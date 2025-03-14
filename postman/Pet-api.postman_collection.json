@@ -1,0 +1,401 @@
+{
+	"info": {
+		"_postman_id": "c79a0eb7-665d-4963-bd43-aa6d6dee34a3",
+		"name": "Pet-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "674876"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Edit an user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"John A. Doe\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/tYFy4ecd0TY2fErw9jsp6e1XHvw1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"tYFy4ecd0TY2fErw9jsp6e1XHvw1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user detail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"tYFy4ecd0TY2fErw9jsp6e1XHvw1\",\n    \"name\": \"Daniel Lovazzano 2\",\n    \"email\": \"daniellovazzano@gmail.com\",\n    \"phone\": \"+1234567890\",\n    \"profilePhoto\": \"https://example.com/profile.jpg\",\n    \"authMethod\": \"email\",\n    \"role\": \"reporter\",\n    \"locale\": \"en\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/tYFy4ecd0TY2fErw9jsp6e1XHvw1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"tYFy4ecd0TY2fErw9jsp6e1XHvw1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search / Filter users by",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "daniellovazzano@gmail.com",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "John",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "reporter",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register an user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"tYFy4ecd0TY2fErw9jsp6e1XHvw1\",\n    \"name\": \"Daniel Lovazzano\",\n    \"email\": \"daniellovazzano@gmail.com\",\n    \"phone\": \"+1234567890\",\n    \"profilePhoto\": \"https://example.com/profile.jpg\",\n    \"authMethod\": \"email\",\n    \"role\": \"reporter\",\n    \"locale\": \"en\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pets",
+			"item": [
+				{
+					"name": "Get all pets",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pets",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a pet",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\": \"Fido\", \"species\": \"Dog\", \"breed\": \"Labrador\", \"age\": 5, \"gender\": \"Male\", \"color\": \"Brown\", \"size\": \"Large\", \"status\": \"lost\", \"description\": \"Friendly dog\", \"location\": { \"latitude\": 37.7749, \"longitude\": -122.4194, \"address\": \"San Francisco, CA\" }, \"images\": [\"https://pettownsendvet.com/wp-content/uploads/2023/01/iStock-1052880600-2048x1365.jpg\"], \"owner\": { \"name\": \"John Doe\", \"contact\": { \"phone\": \"123-456-7890\", \"email\": \"john@example.com\" } }, \"report\": { \"reportedAt\": \"2025-03-05T10:00:00Z\", \"updatedAt\": \"2025-03-05T10:00:00Z\" } }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pets",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a pet",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fido\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pets/6a1f4374-b2e4-460f-83e3-f949c8d5c6f7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pets",
+								"6a1f4374-b2e4-460f-83e3-f949c8d5c6f7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a pet",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"ce35659c-98a9-4c25-8da4-dd859869adca\",\n    \"name\": \"Pepe-2\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pets/ce35659c-98a9-4c25-8da4-dd859869adca",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pets",
+								"ce35659c-98a9-4c25-8da4-dd859869adca"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conversations",
+			"item": [
+				{
+					"name": "Get a conversation by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/conversations/vhEEqkag4IFDsiUIZJbG",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"conversations",
+								"vhEEqkag4IFDsiUIZJbG"
+							]
+						},
+						"description": "Generated from cURL: curl --location --request GET 'http://localhost:3000/conversations/your-conversation-id'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all conversations from a user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/conversations/user/ipfuAjBzv7WAGK1ASJ2dlxI0RI73",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"conversations",
+								"user",
+								"ipfuAjBzv7WAGK1ASJ2dlxI0RI73"
+							]
+						},
+						"description": "Generated from cURL: curl --location --request GET 'http://localhost:3000/conversations/user/firebase-uid-123'"
+					},
+					"response": []
+				},
+				{
+					"name": "Create a conversation",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"participants\": [\"ipfuAjBzv7WAGK1ASJ2dlxI0RI73\", \"tYFy4ecd0TY2fErw9jsp6e1XHvw1\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/conversations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

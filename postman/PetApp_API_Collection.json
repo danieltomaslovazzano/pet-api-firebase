@@ -1,0 +1,805 @@
+{
+  "info": {
+    "name": "Pet App API Collection",
+    "_postman_id": "d3e7d9c0-1234-5678-9abc-def123456789",
+    "description": "This collection tests the Pet App API endpoints for pets, users, conversations, messages, and admin operations.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "PETS Endpoints",
+      "item": [
+        {
+          "name": "GET /pets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/pets",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "pets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /pets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Buddy\",\n  \"species\": \"dog\",\n  \"breed\": \"Labrador\",\n  \"age\": 4,\n  \"gender\": \"male\",\n  \"color\": \"yellow\",\n  \"size\": \"large\",\n  \"status\": \"lost\",\n  \"description_en\": \"Friendly and energetic\",\n  \"description_es\": \"Amigable y enérgico\",\n  \"location\": { \"latitude\": 37.7749, \"longitude\": -122.4194, \"address\": \"San Francisco, CA\" },\n  \"images\": [ \"https://example.com/image.jpg\" ],\n  \"userId\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/pets",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "pets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /pets/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /pets/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"found\",\n  \"description_en\": \"Pet has been found\",\n  \"description_es\": \"La mascota ha sido encontrada\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /pets/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/pets/{{petId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "pets",
+                "{{petId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "USERS Endpoints",
+      "item": [
+        {
+          "name": "POST /users/signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"firebase-uid-123\",\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"profilePhoto\": \"https://example.com/profile.jpg\",\n  \"authMethod\": \"email\",\n  \"role\": \"reporter\",\n  \"locale\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/signup",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "signup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /users/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/users/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /users/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John A. Doe\",\n  \"phone\": \"+0987654321\",\n  \"locale\": \"es\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /users/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/users/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /users/{id}/block",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blockedUserId\": \"firebase-uid-456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/firebase-uid-123/block",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "firebase-uid-123",
+                "block"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /users/{id}/unblock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"blockedUserId\": \"firebase-uid-456\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/users/firebase-uid-123/unblock",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "users",
+                "firebase-uid-123",
+                "unblock"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "CONVERSATIONS Endpoints",
+      "item": [
+        {
+          "name": "POST /conversations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participants\": [\"firebase-uid-123\", \"firebase-uid-456\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /conversations/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /conversations/user/{userId}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/conversations/user/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "user",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /conversations/{id}/soft-delete",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"firebase-uid-123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id/soft-delete",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id",
+                "soft-delete"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /conversations/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /conversations/{id}/hide",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"firebase-uid-123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id/hide",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id",
+                "hide"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /conversations/{id}/unhide",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"firebase-uid-123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id/unhide",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id",
+                "unhide"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /conversations/{id}/block",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"firebase-uid-123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id/block",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id",
+                "block"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /conversations/{id}/unblock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"firebase-uid-123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/conversations/your-conversation-id/unblock",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "conversations",
+                "your-conversation-id",
+                "unblock"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "MESSAGES Endpoints",
+      "item": [
+        {
+          "name": "POST /messages",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conversationId\": \"conv-123\",\n  \"senderId\": \"firebase-uid-123\",\n  \"content\": \"Hello, I think I found your pet.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/messages",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "messages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /messages/{conversationId}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/messages/conv-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "messages",
+                "conv-123"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ADMIN / MODERATION Endpoints",
+      "item": [
+        {
+          "name": "GET /admin/pets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/admin/pets",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "admin",
+                "pets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /admin/pets/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"for_adoption\",\n  \"description_en\": \"Updated description in English\",\n  \"description_es\": \"Descripción actualizada en español\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/admin/pets/your-pet-id",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "admin",
+                "pets",
+                "your-pet-id"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /admin/users/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"phone\": \"+1122334455\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/admin/users/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "admin",
+                "users",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /admin/roles/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"moderator\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/admin/roles/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "admin",
+                "roles",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /admin/users/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <YOUR_MODERATOR_TOKEN>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/admin/users/firebase-uid-123",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "admin",
+                "users",
+                "firebase-uid-123"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
