@@ -1,0 +1,9 @@
+# Environment files
+.env*
+
+# Firebase service account keys
+*/config/*-firebase-adminsdk-*.json
+
+# Specific service account keys
+config/pet-api-prod-firebase-adminsdk-fbsvc-d95299d01b.json
+config/pet-api-dev-35115-firebase-adminsdk-fbsvc-834051197d.json

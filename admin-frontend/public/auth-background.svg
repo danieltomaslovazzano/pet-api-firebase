@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradiente de fondo -->
+  <rect width="1920" height="1080" fill="url(#gradient)"/>
+  
+  <!-- Patrón de formas -->
+  <g opacity="0.1">
+    <circle cx="200" cy="200" r="100" fill="white"/>
+    <circle cx="600" cy="400" r="150" fill="white"/>
+    <circle cx="1000" cy="600" r="120" fill="white"/>
+    <circle cx="1400" cy="300" r="80" fill="white"/>
+    <circle cx="1700" cy="800" r="180" fill="white"/>
+    
+    <!-- Siluetas de mascotas -->
+    <path d="M300 700C300 650 350 600 400 600H450L500 500H700L750 600H800C850 600 900 650 900 700V900C900 950 850 1000 800 1000H400C350 1000 300 950 300 900V700Z" fill="white"/>
+    <path d="M1200 200C1200 150 1250 100 1300 100H1350L1400 0H1600L1650 100H1700C1750 100 1800 150 1800 200V400C1800 450 1750 500 1700 500H1300C1250 500 1200 450 1200 400V200Z" fill="white"/>
+  </g>
+  
+  <!-- Definición del gradiente -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" style="stop-color:#4F46E5"/>
+      <stop offset="50%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#9333EA"/>
+    </linearGradient>
+  </defs>
+</svg> 

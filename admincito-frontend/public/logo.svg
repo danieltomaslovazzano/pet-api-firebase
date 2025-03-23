@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular con gradiente -->
+  <circle cx="24" cy="24" r="22" fill="url(#logoGradient)"/>
+  
+  <!-- Silueta de casa/edificio -->
+  <path d="M14 34V22L24 14L34 22V34H14Z" fill="white"/>
+  <path d="M20 34V26H28V34H20Z" fill="url(#logoGradient)"/>
+  
+  <!-- Definición del gradiente -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg> 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradiente de fondo -->
+  <rect width="1920" height="1080" fill="url(#backgroundGradient)"/>
+  
+  <!-- Patrón de formas -->
+  <g opacity="0.1">
+    <!-- Edificios y formas geométricas -->
+    <path d="M200 1080V700L400 500L600 700V1080H200Z" fill="white"/>
+    <path d="M800 1080V600L1000 400L1200 600V1080H800Z" fill="white"/>
+    <path d="M1400 1080V800L1600 600L1800 800V1080H1400Z" fill="white"/>
+    
+    <!-- Círculos decorativos -->
+    <circle cx="300" cy="300" r="100" fill="white"/>
+    <circle cx="900" cy="200" r="150" fill="white"/>
+    <circle cx="1500" cy="400" r="120" fill="white"/>
+    
+    <!-- Líneas decorativas -->
+    <rect x="100" y="100" width="300" height="4" rx="2" fill="white"/>
+    <rect x="1500" y="200" width="300" height="4" rx="2" fill="white"/>
+    <rect x="800" y="500" width="300" height="4" rx="2" fill="white"/>
+  </g>
+  
+  <!-- Definición del gradiente -->
+  <defs>
+    <linearGradient id="backgroundGradient" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" style="stop-color:#0EA5E9"/>
+      <stop offset="50%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg> 

@@ -1,0 +1,3 @@
+import { TestLayout } from "@/components/layout/TestLayout";
+// ...
+<TestLayout>{children}</TestLayout>
