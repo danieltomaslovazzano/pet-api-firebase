@@ -505,3 +505,114 @@ exports.updateUserRole = async (req, res) => {
     });
   }
 };
+
+// Create user (admin only)
+exports.createUser = async (req, res) => {
+  try {
+    const userData = req.body;
+    
+    // Verificar que el usuario tiene permisos
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+    }
+    
+    // Validar datos requeridos
+    if (!userData.email || !userData.name) {
+      return res.status(400).json({ error: 'Email and name are required' });
+    }
+
+    // Verificar si el usuario ya existe
+    try {
+      const existingUser = await admin.auth().getUserByEmail(userData.email);
+      return res.status(400).json({ 
+        error: 'User already exists',
+        message: 'A user with this email already exists. Please use a different email or reset their password.'
+      });
+    } catch (error) {
+      // User doesn't exist, which is what we want
+    }
+    
+    // Generar contraseña temporal
+    const tempPassword = Math.random().toString(36).slice(-8);
+    
+    // Crear usuario en Firebase Auth
+    const userRecord = await admin.auth().createUser({
+      email: userData.email,
+      emailVerified: false,
+      password: tempPassword,
+      displayName: userData.name,
+      disabled: false
+    });
+    
+    // Generar link de verificación de email
+    const emailVerificationLink = await admin.auth().generateEmailVerificationLink(userData.email);
+    
+    // Generar link de reset de contraseña
+    const passwordResetLink = await admin.auth().generatePasswordResetLink(userData.email);
+    
+    // Establecer rol si se proporciona
+    if (userData.role) {
+      await admin.auth().setCustomUserClaims(userRecord.uid, { 
+        role: userData.role,
+        organizationId: userData.organizationId // Añadir organización a los claims
+      });
+    }
+    
+    // Crear usuario en Firestore
+    const firestoreUserData = {
+      id: userRecord.uid,
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone,
+      profilePhoto: userData.profilePhoto,
+      authMethod: userData.authMethod || 'email',
+      role: userData.role || 'user',
+      organizationId: userData.organizationId,
+      locale: userData.locale || 'en',
+      status: 'pending', // Estado inicial
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    };
+    
+    await admin.firestore().collection('users').doc(userRecord.uid).set(firestoreUserData);
+    
+    // Enviar email de bienvenida (esto es un ejemplo, necesitarás implementar tu propio servicio de email)
+    try {
+      await admin.firestore().collection('mail').add({
+        to: userData.email,
+        message: {
+          subject: 'Welcome to Pet API - Complete Your Registration',
+          html: `
+            <h1>Welcome to Pet API!</h1>
+            <p>Hello ${userData.name},</p>
+            <p>An administrator has created an account for you. To complete your registration:</p>
+            <ol>
+              <li>First, verify your email: <a href="${emailVerificationLink}">Click here to verify your email</a></li>
+              <li>Then, set your password: <a href="${passwordResetLink}">Click here to set your password</a></li>
+            </ol>
+            <p>Your temporary password is: ${tempPassword}</p>
+            <p>If you did not request this account, please contact support.</p>
+          `
+        }
+      });
+    } catch (emailError) {
+      console.error('Error sending welcome email:', emailError);
+      // No fallamos la creación del usuario si falla el email
+    }
+    
+    res.status(201).json({
+      message: 'User created successfully. Welcome email sent.',
+      user: {
+        ...firestoreUserData,
+        uid: userRecord.uid,
+        status: 'pending'
+      }
+    });
+  } catch (err) {
+    console.error('Error creating user:', err);
+    res.status(500).json({ 
+      error: 'Error creating user', 
+      details: err.message 
+    });
+  }
+};

@@ -116,54 +116,38 @@ exports.getUserOrganizations = (req, res) => {
 
 exports.getAdminUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    console.log(`Fetching details for user: ${userId}`);
-
-    try {
-      // Obtener datos de Firebase Auth
-      const userRecord = await admin.auth().getUser(userId);
-      console.log('Firebase Auth data retrieved:', userRecord.uid);
-
-      // Obtener datos adicionales de Firestore
-      const userDoc = await db.collection('users').doc(userId).get();
-      console.log('Firestore data retrieved for user:', userId);
-
-      if (!userDoc.exists) {
-        console.log('User document not found in Firestore for ID:', userId);
-        return res.status(404).json({ error: 'User not found in database' });
-      }
-
-      // Combinar datos de Auth y Firestore
-      const userData = {
-        id: userId,
-        ...userDoc.data(),
-        email: userRecord.email,
-        emailVerified: userRecord.emailVerified,
-        disabled: userRecord.disabled,
-        metadata: userRecord.metadata,
-        providerData: userRecord.providerData,
-        createdAt: userDoc.data().createdAt || userRecord.metadata.creationTime,
-        updatedAt: userDoc.data().updatedAt || userRecord.metadata.lastRefreshTime,
-        lastLoginAt: userRecord.metadata.lastSignInTime
-      };
-
-      console.log('User data combined successfully for ID:', userId);
-      return res.status(200).json(userData);
-
-    } catch (innerError) {
-      console.error('Error in user lookup:', innerError);
-      if (innerError.code === 'auth/user-not-found') {
-        return res.status(404).json({ error: 'User not found in authentication system' });
-      }
-      throw innerError; // Re-throw para que sea capturado por el catch exterior
+    const { id } = req.params;
+    
+    // Get user from Firebase Auth
+    const userRecord = await admin.auth().getUser(id);
+    
+    // Get user from Firestore
+    const userDoc = await db.collection('users').doc(id).get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: 'User not found in Firestore' });
     }
-
+    
+    // Combine data from both sources
+    const userData = {
+      ...userDoc.data(),
+      uid: userRecord.uid,
+      email: userRecord.email,
+      emailVerified: userRecord.emailVerified,
+      disabled: userRecord.disabled,
+      metadata: {
+        creationTime: userRecord.metadata.creationTime,
+        lastSignInTime: userRecord.metadata.lastSignInTime
+      },
+      customClaims: userRecord.customClaims || {}
+    };
+    
+    res.status(200).json(userData);
   } catch (error) {
-    console.error('Error fetching user details:', error);
-    return res.status(500).json({ 
-      error: 'Error fetching user details',
-      message: error.message,
-      code: error.code
-    });
+    console.error('Error getting admin user details:', error);
+    if (error.code === 'auth/user-not-found') {
+      return res.status(404).json({ error: 'User not found in Firebase Auth' });
+    }
+    res.status(500).json({ error: 'Error getting user details', details: error.message });
   }
 };
