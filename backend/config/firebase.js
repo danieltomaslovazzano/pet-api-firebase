@@ -1,22 +1,16 @@
 // config/firebase.js
 const admin = require('firebase-admin');
 const path = require('path');
-const dotenv = require('dotenv');
+const fs = require('fs');
 
-// Load environment variables from the appropriate .env file
-dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev'
-});
+// Initialize Firebase Admin SDK with service account
+const serviceAccountPath = path.join(__dirname, 'pet-api-dev-35115-firebase-adminsdk-fbsvc-a48b0c2ce5.json');
+const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
-// Resolve the path to the service account JSON file
-const serviceAccountPath = path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-const serviceAccount = require(serviceAccountPath);
-
-// Initialize Firebase Admin SDK, explicitly setting the storage bucket from env variable
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 });
 
-console.log('Firebase Admin Initialized for project:', process.env.FIREBASE_PROJECT_ID);
+console.log('Firebase Admin Initialized for project:', serviceAccount.project_id);
 module.exports = admin;

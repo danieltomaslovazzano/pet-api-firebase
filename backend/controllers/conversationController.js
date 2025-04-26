@@ -95,3 +95,20 @@ exports.unblockConversation = (req, res) => {
     res.status(200).json(result);
   });
 };
+
+exports.getConversations = (req, res) => {
+  // Get query parameters for filtering
+  const filters = {
+    userId: req.query.userId,
+    status: req.query.status,
+    startDate: req.query.startDate,
+    endDate: req.query.endDate
+  };
+
+  conversationModel.getConversations(filters, (err, conversations) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error retrieving conversations', details: err.message });
+    }
+    res.status(200).json(conversations);
+  });
+};

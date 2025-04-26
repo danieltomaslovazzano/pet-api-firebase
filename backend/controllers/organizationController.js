@@ -81,3 +81,20 @@ exports.getOrganizationMembers = (req, res) => {
     });
   });
 };
+
+exports.getOrganizations = (req, res) => {
+  // Get query parameters for filtering
+  const filters = {
+    name: req.query.name,
+    type: req.query.type,
+    status: req.query.status,
+    createdBy: req.query.createdBy
+  };
+
+  organizationModel.getOrganizations(filters, (err, organizations) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error retrieving organizations', details: err.message });
+    }
+    res.status(200).json(organizations);
+  });
+};
