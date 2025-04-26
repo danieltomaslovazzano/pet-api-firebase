@@ -49,4 +49,4 @@ coverage/
 **/firebase-adminsdk-*.json
 **/serviceAccountKey.json
 **/service-account.json
-**/firebase-credentials.json 
+**/firebase-credentials.json backend.zip
