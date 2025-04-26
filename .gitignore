@@ -43,4 +43,10 @@ coverage/
 
 # Misc
 *.pem
-.cache 
+.cache
+
+# Firebase
+**/firebase-adminsdk-*.json
+**/serviceAccountKey.json
+**/service-account.json
+**/firebase-credentials.json 
