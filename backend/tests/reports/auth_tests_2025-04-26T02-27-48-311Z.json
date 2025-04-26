@@ -1,0 +1,215 @@
+{
+  "summary": {
+    "totalTests": 8,
+    "passed": 2,
+    "failed": 6
+  },
+  "results": [
+    {
+      "testName": "Authentication",
+      "testCase": "Register with valid data",
+      "timestamp": "2025-04-26T02:27:47.422Z",
+      "result": {
+        "status": 201,
+        "data": {
+          "message": "Usuario registrado correctamente",
+          "user": {
+            "id": "ue0zlZTKsXMVO4oTGSgegok9Lsp1",
+            "email": "test1745634464546@example.com",
+            "name": "Test User",
+            "role": "user",
+            "createdAt": {},
+            "updatedAt": {}
+          },
+          "tokens": {
+            "idToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjkwOTg1NzhjNDg4MWRjMDVlYmYxOWExNWJhMjJkOGZkMWFiMzRjOGEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcGV0LWFwaS1kZXYtMzUxMTUiLCJhdWQiOiJwZXQtYXBpLWRldi0zNTExNSIsImF1dGhfdGltZSI6MTc0NTYzNDQ2NSwidXNlcl9pZCI6InVlMHpsWlRLc1hNVk80b1RHU2dlZ29rOUxzcDEiLCJzdWIiOiJ1ZTB6bFpUS3NYTVZPNG9UR1NnZWdvazlMc3AxIiwiaWF0IjoxNzQ1NjM0NDY1LCJleHAiOjE3NDU2MzgwNjUsImVtYWlsIjoidGVzdDE3NDU2MzQ0NjQ1NDZAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidGVzdDE3NDU2MzQ0NjQ1NDZAZXhhbXBsZS5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.jQfhSTi9Chokn50Tpw8Tw5Bs8Siss75boTIHeUmFYgwkIgM5JSmKsceM6GMzOy4Wn-XVitHxXXW-EiafXmzunqDxJXnPKIhZeghwN5mi9ftoN6uDaZ41El3LtAd8R68lY8nbeHdgC9tauFYO0WNImDGqUO-lvDmY0i02I834DBEh2j6y5kENKeoRcwfMvRCh5rLH_6j6soc0abZpH1SbRSnnAgRIWEYC1kWshrK0eYYsiWZNI2-FH5ce2x-XlfCiTxViasJGXPFScJ2fY27NBqwlGfsncp1AzHhPh92rwPyn9mnNFDZRfNYkQ0MWtiZ9bWfG0fq60C7yLX2SJxSgoQ",
+            "expiresIn": 3600
+          }
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "1191",
+          "etag": "W/\"4a7-+ZPEThtGeqrK6+x2KjKacxFmuZs\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "requestData": {
+          "email": "test1745634464546@example.com",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with invalid email",
+      "timestamp": "2025-04-26T02:27:47.519Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Formato de email inválido"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "38",
+          "etag": "W/\"26-a2KtX56nN9d92pNRP+9lzUo4Qkc\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400",
+        "requestData": {
+          "email": "invalid-email",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with weak password",
+      "timestamp": "2025-04-26T02:27:47.539Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "La contraseña debe tener al menos 6 caracteres"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "59",
+          "etag": "W/\"3b-bm1FhnjpnP+uQHC7fKC+FJKgbOw\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400",
+        "requestData": {
+          "email": "test1745634467521@example.com",
+          "password": "123",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with missing fields",
+      "timestamp": "2025-04-26T02:27:47.551Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Se requieren todos los campos: email, password y name"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "65",
+          "etag": "W/\"41-cBg7B6HGrqcvr6qG/tjfU7cjOAE\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400",
+        "requestData": {
+          "email": "test1745634467541@example.com"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with valid credentials",
+      "timestamp": "2025-04-26T02:27:47.764Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Error de autenticación",
+          "details": "INVALID_LOGIN_CREDENTIALS"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "73",
+          "etag": "W/\"49-jL22qI9XzW7ZXzyHTnJcavz1C9o\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400"
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with invalid password",
+      "timestamp": "2025-04-26T02:27:48.000Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Error de autenticación",
+          "details": "INVALID_LOGIN_CREDENTIALS"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "73",
+          "etag": "W/\"49-jL22qI9XzW7ZXzyHTnJcavz1C9o\"",
+          "date": "Sat, 26 Apr 2025 02:27:47 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400"
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Request password reset with valid email",
+      "timestamp": "2025-04-26T02:27:48.303Z",
+      "result": {
+        "status": 200,
+        "data": {
+          "message": "Correo de recuperación enviado correctamente"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "59",
+          "etag": "W/\"3b-7+XrS/J3yfz/aqsO15MxUS0GD0g\"",
+          "date": "Sat, 26 Apr 2025 02:27:48 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Logout with valid token",
+      "timestamp": "2025-04-26T02:27:48.310Z",
+      "result": {
+        "status": 401,
+        "data": {
+          "message": "No token provided"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "31",
+          "etag": "W/\"1f-pZK48A3ZbwxVl8UtZcC9y8sBFbw\"",
+          "date": "Sat, 26 Apr 2025 02:27:48 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 401"
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "totalTests": 8,
+    "passed": 0,
+    "failed": 0
+  },
+  "results": [
+    {
+      "testName": "Authentication",
+      "testCase": "Register with valid data",
+      "timestamp": "2025-04-26T02:25:25.295Z",
+      "result": {
+        "error": "",
+        "requestData": {
+          "email": "test1745634325052@example.com",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with invalid email",
+      "timestamp": "2025-04-26T02:25:25.327Z",
+      "result": {
+        "error": "",
+        "requestData": {
+          "email": "invalid-email",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with weak password",
+      "timestamp": "2025-04-26T02:25:25.344Z",
+      "result": {
+        "error": "",
+        "requestData": {
+          "email": "test1745634325334@example.com",
+          "password": "123",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with missing fields",
+      "timestamp": "2025-04-26T02:25:25.376Z",
+      "result": {
+        "error": "",
+        "requestData": {
+          "email": "test1745634325354@example.com"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with valid credentials",
+      "timestamp": "2025-04-26T02:25:25.501Z",
+      "result": {
+        "error": ""
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with invalid password",
+      "timestamp": "2025-04-26T02:25:25.526Z",
+      "result": {
+        "error": ""
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Request password reset with valid email",
+      "timestamp": "2025-04-26T02:25:25.535Z",
+      "result": {
+        "error": ""
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Logout with valid token",
+      "timestamp": "2025-04-26T02:25:25.542Z",
+      "result": {
+        "error": ""
+      }
+    }
+  ]
+}

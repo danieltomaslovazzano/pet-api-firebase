@@ -1,0 +1,200 @@
+{
+  "summary": {
+    "totalTests": 8,
+    "passed": 1,
+    "failed": 7
+  },
+  "results": [
+    {
+      "testName": "Authentication",
+      "testCase": "Register with valid data",
+      "timestamp": "2025-04-26T02:26:18.734Z",
+      "result": {
+        "status": 404,
+        "data": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/auth/register</pre>\n</body>\n</html>\n",
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "157",
+          "date": "Sat, 26 Apr 2025 02:26:18 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 404",
+        "requestData": {
+          "email": "test1745634378531@example.com",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with invalid email",
+      "timestamp": "2025-04-26T02:26:18.759Z",
+      "result": {
+        "status": 404,
+        "data": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/auth/register</pre>\n</body>\n</html>\n",
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "157",
+          "date": "Sat, 26 Apr 2025 02:26:18 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 404",
+        "requestData": {
+          "email": "invalid-email",
+          "password": "Test123456!",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with weak password",
+      "timestamp": "2025-04-26T02:26:18.769Z",
+      "result": {
+        "status": 404,
+        "data": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/auth/register</pre>\n</body>\n</html>\n",
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "157",
+          "date": "Sat, 26 Apr 2025 02:26:18 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 404",
+        "requestData": {
+          "email": "test1745634378761@example.com",
+          "password": "123",
+          "name": "Test User"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Register with missing fields",
+      "timestamp": "2025-04-26T02:26:18.783Z",
+      "result": {
+        "status": 404,
+        "data": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/auth/register</pre>\n</body>\n</html>\n",
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-security-policy": "default-src 'none'",
+          "x-content-type-options": "nosniff",
+          "content-type": "text/html; charset=utf-8",
+          "content-length": "157",
+          "date": "Sat, 26 Apr 2025 02:26:18 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 404",
+        "requestData": {
+          "email": "test1745634378771@example.com"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with valid credentials",
+      "timestamp": "2025-04-26T02:26:19.228Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Error de autenticación",
+          "details": "INVALID_LOGIN_CREDENTIALS"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "73",
+          "etag": "W/\"49-jL22qI9XzW7ZXzyHTnJcavz1C9o\"",
+          "date": "Sat, 26 Apr 2025 02:26:19 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400"
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Login with invalid password",
+      "timestamp": "2025-04-26T02:26:19.529Z",
+      "result": {
+        "status": 400,
+        "data": {
+          "error": "Error de autenticación",
+          "details": "INVALID_LOGIN_CREDENTIALS"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "73",
+          "etag": "W/\"49-jL22qI9XzW7ZXzyHTnJcavz1C9o\"",
+          "date": "Sat, 26 Apr 2025 02:26:19 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 400"
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Request password reset with valid email",
+      "timestamp": "2025-04-26T02:26:19.833Z",
+      "result": {
+        "status": 200,
+        "data": {
+          "message": "Correo de recuperación enviado correctamente"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "59",
+          "etag": "W/\"3b-7+XrS/J3yfz/aqsO15MxUS0GD0g\"",
+          "date": "Sat, 26 Apr 2025 02:26:19 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        }
+      }
+    },
+    {
+      "testName": "Authentication",
+      "testCase": "Logout with valid token",
+      "timestamp": "2025-04-26T02:26:19.849Z",
+      "result": {
+        "status": 401,
+        "data": {
+          "message": "No token provided"
+        },
+        "headers": {
+          "x-powered-by": "Express",
+          "vary": "Origin",
+          "content-type": "application/json; charset=utf-8",
+          "content-length": "31",
+          "etag": "W/\"1f-pZK48A3ZbwxVl8UtZcC9y8sBFbw\"",
+          "date": "Sat, 26 Apr 2025 02:26:19 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5"
+        },
+        "error": "Request failed with status code 401"
+      }
+    }
+  ]
+}
