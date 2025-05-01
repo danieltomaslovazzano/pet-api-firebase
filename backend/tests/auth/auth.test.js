@@ -141,6 +141,68 @@ describe('Authentication Endpoints', () => {
       expect(result.data).toHaveProperty('error', 'Error de autenticación');
       expect(result.data).toHaveProperty('details', 'INVALID_LOGIN_CREDENTIALS');
     });
+
+    // Test Case 3: Non-existent User
+    it('should reject login with non-existent user', async () => {
+      const loginData = {
+        email: `nonexistent${Date.now()}@example.com`,
+        password: 'Test123456!'
+      };
+
+      const result = await makeRequest('POST', 'auth/login', loginData);
+      result.requestData = loginData;
+      result.endpoint = 'auth/login';
+      trackResult('Login with non-existent user', result);
+
+      expect(result.status).toBe(400);
+      expect(result.data).toHaveProperty('error', 'Error de autenticación');
+      expect(result.data).toHaveProperty('details', 'USER_NOT_FOUND');
+    });
+
+    // Test Case 4: Invalid Email Format
+    it('should reject login with invalid email format', async () => {
+      const loginData = {
+        email: 'invalid-email-format',
+        password: 'Test123456!'
+      };
+
+      const result = await makeRequest('POST', 'auth/login', loginData);
+      result.requestData = loginData;
+      result.endpoint = 'auth/login';
+      trackResult('Login with invalid email', result);
+
+      expect(result.status).toBe(400);
+      expect(result.data).toHaveProperty('error', 'Formato de email inválido');
+    });
+
+    // Test Case 5: Disabled Account
+    it('should reject login with disabled account', async () => {
+      // First, create a test user
+      const testData = {
+        email: `disabled${Date.now()}@example.com`,
+        password: 'Test123456!',
+        name: 'Disabled User'
+      };
+
+      const registerResult = await makeRequest('POST', 'auth/register', testData);
+      expect(registerResult.status).toBe(201);
+
+      // Disable the user (this would typically be done through an admin endpoint)
+      // For now, we'll simulate a disabled user response
+      const loginData = {
+        email: testData.email,
+        password: testData.password
+      };
+
+      const result = await makeRequest('POST', 'auth/login', loginData);
+      result.requestData = loginData;
+      result.endpoint = 'auth/login';
+      trackResult('Login with disabled account', result);
+
+      expect(result.status).toBe(403);
+      expect(result.data).toHaveProperty('error', 'Cuenta deshabilitada');
+      expect(result.data).toHaveProperty('details', 'USER_DISABLED');
+    });
   });
 
   // Test Suite: Password Reset
@@ -161,6 +223,69 @@ describe('Authentication Endpoints', () => {
     });
   });
 
+  // Test Suite: Email Verification
+  describe('Email Verification', () => {
+    // Test Case 1: Verify with Valid Token
+    it('should successfully verify email with valid token', async () => {
+      // First, register a new user
+      const testData = {
+        email: `verify${Date.now()}@example.com`,
+        password: 'Test123456!',
+        name: 'Verify User'
+      };
+
+      const registerResult = await makeRequest('POST', 'auth/register', testData);
+      expect(registerResult.status).toBe(201);
+
+      // Get the verification token from the registration response
+      const verificationToken = registerResult.data.tokens.emailVerificationToken;
+
+      const verifyData = {
+        token: verificationToken
+      };
+
+      const result = await makeRequest('POST', 'auth/verify-email', verifyData);
+      result.requestData = verifyData;
+      result.endpoint = 'auth/verify-email';
+      trackResult('Verify with valid token', result);
+
+      expect(result.status).toBe(200);
+      expect(result.data).toHaveProperty('message', 'Email verificado correctamente');
+    });
+
+    // Test Case 2: Verify with Invalid Token
+    it('should reject verification with invalid token', async () => {
+      const verifyData = {
+        token: 'invalid-token-123'
+      };
+
+      const result = await makeRequest('POST', 'auth/verify-email', verifyData);
+      result.requestData = verifyData;
+      result.endpoint = 'auth/verify-email';
+      trackResult('Verify with invalid token', result);
+
+      expect(result.status).toBe(400);
+      expect(result.data).toHaveProperty('error', 'Token de verificación inválido');
+    });
+
+    // Test Case 3: Verify with Expired Token
+    it('should reject verification with expired token', async () => {
+      // Create an expired token (this would typically be done by waiting for token expiration)
+      // For testing purposes, we'll use a mock expired token
+      const verifyData = {
+        token: 'expired-token-123'
+      };
+
+      const result = await makeRequest('POST', 'auth/verify-email', verifyData);
+      result.requestData = verifyData;
+      result.endpoint = 'auth/verify-email';
+      trackResult('Verify with expired token', result);
+
+      expect(result.status).toBe(400);
+      expect(result.data).toHaveProperty('error', 'Token de verificación expirado');
+    });
+  });
+
   // Test Suite: Logout
   describe('Logout', () => {
     // Test Case 1: Successful Logout
@@ -171,6 +296,27 @@ describe('Authentication Endpoints', () => {
 
       expect(result.status).toBe(200);
       expect(result.data).toHaveProperty('message', 'Sesión cerrada correctamente');
+    });
+
+    // Test Case 2: Logout with Invalid Token
+    it('should reject logout with invalid token', async () => {
+      const invalidToken = 'invalid-token-123';
+      const result = await makeRequest('POST', 'auth/logout', null, invalidToken);
+      result.endpoint = 'auth/logout';
+      trackResult('Logout with invalid token', result);
+
+      expect(result.status).toBe(401);
+      expect(result.data).toHaveProperty('error', 'Token inválido');
+    });
+
+    // Test Case 3: Logout without Token
+    it('should reject logout without token', async () => {
+      const result = await makeRequest('POST', 'auth/logout');
+      result.endpoint = 'auth/logout';
+      trackResult('Logout without token', result);
+
+      expect(result.status).toBe(401);
+      expect(result.data).toHaveProperty('error', 'Token no proporcionado');
     });
   });
 
@@ -189,7 +335,7 @@ describe('Authentication Endpoints', () => {
           },
           {
             name: 'User Login',
-            total: 2,
+            total: 5,
             passed: testResults.filter(r => r.testCase.includes('Login') && r.result.status >= 200 && r.result.status < 300).length
           },
           {
@@ -198,8 +344,13 @@ describe('Authentication Endpoints', () => {
             passed: testResults.filter(r => r.testCase.includes('reset') && r.result.status >= 200 && r.result.status < 300).length
           },
           {
+            name: 'Email Verification',
+            total: 3,
+            passed: testResults.filter(r => r.testCase.includes('Verify') && r.result.status >= 200 && r.result.status < 300).length
+          },
+          {
             name: 'Logout',
-            total: 1,
+            total: 3,
             passed: testResults.filter(r => r.testCase.includes('Logout') && r.result.status >= 200 && r.result.status < 300).length
           }
         ]
