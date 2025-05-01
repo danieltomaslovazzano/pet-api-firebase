@@ -5,11 +5,17 @@ const authController = require('../controllers/authController');
 const { verifyToken } = require('../middlewares/auth');
 const { checkRoles } = require('../middlewares/role');
 
+// POST /auth/register
+router.post('/register', authController.register);
+
 // POST /auth/login
 router.post('/login', authController.login);
 
 // POST /auth/logout
 router.post('/logout', verifyToken, authController.logout);
+
+// POST /auth/verify-email
+router.post('/verify-email', authController.verifyEmail);
 
 // Nuevos endpoints
 // POST /auth/reset-password - Enviar correo de reseteo de contraseña

@@ -1,0 +1,6 @@
+# Test reports
+auth/reports/*.md
+reports/test-report.html
+
+# OS files
+.DS_Store 

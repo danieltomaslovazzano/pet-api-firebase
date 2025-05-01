@@ -3,7 +3,7 @@ require('dotenv').config({ path: '.env.dev' });
 
 const config = {
   baseUrl: `http://localhost:${process.env.PORT || 3000}`,
-  apiVersion: 'v1',
+  apiVersion: '',
   testUser: {
     email: process.env.TEST_USER_EMAIL || 'test@example.com',
     password: process.env.TEST_USER_PASSWORD || 'test123456',
