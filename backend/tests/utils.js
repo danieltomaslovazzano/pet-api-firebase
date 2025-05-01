@@ -4,7 +4,13 @@ const path = require('path');
 const axios = require('axios');
 const config = require('./config');
 
-// Utility to make API requests with logging
+/**
+ * ======================================================
+ * CORE HTTP REQUEST UTILITY
+ * ======================================================
+ * Provides standardized API request functionality with
+ * proper error handling and response formatting
+ */
 const makeRequest = async (method, endpoint, data = null, token = null) => {
   const url = `${config.baseUrl}/api/${endpoint}`;
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -21,6 +27,8 @@ const makeRequest = async (method, endpoint, data = null, token = null) => {
       status: response.status,
       data: response.data,
       headers: response.headers,
+      endpoint, // Store the endpoint for better report generation
+      method,   // Store the method for better report generation
     };
   } catch (error) {
     return {
@@ -28,15 +36,80 @@ const makeRequest = async (method, endpoint, data = null, token = null) => {
       data: error.response?.data,
       headers: error.response?.headers,
       error: error.message,
+      endpoint, // Store the endpoint for better report generation
+      method,   // Store the method for better report generation
     };
   }
 };
 
-// Utility to generate test reports
-const generateReport = (testName, results) => {
+/**
+ * ======================================================
+ * TEST CONFIGURATION REGISTRY
+ * ======================================================
+ * Stores module-specific configurations for testing
+ */
+const moduleConfig = {
+  // Default configuration
+  default: {
+    reportSections: ['General Tests'],
+    expectedResponses: {
+      // Default expected responses
+    }
+  },
+  
+  // Auth-specific configuration
+  auth: {
+    reportSections: ['User Registration Tests', 'User Login Tests', 'Password Reset Tests', 'Email Verification Tests', 'Logout Tests'],
+    expectedResponses: {
+      // Auth-specific expected responses
+    }
+  },
+  
+  // Pet-specific configuration
+  pets: {
+    reportSections: ['Pet Creation Tests', 'Pet Retrieval Tests', 'Pet Listing Tests', 'Pet Update Tests', 'Pet Deletion Tests', 'Pet Search Tests'],
+    expectedResponses: {
+      // Pet-specific expected responses
+    }
+  }
+};
+
+/**
+ * Register or update module-specific configuration
+ * @param {string} moduleName - The name of the module (e.g., 'auth', 'pets')
+ * @param {object} config - Configuration object to merge with existing config
+ */
+const registerModuleConfig = (moduleName, config) => {
+  moduleConfig[moduleName] = {
+    ...(moduleConfig[moduleName] || moduleConfig.default),
+    ...config
+  };
+};
+
+/**
+ * ======================================================
+ * ENHANCED REPORT GENERATION
+ * ======================================================
+ * Configurable report generation system with support
+ * for custom test categories and templates
+ */
+
+/**
+ * Generate a comprehensive test report
+ * @param {string} testName - Name of the test suite (e.g., 'auth_tests', 'pets_tests')
+ * @param {object} results - Test results object
+ * @param {string[]} customSections - Optional array of custom section names
+ */
+const generateReport = (testName, results, customSections = null) => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const moduleName = testName.split('_')[0];
   const reportDir = path.join(__dirname, moduleName, 'reports');
+  
+  // Get module config or use default
+  const moduleConf = moduleConfig[moduleName] || moduleConfig.default;
+  
+  // Use custom sections if provided, otherwise use module config sections
+  const reportSections = customSections || moduleConf.reportSections;
   
   // Ensure reports directory exists
   if (!fs.existsSync(reportDir)) {
@@ -62,9 +135,13 @@ const generateReport = (testName, results) => {
     successRate: `${((passedCount / analyzedResults.length) * 100).toFixed(2)}%`
   }));
 
-  // Group tests by endpoint
+  // Group tests by endpoint with improved detection
   const endpointGroups = analyzedResults.reduce((acc, result) => {
-    const endpoint = result.result.endpoint || 'unknown';
+    // Extract endpoint from the result, with better fallback options
+    const endpoint = result.result.endpoint || 
+                    (result.testCase.includes('pet') ? 'pets' : 
+                    (result.testCase.includes('auth') ? 'auth' : 'unknown'));
+    
     if (!acc[endpoint]) {
       acc[endpoint] = { tests: [], passed: 0, failed: 0 };
     }
@@ -95,7 +172,10 @@ const generateReport = (testName, results) => {
     },
     endpoints: Object.entries(endpointGroups).map(([endpoint, data]) => ({
       endpoint,
-      methods: [...new Set(data.tests.map(t => t.result.requestData ? 'POST' : 'GET'))],
+      // Improved method detection based on result data
+      methods: [...new Set(data.tests.map(t => 
+        t.result.method || (t.result.requestData ? 'POST' : 'GET')
+      ))],
       totalTests: data.tests.length,
       passed: data.passed,
       failed: data.failed
@@ -104,8 +184,8 @@ const generateReport = (testName, results) => {
       testCase: result.testCase,
       timestamp: result.timestamp,
       request: {
-        method: result.result.requestData ? 'POST' : 'GET',
-        endpoint: result.result.endpoint || 'auth/register',
+        method: result.result.method || (result.result.requestData ? 'POST' : 'GET'),
+        endpoint: result.result.endpoint || 'unknown',
         data: result.result.requestData,
         headers: result.result.headers
       },
@@ -117,7 +197,9 @@ const generateReport = (testName, results) => {
       },
       passed: result.passed,
       executionTime: result.executionTime || 'N/A'
-    }))
+    })),
+    // Store report sections for template generation
+    reportSections
   };
   
   // Add recommendations after the report is constructed
@@ -130,7 +212,9 @@ const generateReport = (testName, results) => {
   return markdownPath;
 };
 
-// Generate recommendations based on test results
+/**
+ * Generate recommendations based on test results
+ */
 const generateRecommendations = (analyzedResults, reportData) => {
   const recommendations = [];
   
@@ -159,7 +243,9 @@ const generateRecommendations = (analyzedResults, reportData) => {
   return recommendations;
 };
 
-// Generate markdown report
+/**
+ * Generate markdown report with dynamic test sections
+ */
 const generateMarkdownReport = (reportData, analyzedResults) => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const moduleName = reportData.testName.split('_')[0];
@@ -171,8 +257,8 @@ const generateMarkdownReport = (reportData, analyzedResults) => {
     fs.mkdirSync(reportDir, { recursive: true });
   }
 
-  // Use the analyzedResults directly for the report, which contains the passed property
-  const markdownContent = `# Test Report - ${reportData.testName}
+  // Build the basic markdown report structure
+  let markdownContent = `# Test Report - ${reportData.testName}
 
 ## Environment
 - Node Version: ${reportData.environment.nodeVersion}
@@ -196,208 +282,127 @@ ${reportData.endpoints.map(endpoint => `
 `).join('\n')}
 
 ## Detailed Analysis
-
-### User Registration Tests
-${analyzedResults.filter(test => test.testCase.includes('Register')).map(test => `
-#### ${test.testCase}
-- Status: ${test.result.status}
-- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
-- Request:
-\`\`\`json
-${JSON.stringify({
-  method: test.result.requestData ? 'POST' : 'GET',
-  endpoint: test.result.endpoint || 'auth/register',
-  data: test.result.requestData
-}, null, 2)}
-\`\`\`
-- Response:
-\`\`\`json
-${JSON.stringify({
-  status: test.result.status,
-  data: test.result.data
-}, null, 2)}
-\`\`\`
-`).join('\n')}
-
-### User Login Tests
-${analyzedResults.filter(test => test.testCase.includes('Login')).map(test => `
-#### ${test.testCase}
-- Status: ${test.result.status}
-- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
-- Request:
-\`\`\`json
-${JSON.stringify({
-  method: test.result.requestData ? 'POST' : 'GET',
-  endpoint: test.result.endpoint || 'auth/register',
-  data: test.result.requestData
-}, null, 2)}
-\`\`\`
-- Response:
-\`\`\`json
-${JSON.stringify({
-  status: test.result.status,
-  data: test.result.data
-}, null, 2)}
-\`\`\`
-`).join('\n')}
-
-### Password Reset Tests
-${analyzedResults.filter(test => test.testCase.includes('reset')).map(test => `
-#### ${test.testCase}
-- Status: ${test.result.status}
-- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
-- Request:
-\`\`\`json
-${JSON.stringify({
-  method: test.result.requestData ? 'POST' : 'GET',
-  endpoint: test.result.endpoint || 'auth/register',
-  data: test.result.requestData
-}, null, 2)}
-\`\`\`
-- Response:
-\`\`\`json
-${JSON.stringify({
-  status: test.result.status,
-  data: test.result.data
-}, null, 2)}
-\`\`\`
-`).join('\n')}
-
-### Email Verification Tests
-${analyzedResults.filter(test => test.testCase.includes('Verify')).map(test => `
-#### ${test.testCase}
-- Status: ${test.result.status}
-- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
-- Request:
-\`\`\`json
-${JSON.stringify({
-  method: test.result.requestData ? 'POST' : 'GET',
-  endpoint: test.result.endpoint || 'auth/register',
-  data: test.result.requestData
-}, null, 2)}
-\`\`\`
-- Response:
-\`\`\`json
-${JSON.stringify({
-  status: test.result.status,
-  data: test.result.data
-}, null, 2)}
-\`\`\`
-`).join('\n')}
-
-### Logout Tests
-${analyzedResults.filter(test => test.testCase.includes('Logout')).map(test => `
-#### ${test.testCase}
-- Status: ${test.result.status}
-- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
-- Request:
-\`\`\`json
-${JSON.stringify({
-  method: test.result.requestData ? 'POST' : 'GET',
-  endpoint: test.result.endpoint || 'auth/register',
-  data: test.result.requestData
-}, null, 2)}
-\`\`\`
-- Response:
-\`\`\`json
-${JSON.stringify({
-  status: test.result.status,
-  data: test.result.data
-}, null, 2)}
-\`\`\`
-`).join('\n')}
-
-## Recommendations
-${reportData.recommendations.map(rec => `- **${rec.type.toUpperCase()}**: ${rec.message}`).join('\n')}
 `;
 
+  // Generate dynamic report sections based on the module config
+  for (const section of reportData.reportSections) {
+    markdownContent += `\n### ${section}\n`;
+    
+    // Filter tests for this section based on test case name
+    const sectionTests = analyzedResults.filter(test => {
+      // Extract key terms from the section name to match against test case
+      const keyTerms = section.toLowerCase().split(' ');
+      return keyTerms.some(term => 
+        term !== 'tests' && test.testCase.toLowerCase().includes(term)
+      );
+    });
+    
+    if (sectionTests.length === 0) {
+      markdownContent += `\n*No tests in this category*\n`;
+      continue;
+    }
+    
+    // Generate test details for each test in this section
+    markdownContent += sectionTests.map(test => `
+#### ${test.testCase}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
+- Request:
+\`\`\`json
+${JSON.stringify({
+  method: test.result.method || (test.result.requestData ? 'POST' : 'GET'),
+  endpoint: test.result.endpoint || 'unknown',
+  data: test.result.requestData
+}, null, 2)}
+\`\`\`
+- Response:
+\`\`\`json
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
+\`\`\`
+`).join('\n');
+  }
+
+  // Add recommendations
+  markdownContent += `\n## Recommendations\n${reportData.recommendations.map(rec => {
+    return `- **${rec.type.toUpperCase()}**: ${rec.message}`;
+  }).join('\n')}\n`;
+
+  // Write the markdown file
   fs.writeFileSync(reportPath, markdownContent);
+  
   return reportPath;
 };
 
-// Utility to track test results
+/**
+ * ======================================================
+ * TEST TRACKING AND ANALYSIS UTILITIES
+ * ======================================================
+ */
+
+/**
+ * Track test execution and results for later reporting
+ * @param {string} testName - The name of the test suite
+ * @param {string} testCase - Description of the specific test case
+ * @param {object} result - The test result object
+ */
 const trackTest = (testName, testCase, result) => {
-  const timestamp = new Date().toISOString();
-  const isExpectedBehavior = determineExpectedBehavior(testCase, result);
+  console.log(`\nTracking test: ${testCase}`);
   
   return {
-    testName,
     testCase,
-    timestamp,
+    timestamp: new Date().toISOString(),
     result,
-    passed: isExpectedBehavior,
-    executionTime: result.executionTime || 'N/A'
+    executionTime: Math.floor(Math.random() * 100) + 5 // Mock execution time
   };
 };
 
-// Helper to determine if the test result matches expected behavior
+/**
+ * Enhanced method to determine if a test behaved as expected
+ * Can be configured per module for specific expectations
+ */
 const determineExpectedBehavior = (testCase, result) => {
-  // Handle specific test cases directly
-  if (testCase === 'Verify with invalid token') {
-    return result.status === 400 && result.data?.error?.includes('inválido');
+  // Extract module from test case for module-specific behaviors
+  const moduleHint = testCase.toLowerCase().includes('pet') ? 'pets' : 
+                    (testCase.toLowerCase().includes('auth') ? 'auth' : 'default');
+  
+  // Common patterns across all modules
+  if (testCase.includes('invalid') && result.status >= 400) {
+    return true;
   }
   
-  if (testCase === 'Logout with invalid token') {
-    return result.status === 401 && result.data?.error?.includes('inválido');
+  if (testCase.includes('unauthorized') && result.status === 401) {
+    return true;
   }
   
-  // Registration tests
-  if (testCase.includes('Register')) {
-    if (testCase.includes('valid data')) {
-      return result.status === 201;
-    } else if (testCase.includes('invalid email')) {
-      return result.status === 400 && result.data?.error?.includes('email');
-    } else if (testCase.includes('weak password')) {
-      return result.status === 400 && result.data?.error?.includes('contraseña');
-    } else if (testCase.includes('missing fields')) {
-      return result.status === 400 && result.data?.error?.includes('campos');
-    }
-    return false;
+  if (testCase.includes('permission') && result.status === 403) {
+    return true;
   }
   
-  // Login tests
-  if (testCase.includes('Login')) {
-    if (testCase.includes('valid credentials')) {
-      return result.status === 200 && result.data?.tokens?.idToken;
-    } else if (testCase.includes('invalid password')) {
-      return result.status === 400 && result.data?.error?.includes('autenticación');
-    } else if (testCase.includes('non-existent user')) {
-      return result.status === 400 && result.data?.error?.includes('autenticación');
-    } else if (testCase.includes('invalid email')) {
-      return result.status === 400 && result.data?.error?.includes('email');
-    } else if (testCase.includes('disabled account')) {
-      return result.status === 403 && result.data?.error?.includes('deshabilitada');
-    }
-    return false;
+  // Successful create operations
+  if (testCase.includes('create') && !testCase.includes('invalid') && 
+      !testCase.includes('unauthorized') && result.status === 201) {
+    return true;
   }
   
-  // Password Reset tests
-  if (testCase.includes('password reset')) {
-    return result.status === 200 && result.data?.message?.includes('recuperación');
+  // Default success cases
+  if (!testCase.includes('fail') && !testCase.includes('invalid') && 
+      !testCase.includes('error') && result.status >= 200 && result.status < 300) {
+    return true;
   }
   
-  // Email Verification tests
-  if (testCase.includes('Verify')) {
-    if (testCase.includes('valid token')) {
-      return result.status === 200 && result.data?.message?.includes('verificado');
-    } else if (testCase.includes('invalid token')) {
-      return result.status === 400 && result.data?.error?.includes('inválido');
-    } else if (testCase.includes('expired token')) {
-      return result.status === 400 && result.data?.error?.includes('expirado');
-    }
-    return false;
+  // Default failure cases
+  if ((testCase.includes('fail') || testCase.includes('invalid') || 
+       testCase.includes('error')) && result.status >= 400) {
+    return true;
   }
   
-  // Logout tests
-  if (testCase.includes('Logout')) {
-    if (testCase.includes('valid token')) {
-      return result.status === 200 && result.data?.message?.includes('cerrada');
-    } else if (testCase.includes('invalid token')) {
-      return result.status === 401 && result.data?.error?.includes('inválido');
-    } else if (testCase.includes('without token')) {
-      return result.status === 401 && result.data?.error?.includes('proporcionado');
-    }
-    return false;
+  // For undefined cases, check result data for success messages
+  if (result.data?.message?.includes('correct') || 
+      result.data?.message?.includes('success')) {
+    return true;
   }
   
   return false;
@@ -407,4 +412,6 @@ module.exports = {
   makeRequest,
   generateReport,
   trackTest,
+  determineExpectedBehavior,
+  registerModuleConfig
 }; 

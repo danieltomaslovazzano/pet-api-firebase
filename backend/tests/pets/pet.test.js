@@ -2,13 +2,25 @@ const axios = require('axios');
 const config = require('../config');
 const { describe, it, expect, beforeAll, afterAll } = require('@jest/globals');
 const admin = require('../setup');
-const { generateReport } = require('../utils');
+const { generateReport, registerModuleConfig } = require('../utils');
 const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
 
 // Load environment variables for testing
 require('dotenv').config();
+
+// Register pet-specific test configuration
+registerModuleConfig('pets', {
+  reportSections: [
+    'Pet Creation Tests', 
+    'Pet Retrieval Tests', 
+    'Pet Listing Tests', 
+    'Pet Update Tests', 
+    'Pet Deletion Tests', 
+    'Pet Search Tests'
+  ]
+});
 
 // Test helper functions
 const makeRequest = async (method, endpoint, data = null, token = null) => {
@@ -23,12 +35,16 @@ const makeRequest = async (method, endpoint, data = null, token = null) => {
     });
     return {
       status: response.status,
-      data: response.data
+      data: response.data,
+      endpoint, // Store the endpoint for better report generation
+      method    // Store the method for better report generation
     };
   } catch (error) {
     return {
       status: error.response?.status || 500,
-      data: error.response?.data || { error: error.message }
+      data: error.response?.data || { error: error.message },
+      endpoint, // Store the endpoint for better report generation
+      method    // Store the method for better report generation
     };
   }
 };
@@ -49,12 +65,16 @@ const uploadImage = async (petId, imagePath, token = null) => {
     });
     return {
       status: response.status,
-      data: response.data
+      data: response.data,
+      endpoint: `pets/${petId}/images`,
+      method: 'POST'
     };
   } catch (error) {
     return {
       status: error.response?.status || 500,
-      data: error.response?.data || { error: error.message }
+      data: error.response?.data || { error: error.message },
+      endpoint: `pets/${petId}/images`,
+      method: 'POST'
     };
   }
 };
@@ -149,7 +169,7 @@ describe('Pet Management Endpoints', () => {
     });
     
     // Generate test report
-    generateReport('pet_tests', testResults);
+    generateReport('pets_tests', testResults);
     
     // Cleanup test data (optional)
     if (testPetId) {
