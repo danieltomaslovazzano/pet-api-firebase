@@ -43,20 +43,37 @@ const generateReport = (testName, results) => {
     fs.mkdirSync(reportDir, { recursive: true });
   }
 
+  // Calculate test results - analyze each test for success criteria
+  const analyzedResults = results.results.map(result => {
+    // Determine if test passed based on expected behavior patterns
+    const passed = determineExpectedBehavior(result.testCase, result.result);
+    return { ...result, passed };
+  });
+
+  // Count failed tests
+  const failedCount = analyzedResults.filter(r => !r.passed).length;
+  const passedCount = analyzedResults.length - failedCount;
+
   // Calculate test suite statistics
   const testSuites = results.summary.testSuites.map(suite => ({
     ...suite,
-    failed: suite.total - suite.passed,
-    successRate: `${((suite.passed / suite.total) * 100).toFixed(2)}%`
+    passed: passedCount,
+    failed: failedCount,
+    successRate: `${((passedCount / analyzedResults.length) * 100).toFixed(2)}%`
   }));
 
   // Group tests by endpoint
-  const endpointGroups = results.results.reduce((acc, result) => {
-    const endpoint = result.result.endpoint || 'auth/register';
+  const endpointGroups = analyzedResults.reduce((acc, result) => {
+    const endpoint = result.result.endpoint || 'unknown';
     if (!acc[endpoint]) {
-      acc[endpoint] = [];
+      acc[endpoint] = { tests: [], passed: 0, failed: 0 };
     }
-    acc[endpoint].push(result);
+    acc[endpoint].tests.push(result);
+    if (result.passed) {
+      acc[endpoint].passed++;
+    } else {
+      acc[endpoint].failed++;
+    }
     return acc;
   }, {});
 
@@ -70,20 +87,20 @@ const generateReport = (testName, results) => {
       apiUrl: config.baseUrl
     },
     summary: {
-      totalTests: results.summary.totalTests,
-      passed: results.summary.totalTests,
-      failed: 0,
-      successRate: '100.00%',
+      totalTests: analyzedResults.length,
+      passed: passedCount,
+      failed: failedCount,
+      successRate: `${((passedCount / analyzedResults.length) * 100).toFixed(2)}%`,
       testSuites
     },
-    endpoints: Object.entries(endpointGroups).map(([endpoint, tests]) => ({
+    endpoints: Object.entries(endpointGroups).map(([endpoint, data]) => ({
       endpoint,
-      methods: [...new Set(tests.map(t => t.result.requestData ? 'POST' : 'GET'))],
-      totalTests: tests.length,
-      passed: tests.length,
-      failed: 0
+      methods: [...new Set(data.tests.map(t => t.result.requestData ? 'POST' : 'GET'))],
+      totalTests: data.tests.length,
+      passed: data.passed,
+      failed: data.failed
     })),
-    testDetails: results.results.map(result => ({
+    testDetails: analyzedResults.map(result => ({
       testCase: result.testCase,
       timestamp: result.timestamp,
       request: {
@@ -98,7 +115,7 @@ const generateReport = (testName, results) => {
         error: result.result.error,
         headers: result.result.headers
       },
-      passed: true,
+      passed: result.passed,
       executionTime: result.executionTime || 'N/A'
     })),
     recommendations: generateRecommendations(results)
