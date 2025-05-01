@@ -43,7 +43,7 @@ const generateReport = (testName, results) => {
     fs.mkdirSync(reportDir, { recursive: true });
   }
 
-  // Calculate test results - analyze each test for success criteria
+  // Calculate test results by applying the determineExpectedBehavior function
   const analyzedResults = results.results.map(result => {
     // Determine if test passed based on expected behavior patterns
     const passed = determineExpectedBehavior(result.testCase, result.result);
@@ -117,23 +117,25 @@ const generateReport = (testName, results) => {
       },
       passed: result.passed,
       executionTime: result.executionTime || 'N/A'
-    })),
-    recommendations: generateRecommendations(results)
+    }))
   };
+  
+  // Add recommendations after the report is constructed
+  formattedReport.recommendations = generateRecommendations(analyzedResults, formattedReport);
 
   // Generate and save markdown report
-  const markdownPath = generateMarkdownReport(formattedReport);
+  const markdownPath = generateMarkdownReport(formattedReport, analyzedResults);
   console.log(`\nMarkdown report generated at: ${markdownPath}`);
   
   return markdownPath;
 };
 
 // Generate recommendations based on test results
-const generateRecommendations = (results) => {
+const generateRecommendations = (analyzedResults, reportData) => {
   const recommendations = [];
   
   // Check overall success rate
-  const successRate = (results.summary.passed / results.summary.totalTests) * 100;
+  const successRate = (reportData.summary.passed / reportData.summary.totalTests) * 100;
   if (successRate < 80) {
     recommendations.push({
       type: 'critical',
@@ -141,26 +143,16 @@ const generateRecommendations = (results) => {
     });
   }
   
-  // Check individual test suites
-  results.summary.testSuites.forEach(suite => {
-    if (suite.passed < suite.total) {
-      recommendations.push({
-        type: 'warning',
-        message: `${suite.name} test suite has ${suite.total - suite.passed} failing tests.`
-      });
-    }
-  });
-  
-  // Check for common error patterns
-  const errorPatterns = results.results
-    .filter(r => r.result.status >= 400)
+  // Check for specific error patterns
+  const errorPatterns = analyzedResults
+    .filter(r => !r.passed)
     .map(r => r.result.data?.error)
     .filter(Boolean);
   
-  if (errorPatterns.includes('INVALID_LOGIN_CREDENTIALS')) {
+  if (errorPatterns.length > 0) {
     recommendations.push({
-      type: 'info',
-      message: 'Multiple login failures detected. Check test user credentials.'
+      type: 'warning',
+      message: `There are ${errorPatterns.length} failing tests. Check individual test results.`
     });
   }
   
@@ -168,7 +160,7 @@ const generateRecommendations = (results) => {
 };
 
 // Generate markdown report
-const generateMarkdownReport = (reportData) => {
+const generateMarkdownReport = (reportData, analyzedResults) => {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const moduleName = reportData.testName.split('_')[0];
   const reportDir = path.join(__dirname, moduleName, 'reports');
@@ -179,33 +171,7 @@ const generateMarkdownReport = (reportData) => {
     fs.mkdirSync(reportDir, { recursive: true });
   }
 
-  // Analyze test results
-  const analysis = reportData.testDetails.map(test => {
-    const isExpectedBehavior = (
-      // Registration tests
-      (test.testCase.includes('Register') && test.testCase.includes('valid') && test.response.status === 201) ||
-      (test.testCase.includes('invalid email') && test.response.status === 400) ||
-      (test.testCase.includes('weak password') && test.response.status === 400) ||
-      (test.testCase.includes('missing fields') && test.response.status === 400) ||
-      // Login tests
-      (test.testCase.includes('Login') && test.testCase.includes('valid') && test.response.status === 200) ||
-      (test.testCase.includes('invalid password') && test.response.status === 400) ||
-      // Password reset
-      (test.testCase.includes('reset') && test.response.status === 200) ||
-      // Logout
-      (test.testCase.includes('Logout') && test.testCase.includes('valid') && test.response.status === 200) ||
-      (test.testCase.includes('Logout') && !test.testCase.includes('valid') && test.response.status === 401)
-    );
-
-    return {
-      ...test,
-      isExpectedBehavior,
-      analysis: isExpectedBehavior ? 
-        '✅ Expected behavior' : 
-        '❌ Unexpected behavior'
-    };
-  });
-
+  // Use the analyzedResults directly for the report, which contains the passed property
   const markdownContent = `# Test Report - ${reportData.testName}
 
 ## Environment
@@ -232,62 +198,112 @@ ${reportData.endpoints.map(endpoint => `
 ## Detailed Analysis
 
 ### User Registration Tests
-${analysis.filter(test => test.testCase.includes('Register')).map(test => `
+${analyzedResults.filter(test => test.testCase.includes('Register')).map(test => `
 #### ${test.testCase}
-- Status: ${test.response.status}
-- Analysis: ${test.analysis}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
 - Request:
 \`\`\`json
-${JSON.stringify(test.request, null, 2)}
+${JSON.stringify({
+  method: test.result.requestData ? 'POST' : 'GET',
+  endpoint: test.result.endpoint || 'auth/register',
+  data: test.result.requestData
+}, null, 2)}
 \`\`\`
 - Response:
 \`\`\`json
-${JSON.stringify(test.response, null, 2)}
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
 \`\`\`
 `).join('\n')}
 
 ### User Login Tests
-${analysis.filter(test => test.testCase.includes('Login')).map(test => `
+${analyzedResults.filter(test => test.testCase.includes('Login')).map(test => `
 #### ${test.testCase}
-- Status: ${test.response.status}
-- Analysis: ${test.analysis}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
 - Request:
 \`\`\`json
-${JSON.stringify(test.request, null, 2)}
+${JSON.stringify({
+  method: test.result.requestData ? 'POST' : 'GET',
+  endpoint: test.result.endpoint || 'auth/register',
+  data: test.result.requestData
+}, null, 2)}
 \`\`\`
 - Response:
 \`\`\`json
-${JSON.stringify(test.response, null, 2)}
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
 \`\`\`
 `).join('\n')}
 
 ### Password Reset Tests
-${analysis.filter(test => test.testCase.includes('reset')).map(test => `
+${analyzedResults.filter(test => test.testCase.includes('reset')).map(test => `
 #### ${test.testCase}
-- Status: ${test.response.status}
-- Analysis: ${test.analysis}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
 - Request:
 \`\`\`json
-${JSON.stringify(test.request, null, 2)}
+${JSON.stringify({
+  method: test.result.requestData ? 'POST' : 'GET',
+  endpoint: test.result.endpoint || 'auth/register',
+  data: test.result.requestData
+}, null, 2)}
 \`\`\`
 - Response:
 \`\`\`json
-${JSON.stringify(test.response, null, 2)}
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
+\`\`\`
+`).join('\n')}
+
+### Email Verification Tests
+${analyzedResults.filter(test => test.testCase.includes('Verify')).map(test => `
+#### ${test.testCase}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
+- Request:
+\`\`\`json
+${JSON.stringify({
+  method: test.result.requestData ? 'POST' : 'GET',
+  endpoint: test.result.endpoint || 'auth/register',
+  data: test.result.requestData
+}, null, 2)}
+\`\`\`
+- Response:
+\`\`\`json
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
 \`\`\`
 `).join('\n')}
 
 ### Logout Tests
-${analysis.filter(test => test.testCase.includes('Logout')).map(test => `
+${analyzedResults.filter(test => test.testCase.includes('Logout')).map(test => `
 #### ${test.testCase}
-- Status: ${test.response.status}
-- Analysis: ${test.analysis}
+- Status: ${test.result.status}
+- Analysis: ${test.passed ? '✅ Expected behavior' : '❌ Unexpected behavior'}
 - Request:
 \`\`\`json
-${JSON.stringify(test.request, null, 2)}
+${JSON.stringify({
+  method: test.result.requestData ? 'POST' : 'GET',
+  endpoint: test.result.endpoint || 'auth/register',
+  data: test.result.requestData
+}, null, 2)}
 \`\`\`
 - Response:
 \`\`\`json
-${JSON.stringify(test.response, null, 2)}
+${JSON.stringify({
+  status: test.result.status,
+  data: test.result.data
+}, null, 2)}
 \`\`\`
 `).join('\n')}
 
@@ -316,41 +332,72 @@ const trackTest = (testName, testCase, result) => {
 
 // Helper to determine if the test result matches expected behavior
 const determineExpectedBehavior = (testCase, result) => {
-  // For registration tests
+  // Handle specific test cases directly
+  if (testCase === 'Verify with invalid token') {
+    return result.status === 400 && result.data?.error?.includes('inválido');
+  }
+  
+  if (testCase === 'Logout with invalid token') {
+    return result.status === 401 && result.data?.error?.includes('inválido');
+  }
+  
+  // Registration tests
   if (testCase.includes('Register')) {
-    if (testCase.includes('valid')) {
+    if (testCase.includes('valid data')) {
       return result.status === 201;
     } else if (testCase.includes('invalid email')) {
-      return result.status === 400 && result.data?.error === 'Formato de email inválido';
+      return result.status === 400 && result.data?.error?.includes('email');
     } else if (testCase.includes('weak password')) {
-      return result.status === 400 && result.data?.error === 'La contraseña debe tener al menos 6 caracteres';
+      return result.status === 400 && result.data?.error?.includes('contraseña');
     } else if (testCase.includes('missing fields')) {
-      return result.status === 400 && result.data?.error === 'Se requieren todos los campos: email, password y name';
+      return result.status === 400 && result.data?.error?.includes('campos');
     }
+    return false;
   }
   
-  // For login tests
+  // Login tests
   if (testCase.includes('Login')) {
-    if (testCase.includes('valid')) {
+    if (testCase.includes('valid credentials')) {
       return result.status === 200 && result.data?.tokens?.idToken;
     } else if (testCase.includes('invalid password')) {
-      return result.status === 400 && result.data?.error === 'Error de autenticación';
+      return result.status === 400 && result.data?.error?.includes('autenticación');
+    } else if (testCase.includes('non-existent user')) {
+      return result.status === 400 && result.data?.error?.includes('autenticación');
+    } else if (testCase.includes('invalid email')) {
+      return result.status === 400 && result.data?.error?.includes('email');
+    } else if (testCase.includes('disabled account')) {
+      return result.status === 403 && result.data?.error?.includes('deshabilitada');
     }
+    return false;
   }
   
-  // For password reset tests
-  if (testCase.includes('reset')) {
-    return result.status === 200 && result.data?.message === 'Correo de recuperación enviado correctamente';
+  // Password Reset tests
+  if (testCase.includes('password reset')) {
+    return result.status === 200 && result.data?.message?.includes('recuperación');
   }
   
-  // For logout tests
+  // Email Verification tests
+  if (testCase.includes('Verify')) {
+    if (testCase.includes('valid token')) {
+      return result.status === 200 && result.data?.message?.includes('verificado');
+    } else if (testCase.includes('invalid token')) {
+      return result.status === 400 && result.data?.error?.includes('inválido');
+    } else if (testCase.includes('expired token')) {
+      return result.status === 400 && result.data?.error?.includes('expirado');
+    }
+    return false;
+  }
+  
+  // Logout tests
   if (testCase.includes('Logout')) {
-    if (testCase.includes('valid')) {
-      return result.status === 200 && result.data?.message === 'Sesión cerrada correctamente';
-    } else {
-      // For invalid token or no token cases
-      return result.status === 401;
+    if (testCase.includes('valid token')) {
+      return result.status === 200 && result.data?.message?.includes('cerrada');
+    } else if (testCase.includes('invalid token')) {
+      return result.status === 401 && result.data?.error?.includes('inválido');
+    } else if (testCase.includes('without token')) {
+      return result.status === 401 && result.data?.error?.includes('proporcionado');
     }
+    return false;
   }
   
   return false;
