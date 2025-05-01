@@ -24,14 +24,91 @@ exports.createPet = async (petData, callback) => {
   }
 };
 
-exports.getPets = async (callback) => {
+/**
+ * Get pets with filtering, sorting, and pagination
+ * @param {Object} options - Query options
+ * @param {string} options.name - Filter by partial name match
+ * @param {string} options.species - Filter by species
+ * @param {string} options.status - Filter by status
+ * @param {number} options.minAge - Filter by minimum age
+ * @param {number} options.maxAge - Filter by maximum age
+ * @param {string} options.sort - Field to sort by
+ * @param {string} options.order - Sort order ('asc' or 'desc')
+ * @param {number} options.limit - Number of records per page
+ * @param {number} options.page - Page number
+ * @param {Function} callback - Callback function
+ */
+exports.getPets = async (options = {}, callback) => {
   try {
-    const snapshot = await petsCollection.get();
-    const pets = [];
+    let query = petsCollection;
+    
+    // Apply filters if provided
+    if (options.species) {
+      query = query.where('species', '==', options.species);
+    }
+    
+    if (options.status) {
+      query = query.where('status', '==', options.status);
+    }
+    
+    // Get all data first for local filtering and pagination
+    const snapshot = await query.get();
+    let pets = [];
+    
     snapshot.forEach(doc => {
       pets.push(doc.data());
     });
-    callback(null, pets);
+    
+    // Apply additional filters that can't be done directly in Firestore query
+    if (options.name) {
+      const searchTerm = options.name.toLowerCase();
+      pets = pets.filter(pet => 
+        pet.name && pet.name.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    if (options.minAge !== undefined) {
+      pets = pets.filter(pet => pet.age >= options.minAge);
+    }
+    
+    if (options.maxAge !== undefined) {
+      pets = pets.filter(pet => pet.age <= options.maxAge);
+    }
+    
+    // Apply sorting
+    if (options.sort) {
+      const sortField = options.sort;
+      const sortOrder = options.order === 'desc' ? -1 : 1;
+      
+      pets.sort((a, b) => {
+        // Handle undefined values
+        if (a[sortField] === undefined) return sortOrder;
+        if (b[sortField] === undefined) return -sortOrder;
+        
+        // Compare values
+        if (a[sortField] < b[sortField]) return -1 * sortOrder;
+        if (a[sortField] > b[sortField]) return 1 * sortOrder;
+        return 0;
+      });
+    }
+    
+    // Apply pagination
+    const page = options.page || 1;
+    const limit = options.limit || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    
+    const paginationInfo = {
+      total: pets.length,
+      page: page,
+      limit: limit,
+      totalPages: Math.ceil(pets.length / limit)
+    };
+    
+    // Slice the array for pagination
+    const paginatedPets = pets.slice(startIndex, endIndex);
+    
+    callback(null, { pets: paginatedPets, pagination: paginationInfo });
   } catch (error) {
     callback(error);
   }

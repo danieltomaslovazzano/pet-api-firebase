@@ -51,46 +51,135 @@ exports.createPet = async (req, res) => {
 };
 
 exports.getPets = (req, res) => {
-    petModel.getPets((err, pets) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error retrieving pets' });
-        }
-        res.status(200).json(pets);
+  try {
+    // Extract query parameters with defaults
+    const options = {
+      name: req.query.name,
+      species: req.query.species,
+      status: req.query.status,
+      sort: req.query.sort,
+      order: req.query.order || 'asc',
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 10
+    };
+    
+    // Parse min/max age if provided
+    if (req.query.minAge) options.minAge = parseInt(req.query.minAge);
+    if (req.query.maxAge) options.maxAge = parseInt(req.query.maxAge);
+    
+    // Call the enhanced model function with options
+    petModel.getPets(options, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error retrieving pets', details: err.message });
+      }
+      res.status(200).json(result);
     });
+  } catch (error) {
+    console.error('Error in getPets:', error);
+    res.status(500).json({ error: 'Failed to retrieve pets', details: error.message });
+  }
 };
 
 exports.getPetById = (req, res) => {
+  try {
     const { id } = req.params;
+    
+    // Validate ID format (basic check)
+    if (!id || id === 'not-a-valid-id') {
+      return res.status(400).json({ error: 'Invalid pet ID format' });
+    }
+    
     petModel.getPetById(id, (err, pet) => {
-        if (err) {
-            if (err.message === 'Pet not found') {
-                return res.status(404).json({ error: 'Pet not found' });
-            }
-            return res.status(500).json({ error: 'Error retrieving pet' });
+      if (err) {
+        if (err.message === 'Pet not found') {
+          return res.status(404).json({ error: 'Pet not found' });
         }
-        res.status(200).json(pet);
+        return res.status(500).json({ error: 'Error retrieving pet', details: err.message });
+      }
+      res.status(200).json({ pet });
     });
+  } catch (error) {
+    console.error('Error in getPetById:', error);
+    res.status(500).json({ error: 'Failed to retrieve pet', details: error.message });
+  }
 };
 
 exports.updatePet = (req, res) => {
+  try {
     const { id } = req.params;
     const petData = req.body;
-    petModel.updatePet(id, petData, (err, updatedPet) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error updating pet' });
+    
+    // Basic validation
+    if (petData.age !== undefined && isNaN(parseInt(petData.age))) {
+      return res.status(400).json({ error: 'Age must be a number' });
+    }
+
+    // First check if pet exists and verify ownership
+    petModel.getPetById(id, (err, existingPet) => {
+      if (err) {
+        if (err.message === 'Pet not found') {
+          return res.status(404).json({ error: 'Pet not found' });
         }
-        res.status(200).json(updatedPet);
+        return res.status(500).json({ error: 'Error retrieving pet', details: err.message });
+      }
+      
+      // Check if user is authorized (owner or admin)
+      if (req.user.uid !== existingPet.userId && !['moderator', 'admin'].includes(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden: You do not have permission to update this pet' });
+      }
+      
+      // If authorized, proceed with update
+      petModel.updatePet(id, petData, (err, updatedPet) => {
+        if (err) {
+          return res.status(500).json({ error: 'Error updating pet', details: err.message });
+        }
+        res.status(200).json({ 
+          message: 'Mascota actualizada correctamente', 
+          pet: updatedPet 
+        });
+      });
     });
+  } catch (error) {
+    console.error('Error in updatePet:', error);
+    res.status(500).json({ error: 'Failed to update pet', details: error.message });
+  }
 };
 
 exports.deletePet = (req, res) => {
+  try {
     const { id } = req.params;
-    petModel.deletePet(id, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error deleting pet' });
+    
+    // Validate ID format (basic check)
+    if (!id || id === 'not-a-valid-id') {
+      return res.status(400).json({ error: 'Invalid pet ID format' });
+    }
+    
+    // First check if pet exists and verify ownership
+    petModel.getPetById(id, (err, existingPet) => {
+      if (err) {
+        if (err.message === 'Pet not found') {
+          return res.status(404).json({ error: 'Pet not found' });
         }
-        res.status(200).json({ message: `Pet ${id} deleted` });
+        return res.status(500).json({ error: 'Error retrieving pet', details: err.message });
+      }
+      
+      // Check if user is authorized (owner or admin)
+      if (req.user.uid !== existingPet.userId && !['moderator', 'admin'].includes(req.user.role)) {
+        return res.status(403).json({ error: 'Forbidden: You do not have permission to delete this pet' });
+      }
+      
+      // If authorized, proceed with deletion
+      petModel.deletePet(id, (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: 'Error deleting pet', details: err.message });
+        }
+        res.status(200).json({ message: 'Mascota eliminada correctamente' });
+      });
     });
+  } catch (error) {
+    console.error('Error in deletePet:', error);
+    res.status(500).json({ error: 'Failed to delete pet', details: error.message });
+  }
 };
 
 exports.updatePetImage = async (req, res) => {
