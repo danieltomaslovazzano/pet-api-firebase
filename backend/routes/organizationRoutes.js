@@ -3,21 +3,39 @@ const express = require('express');
 const router = express.Router();
 const organizationController = require('../controllers/organizationController');
 const membershipController = require('../controllers/membershipController');
-const { verifyToken } = require('../middlewares/auth');
+const { requireAuth, protectResource } = require('../middlewares');
 
 // Aplicar middleware de autenticación a todas las rutas
-router.use(verifyToken);
+router.use(requireAuth);
 
 // Rutas para organizaciones
-router.post('/', organizationController.createOrganization);
-router.get('/:id', organizationController.getOrganizationById);
-router.put('/:id', organizationController.updateOrganization);
-router.delete('/:id', organizationController.deleteOrganization);
-router.get('/:id/members', organizationController.getOrganizationMembers);
+router.post('/', requireAuth, organizationController.createOrganization);
+router.get('/:id', requireAuth, organizationController.getOrganizationById);
+
+// Rutas protegidas por permisos de organización
+router.put('/:id', 
+  ...protectResource('organizations', 'update'),
+  organizationController.updateOrganization
+);
+
+router.delete('/:id', 
+  ...protectResource('organizations', 'delete'),
+  organizationController.deleteOrganization
+);
+
+router.get('/:id/members', requireAuth, organizationController.getOrganizationMembers);
 
 // Rutas para gestión de membresías
-router.post('/memberships', membershipController.inviteUser);
-router.put('/memberships/:id', membershipController.updateMemberRole);
-router.delete('/memberships/:id', membershipController.removeMember);
+router.post('/memberships', requireAuth, membershipController.inviteUser);
+
+router.put('/memberships/:id', 
+  ...protectResource('organizations', 'updateMember'),
+  membershipController.updateMemberRole
+);
+
+router.delete('/memberships/:id', 
+  ...protectResource('organizations', 'removeMember'),
+  membershipController.removeMember
+);
 
 module.exports = router;
