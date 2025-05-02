@@ -563,7 +563,7 @@ ${reportData.endpoints.map(endpoint => `
   for (const section of reportData.reportSections) {
     markdownContent += `\n### ${section}\n`;
     
-    // Filter tests for this section based on test case name
+    // Filter tests for this section based on test case
     const sectionTests = analyzedResults.filter(test => {
       // Extract key terms from the section name to match against test case
       const sectionLower = section.toLowerCase();
@@ -590,6 +590,36 @@ ${reportData.endpoints.map(endpoint => `
       
       if (sectionLower.includes('logout')) {
         return testCaseLower.includes('logout');
+      }
+      
+      // More precise mapping for pet tests
+      if (sectionLower.includes('pet creation')) {
+        return testCaseLower.includes('create pet');
+      }
+      
+      if (sectionLower.includes('pet retrieval')) {
+        return testCaseLower.includes('retrieve pet') || 
+               (testCaseLower.includes('pet with') && 
+                (testCaseLower.includes('valid id') || testCaseLower.includes('invalid id') || 
+                testCaseLower.includes('non-existent')));
+      }
+      
+      if (sectionLower.includes('pet listing')) {
+        return testCaseLower.includes('list') || 
+               testCaseLower.includes('filter') || 
+               testCaseLower.includes('sort');
+      }
+      
+      if (sectionLower.includes('pet update')) {
+        return testCaseLower.includes('update pet');
+      }
+      
+      if (sectionLower.includes('pet deletion')) {
+        return testCaseLower.includes('delete pet');
+      }
+      
+      if (sectionLower.includes('pet search')) {
+        return testCaseLower.includes('search');
       }
       
       // For other sections, fallback to key term matching
@@ -650,11 +680,17 @@ ${reportData.endpoints.map(endpoint => `
       // Combine all bug checks
       const isPassingBug = isSecurityBug || isValidationBug;
       
+      // Special case for skipped tests
+      const isSkipped = test.skipped || test.result.skipped;
+      
       // Get status indicator and message
       let statusIndicator = '';
       let statusMessage = '';
       
-      if (test.passed && !isPassingBug) {
+      if (isSkipped) {
+        statusIndicator = '⏭️';
+        statusMessage = 'Test was skipped - Dependencies not available';
+      } else if (test.passed && !isPassingBug) {
         statusIndicator = '✅';
         statusMessage = 'Test passed - API behavior matches expectations';
       } else if (test.passed && isPassingBug) {
@@ -834,10 +870,10 @@ const isExpectedBehavior = (testCase, result) => {
   // Special case handling for known API behaviors
   const testCaseLower = testCase.toLowerCase();
   
-  // Pet creation with valid data should return 201
-  if (testCaseLower.includes('create pet with valid data') && result.status === 201) {
-    // API response format check
-    return result.data && result.data.id; 
+  // Pet creation with valid data should return 201 but currently returns 500
+  // Mark as failure to align with the expectation in the test
+  if (testCaseLower.includes('create pet with valid data')) {
+    return result.status === 201; // This will return false when status is 500
   }
   
   // Pet creation with missing required fields should now be rejected with 400

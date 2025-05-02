@@ -104,6 +104,28 @@ const trackResult = (testCase, result) => {
   testResults.summary.totalTests++;
 };
 
+// Track a skipped test to ensure it appears in reports
+const trackSkippedTest = (testCase) => {
+  console.warn(`Skipping test: ${testCase}`);
+  
+  // Create a mock result for a skipped test
+  const mockResult = {
+    status: 0, // Special status code for skipped tests
+    data: { message: 'Test was skipped due to missing dependencies' },
+    skipped: true
+  };
+  
+  // Store the skipped test result for report generation
+  testResults.results.push({
+    testCase,
+    timestamp: new Date().toISOString(),
+    result: mockResult,
+    executionTime: 0,
+    skipped: true
+  });
+  testResults.summary.totalTests++;
+};
+
 describe('Pet Management Endpoints', () => {
   let ownerToken;
   let adminToken;
@@ -386,7 +408,7 @@ describe('Pet Management Endpoints', () => {
     it('should update pet with valid data', async () => {
       // Skip test if no valid pet ID available
       if (!testPetId) {
-        console.warn('Skipping test: No valid pet ID available');
+        trackSkippedTest('Update pet with valid data - No pet ID available');
         return;
       }
       
@@ -411,7 +433,7 @@ describe('Pet Management Endpoints', () => {
     it('should reject update with invalid data', async () => {
       // Skip test if no valid pet ID available
       if (!testPetId) {
-        console.warn('Skipping test: No valid pet ID available');
+        trackSkippedTest('Update pet with invalid data - No pet ID available');
         return;
       }
       
@@ -435,7 +457,7 @@ describe('Pet Management Endpoints', () => {
     it('should reject update by unauthorized user', async () => {
       // Skip test if no valid pet ID available
       if (!testPetId) {
-        console.warn('Skipping test: No valid pet ID available');
+        trackSkippedTest('Update pet as non-owner - No pet ID available');
         return;
       }
       
@@ -482,7 +504,7 @@ describe('Pet Management Endpoints', () => {
     it('should delete pet with valid ID', async () => {
       // Skip test if no pet ID available for deletion
       if (!petToDeleteId) {
-        console.warn('Skipping test: No pet ID available for deletion');
+        trackSkippedTest('Delete pet with valid ID - No pet ID available');
         return;
       }
       
@@ -516,7 +538,7 @@ describe('Pet Management Endpoints', () => {
     it('should reject deletion by unauthorized user', async () => {
       // Skip test if no valid pet ID available
       if (!testPetId) {
-        console.warn('Skipping test: No valid pet ID available');
+        trackSkippedTest('Delete pet as non-owner - No pet ID available');
         return;
       }
       
