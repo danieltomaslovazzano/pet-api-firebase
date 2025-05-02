@@ -462,17 +462,17 @@ describe('Pet Management Endpoints', () => {
       }
       
       const updateData = {
-        name: 'Unauthorized Update'
+        name: 'Unauthorized Update',
+        petId: testPetId
       };
       
       const result = await makeRequest('PUT', `pets/${testPetId}`, updateData, unauthorizedToken);
-      result.requestData = { ...updateData, petId: testPetId };
+      result.requestData = updateData;
       trackResult('Update pet as non-owner', result);
       
-      // API doesn't check authorization for updates (this is a security issue!)
-      expect(result.status).toBe(200);
-      expect(result.data).toHaveProperty('name', updateData.name);
-      console.warn('CRITICAL: API allows unauthorized users to update pets - this is a security issue!');
+      // API now correctly checks authorization for updates
+      expect(result.status).toBe(403);
+      expect(result.data).toHaveProperty('error', 'Permission denied');
     });
   });
   
@@ -546,11 +546,9 @@ describe('Pet Management Endpoints', () => {
       result.requestData = { petId: testPetId };
       trackResult('Delete pet as non-owner', result);
       
-      // API doesn't check authorization for deletion (this is a security issue!)
-      expect(result.status).toBe(200);
-      expect(result.data).toHaveProperty('message');
-      expect(result.data.message).toContain('deleted');
-      console.warn('CRITICAL: API allows unauthorized users to delete pets - this is a security issue!');
+      // API now correctly checks authorization for deletions
+      expect(result.status).toBe(403);
+      expect(result.data).toHaveProperty('error', 'Permission denied');
     });
   });
   
