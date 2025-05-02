@@ -13,6 +13,12 @@ Table of Contents:
 - Setup & Installation
 - Environment Variables
 - Authentication & Authorization
+  - Authentication Middleware
+  - Authorization Middleware
+  - Resource Loaders
+  - Middleware Composition
+  - Permission Rules
+  - Usage Examples
 - API Endpoints
    - POST /pets
    - GET /pets
@@ -84,7 +90,7 @@ The API uses the following environment variables (defined in the .env file):
 ------------------------------------------------------------
 Authentication & Authorization:
 ------------------------------------------------------------
-The API uses a comprehensive authentication and authorization system to secure endpoints.
+The API uses a comprehensive authentication and authorization system to secure endpoints. This system follows a clean separation of concerns pattern, keeping identity verification (authentication) separate from permission checking (authorization).
 
 Authentication:
 - Firebase Authentication is used for identity verification
@@ -98,6 +104,19 @@ Authorization:
 - Resource ownership checking
 - Organization-based permissions
 
+Resource Loaders:
+- Dedicated middleware to load resources for permission checking
+- Support for pets, users, organizations, memberships, conversations, and messages
+- Clean separation between resource loading and permission checking
+
+Middleware Composition:
+- Utility functions to compose middleware for common patterns
+- `protectResource(resource, action)` - Protects a specific resource instance
+- `protectCollection(resource, action)` - Protects collection-level operations
+- `requireRole(role)` - Requires a specific role or roles
+- `requireAdmin()` - Convenience function for admin-only routes
+- `requireOrgAdmin()` - Organization admin access
+
 Permission Conditions:
 - `isOwner` - User owns the resource
 - `isSelf` - Resource is the user's own profile
@@ -110,6 +129,8 @@ All protected endpoints require a valid Firebase Auth token in the Authorization
 ```
 Authorization: Bearer your-firebase-token
 ```
+
+For detailed usage examples, see the `docs/auth-usage-examples.md` file.
 
 ------------------------------------------------------------
 API Endpoints:

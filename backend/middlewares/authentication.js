@@ -3,6 +3,19 @@
  * 
  * This middleware is focused solely on verifying user identity (authentication).
  * It does not handle permission checks or authorization decisions.
+ * 
+ * Features:
+ * - Firebase token verification
+ * - User data loading from Firestore
+ * - Detailed error handling for various token scenarios
+ * - Security logging for authentication events
+ * - Backward compatibility with legacy error messages
+ * 
+ * Security considerations:
+ * - Tokens are verified using Firebase Admin SDK
+ * - Different error types are handled with appropriate status codes
+ * - Sensitive information is never exposed in error messages
+ * - All authentication attempts are logged for audit purposes
  */
 
 const admin = require('firebase-admin');
@@ -15,6 +28,19 @@ const { logAuthDebug, logAuthError } = require('../utils/loggerUtil');
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @param {Function} next - Express next middleware function
+ * 
+ * Error handling:
+ * - 401: Missing token, invalid token, expired token
+ * - 403: User account disabled 
+ * - 500: Internal server errors during verification
+ * 
+ * Backward compatibility:
+ * Uses the original error message format for compatibility with existing clients:
+ * - "Token no proporcionado" - No token provided
+ * - "Token inválido" - Invalid token format or verification failed
+ * - "Token expirado" - Token has expired
+ * - "Cuenta de usuario deshabilitada" - User account is disabled
+ * - "Error interno del servidor" - Internal server error
  */
 exports.verifyToken = async (req, res, next) => {
   try {
@@ -31,7 +57,8 @@ exports.verifyToken = async (req, res, next) => {
         headers: { authorization: authHeader ? 'Present but invalid' : 'Missing' }
       });
       
-      return res.status(401).json({ error: 'Not authorized: Token not provided' });
+      // Use backward-compatible error message
+      return res.status(401).json({ error: 'Token no proporcionado' });
     }
 
     const token = authHeader.split('Bearer ')[1];
@@ -77,7 +104,7 @@ exports.verifyToken = async (req, res, next) => {
       next();
     } catch (error) {
       // Handle specific Firebase auth errors
-      let errorMessage = 'Not authorized: Invalid token';
+      let errorMessage = 'Token inválido'; // Use backward-compatible error message
       let statusCode = 401;
       
       // Check for serious internal errors first
@@ -87,11 +114,11 @@ exports.verifyToken = async (req, res, next) => {
       }
       // Check specific auth errors
       else if (error.code === 'auth/id-token-expired') {
-        errorMessage = 'Not authorized: Token expired';
+        errorMessage = 'Token expirado';
       } else if (error.code === 'auth/id-token-revoked') {
-        errorMessage = 'Not authorized: Token revoked';
+        errorMessage = 'Token revocado';
       } else if (error.code === 'auth/user-disabled') {
-        errorMessage = 'Not authorized: User account disabled';
+        errorMessage = 'Cuenta de usuario deshabilitada';
         statusCode = 403;
       }
       
@@ -111,6 +138,6 @@ exports.verifyToken = async (req, res, next) => {
       path: req?.path || 'unknown'
     });
     
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }; 
