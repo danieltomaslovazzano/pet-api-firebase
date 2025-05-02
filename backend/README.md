@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------
 Pet Reports API
 ------------------------------------------------------------
@@ -13,6 +12,7 @@ Table of Contents:
 - Technologies
 - Setup & Installation
 - Environment Variables
+- Authentication & Authorization
 - API Endpoints
    - POST /pets
    - GET /pets
@@ -41,7 +41,8 @@ Technologies:
 ------------------------------------------------------------
 - Node.js – JavaScript runtime environment.
 - Express – Web framework for Node.js.
-- MySQL – Relational database for storing pet reports.
+- Firebase – Authentication and database services.
+- Firestore – NoSQL database for storing pet data.
 - UUID – For generating unique identifiers.
 - dotenv – For environment variable management.
 
@@ -79,6 +80,36 @@ The API uses the following environment variables (defined in the .env file):
 - DB_USER: MySQL user.
 - DB_PASSWORD: MySQL password.
 - DB_NAME: Name of the database (e.g., pet_reports).
+
+------------------------------------------------------------
+Authentication & Authorization:
+------------------------------------------------------------
+The API uses a comprehensive authentication and authorization system to secure endpoints.
+
+Authentication:
+- Firebase Authentication is used for identity verification
+- JWT tokens are required for protected endpoints
+- Token verification happens in the `authentication.js` middleware
+- Various token error cases are handled (expired, invalid, revoked)
+
+Authorization:
+- Permission-based authorization system defined in `permissionRules.js`
+- Role-based access control (admin, org-admin, org-staff, user)
+- Resource ownership checking
+- Organization-based permissions
+
+Permission Conditions:
+- `isOwner` - User owns the resource
+- `isSelf` - Resource is the user's own profile
+- `isSameOrganization` - User belongs to the same organization as the resource
+- `isOrgAdmin`, `isOrgStaff` - User has specific role in the organization
+- `isPublic` - The resource is marked as public
+
+Using Protected Endpoints:
+All protected endpoints require a valid Firebase Auth token in the Authorization header:
+```
+Authorization: Bearer your-firebase-token
+```
 
 ------------------------------------------------------------
 API Endpoints:
