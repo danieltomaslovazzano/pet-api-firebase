@@ -6,11 +6,10 @@ const userController = require('../controllers/userController');
 const organizationController = require('../controllers/organizationController');
 const conversationController = require('../controllers/conversationController');
 const messageController = require('../controllers/messageController');
-const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
+const { requireAdmin } = require('../middlewares');
 
-// Aplicar middleware de autenticación a todas las rutas
-router.use(verifyToken);
-router.use(isAdmin);
+// Aplicar middleware de autenticación y autorización a todas las rutas
+router.use(requireAdmin);
 
 // Rutas de usuarios
 router.get('/users', adminController.getAllUsers);
