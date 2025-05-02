@@ -5,19 +5,25 @@ const petController = require('../controllers/petController');
 const { verifyToken } = require('../middlewares/auth');
 const multer = require('multer');
 const upload = multer();
+const {
+  validateCreatePet,
+  validateUpdatePet,
+  validatePetId,
+  validatePetImage
+} = require('../middlewares/validation/petValidation');
 
 // Public endpoints:
 router.get('/', petController.getPets);
-router.get('/:id', petController.getPetById);
+router.get('/:id', validatePetId, petController.getPetById);
 
-// Protected endpoint: Create pet record using external image URLs (processed automatically)
-router.post('/', verifyToken, petController.createPet);
-router.put('/:id', verifyToken, petController.updatePet);
-router.delete('/:id', verifyToken, petController.deletePet);
+// Protected endpoint with validation
+router.post('/', verifyToken, validateCreatePet, petController.createPet);
+router.put('/:id', verifyToken, validatePetId, validateUpdatePet, petController.updatePet);
+router.delete('/:id', verifyToken, validatePetId, petController.deletePet);
 
-// Endpoints for file upload remain available:
-router.put('/:id/image', verifyToken, upload.single('image'), petController.updatePetImage);
-router.put('/:id/images/multiple', verifyToken, upload.array('images', 10), petController.updatePetMultipleImages);
-router.delete('/:id/images', verifyToken, petController.removePetImage);
+// Endpoints for file upload with validation
+router.put('/:id/image', verifyToken, validatePetId, upload.single('image'), petController.updatePetImage);
+router.put('/:id/images/multiple', verifyToken, validatePetId, upload.array('images', 10), petController.updatePetMultipleImages);
+router.delete('/:id/images', verifyToken, validatePetId, validatePetImage, petController.removePetImage);
 
 module.exports = router;
