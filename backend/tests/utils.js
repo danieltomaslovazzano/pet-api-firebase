@@ -239,16 +239,16 @@ const getExpectedStatusCode = (testCase) => {
   const testCaseLower = testCase.toLowerCase();
   
   // Special cases for authentication tests
+  // First handle explicit tests that should return a specific status code
+  if (testCaseLower.includes('register with valid data')) {
+    return 201; // Successful registrations return 201 Created
+  }
+  
   if (testCaseLower.includes('login with valid credentials') || 
-      testCaseLower.includes('register with valid data') ||
       testCaseLower.includes('verify with valid token') ||
       testCaseLower.includes('logout with valid token') ||
       testCaseLower.includes('request password reset with valid email')) {
     return 200; // Successful authentications return 200 OK
-  }
-  
-  if (testCaseLower.includes('register with valid data')) {
-    return 201; // Successful registrations return 201 Created
   }
   
   if (testCaseLower.includes('login with invalid password') ||
@@ -566,9 +566,36 @@ ${reportData.endpoints.map(endpoint => `
     // Filter tests for this section based on test case name
     const sectionTests = analyzedResults.filter(test => {
       // Extract key terms from the section name to match against test case
-      const keyTerms = section.toLowerCase().split(' ');
+      const sectionLower = section.toLowerCase();
+      const testCaseLower = test.testCase.toLowerCase();
+      
+      // More precise mapping for authentication tests
+      if (sectionLower.includes('registration')) {
+        return testCaseLower.includes('register');
+      }
+      
+      if (sectionLower.includes('login')) {
+        return testCaseLower.includes('login');
+      }
+      
+      if (sectionLower.includes('password reset')) {
+        return testCaseLower.includes('password reset') || 
+               (testCaseLower.includes('register') && testCaseLower.includes('weak password'));
+      }
+      
+      if (sectionLower.includes('email verification')) {
+        return testCaseLower.includes('verify') || 
+               (testCaseLower.includes('register') && testCaseLower.includes('invalid email'));
+      }
+      
+      if (sectionLower.includes('logout')) {
+        return testCaseLower.includes('logout');
+      }
+      
+      // For other sections, fallback to key term matching
+      const keyTerms = sectionLower.split(' ');
       return keyTerms.some(term => 
-        term !== 'tests' && test.testCase.toLowerCase().includes(term)
+        term !== 'tests' && testCaseLower.includes(term)
       );
     });
     
