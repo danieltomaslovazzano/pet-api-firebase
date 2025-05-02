@@ -54,18 +54,55 @@ exports.createPet = async (req, res) => {
     const processedUrls = [];
     for (const url of petData.images) {
       try {
-        // Download the image from the external URL
-        const response = await axios.get(url, { responseType: 'arraybuffer' });
-        const imageBuffer = Buffer.from(response.data, 'binary');
+        // Validate URL format
+        if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+          throw new Error(`Invalid image URL format: ${url}`);
+        }
 
-        // Compress the image using your utility (defaults: 800x800, quality 70)
-        const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70);
+        console.log(`Processing image URL: ${url}`);
+        
+        // Download the image from the external URL
+        const response = await axios.get(url, { 
+          responseType: 'arraybuffer',
+          timeout: 10000 // 10 second timeout
+        });
+        
+        // Check if we received a valid image
+        const contentType = response.headers['content-type'];
+        if (!contentType || !contentType.startsWith('image/')) {
+          throw new Error(`URL did not return a valid image: ${url}, content-type: ${contentType}`);
+        }
+        
+        const imageBuffer = Buffer.from(response.data, 'binary');
+        if (!imageBuffer || imageBuffer.length === 0) {
+          throw new Error(`Empty image data received from URL: ${url}`);
+        }
+
+        // Determine format based on content type
+        let format = 'jpeg'; // Default
+        let fileExtension = '.jpg'; // Default
+        
+        if (contentType === 'image/png') {
+          format = 'png';
+          fileExtension = '.png';
+        } else if (contentType === 'image/gif') {
+          format = 'gif';
+          fileExtension = '.gif';
+        } else if (contentType === 'image/webp') {
+          format = 'webp';
+          fileExtension = '.webp';
+        }
+
+        // Compress the image using format-specific settings
+        const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70, format);
 
         // Generate a unique filename (using timestamp and a random string)
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.jpg`;
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExtension}`;
+        console.log(`Generated filename: ${fileName}`);
 
         // Upload the compressed image to Firebase Storage and get its public URL
         const newUrl = await uploadImageToStorage(compressedBuffer, fileName);
+        console.log(`Image uploaded successfully: ${newUrl}`);
 
         processedUrls.push(newUrl);
       } catch (imageError) {
@@ -86,10 +123,16 @@ exports.createPet = async (req, res) => {
       petData.userId = req.user.uid;
     }
 
+    console.log('Saving pet data to Firestore:', JSON.stringify(petData));
+
     // Create the pet record in Firestore
     petModel.createPet(petData, (err, newPet) => {
       if (err) {
-        return res.status(500).json({ error: 'Error creating pet record', details: err.message });
+        console.error('Error creating pet record:', err);
+        return res.status(500).json({ 
+          error: 'Error creating pet record', 
+          details: err.message || 'Unknown error occurred'
+        });
       }
       res.status(201).json(newPet);
     });
@@ -134,13 +177,17 @@ exports.getPets = (req, res) => {
 
 exports.getPetById = (req, res) => {
     const { id } = req.params;
+    console.log(`[getPetById] Attempting to retrieve pet with ID: ${id}`);
+    
     petModel.getPetById(id, (err, pet) => {
         if (err) {
+            console.error(`[getPetById] Error retrieving pet ID ${id}:`, err);
             if (err.message === 'Pet not found') {
                 return res.status(404).json({ error: 'Pet not found' });
             }
-            return res.status(500).json({ error: 'Error retrieving pet' });
+            return res.status(500).json({ error: 'Error retrieving pet', details: err.message });
         }
+        console.log(`[getPetById] Successfully retrieved pet ID ${id}`);
         res.status(200).json(pet);
     });
 };

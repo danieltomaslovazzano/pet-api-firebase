@@ -907,15 +907,15 @@ const isExpectedBehavior = (testCase, result) => {
   }
   
   // Unauthorized pet update should reject but currently accepts (security bug)
-  if (testCaseLower.includes('update') && testCaseLower.includes('non-owner') && result.status === 200) {
-    // This is a security bug in the API, but it's the expected current behavior
-    return true;
+  if (testCaseLower.includes('update') && testCaseLower.includes('non-owner')) {
+    // The API now correctly returns 403 for unauthorized updates (fixed security bug)
+    return result.status === 403 && result.data && result.data.error === 'Permission denied';
   }
   
   // Unauthorized pet deletion should reject but currently accepts (security bug)
-  if (testCaseLower.includes('delete') && testCaseLower.includes('non-owner') && result.status === 200) {
-    // This is a security bug in the API, but it's the expected current behavior
-    return true;
+  if (testCaseLower.includes('delete') && testCaseLower.includes('non-owner')) {
+    // The API now correctly returns 403 for unauthorized deletions (fixed security bug)
+    return result.status === 403 && result.data && result.data.error === 'Permission denied';
   }
   
   // For specific types of pet listing tests

@@ -31,7 +31,7 @@ router.get('/:id', validatePetId, petController.getPetById);
 router.post('/', 
   requireAuth, 
   validateCreatePet, 
-  protectResource('pets', 'create'),
+  checkPermission('pets', 'create'),
   petController.createPet
 );
 
