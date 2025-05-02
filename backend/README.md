@@ -1,4 +1,3 @@
-
 ------------------------------------------------------------
 Pet Reports API
 ------------------------------------------------------------
@@ -13,6 +12,13 @@ Table of Contents:
 - Technologies
 - Setup & Installation
 - Environment Variables
+- Authentication & Authorization
+  - Authentication Middleware
+  - Authorization Middleware
+  - Resource Loaders
+  - Middleware Composition
+  - Permission Rules
+  - Usage Examples
 - API Endpoints
    - POST /pets
    - GET /pets
@@ -41,7 +47,8 @@ Technologies:
 ------------------------------------------------------------
 - Node.js – JavaScript runtime environment.
 - Express – Web framework for Node.js.
-- MySQL – Relational database for storing pet reports.
+- Firebase – Authentication and database services.
+- Firestore – NoSQL database for storing pet data.
 - UUID – For generating unique identifiers.
 - dotenv – For environment variable management.
 
@@ -79,6 +86,51 @@ The API uses the following environment variables (defined in the .env file):
 - DB_USER: MySQL user.
 - DB_PASSWORD: MySQL password.
 - DB_NAME: Name of the database (e.g., pet_reports).
+
+------------------------------------------------------------
+Authentication & Authorization:
+------------------------------------------------------------
+The API uses a comprehensive authentication and authorization system to secure endpoints. This system follows a clean separation of concerns pattern, keeping identity verification (authentication) separate from permission checking (authorization).
+
+Authentication:
+- Firebase Authentication is used for identity verification
+- JWT tokens are required for protected endpoints
+- Token verification happens in the `authentication.js` middleware
+- Various token error cases are handled (expired, invalid, revoked)
+
+Authorization:
+- Permission-based authorization system defined in `permissionRules.js`
+- Role-based access control (admin, org-admin, org-staff, user)
+- Resource ownership checking
+- Organization-based permissions
+
+Resource Loaders:
+- Dedicated middleware to load resources for permission checking
+- Support for pets, users, organizations, memberships, conversations, and messages
+- Clean separation between resource loading and permission checking
+
+Middleware Composition:
+- Utility functions to compose middleware for common patterns
+- `protectResource(resource, action)` - Protects a specific resource instance
+- `protectCollection(resource, action)` - Protects collection-level operations
+- `requireRole(role)` - Requires a specific role or roles
+- `requireAdmin()` - Convenience function for admin-only routes
+- `requireOrgAdmin()` - Organization admin access
+
+Permission Conditions:
+- `isOwner` - User owns the resource
+- `isSelf` - Resource is the user's own profile
+- `isSameOrganization` - User belongs to the same organization as the resource
+- `isOrgAdmin`, `isOrgStaff` - User has specific role in the organization
+- `isPublic` - The resource is marked as public
+
+Using Protected Endpoints:
+All protected endpoints require a valid Firebase Auth token in the Authorization header:
+```
+Authorization: Bearer your-firebase-token
+```
+
+For detailed usage examples, see the `docs/auth-usage-examples.md` file.
 
 ------------------------------------------------------------
 API Endpoints:

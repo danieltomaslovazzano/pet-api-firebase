@@ -2,28 +2,74 @@
 const express = require('express');
 const router = express.Router();
 const petController = require('../controllers/petController');
-const { verifyToken } = require('../middlewares/auth');
+const { verifyToken } = require('../middlewares/authentication');
+const { 
+  protectResource, 
+  requireAuth, 
+  ownerOrAdmin 
+} = require('../middlewares');
+const { loadPetResource } = require('../middlewares/resourceLoaders');
+const { checkPermission } = require('../middlewares/authorization');
 const multer = require('multer');
 const upload = multer();
 const {
   validateCreatePet,
   validateUpdatePet,
   validatePetId,
-  validatePetImage
+  validatePetImage,
+  validateSearchQuery
 } = require('../middlewares/validation/petValidation');
+
+// Search endpoint - must come before /:id to avoid conflict
+router.get('/search', validateSearchQuery, petController.searchPets);
 
 // Public endpoints:
 router.get('/', petController.getPets);
 router.get('/:id', validatePetId, petController.getPetById);
 
-// Protected endpoint with validation
-router.post('/', verifyToken, validateCreatePet, petController.createPet);
-router.put('/:id', verifyToken, validatePetId, validateUpdatePet, petController.updatePet);
-router.delete('/:id', verifyToken, validatePetId, petController.deletePet);
+// Protected endpoint with validation and authorization
+router.post('/', 
+  requireAuth, 
+  validateCreatePet, 
+  checkPermission('pets', 'create'),
+  petController.createPet
+);
 
-// Endpoints for file upload with validation
-router.put('/:id/image', verifyToken, validatePetId, upload.single('image'), petController.updatePetImage);
-router.put('/:id/images/multiple', verifyToken, validatePetId, upload.array('images', 10), petController.updatePetMultipleImages);
-router.delete('/:id/images', verifyToken, validatePetId, validatePetImage, petController.removePetImage);
+// Fix: Use ownerOrAdmin middleware for resource permission
+router.put('/:id', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  validateUpdatePet,
+  petController.updatePet
+);
+
+// Fix: Use ownerOrAdmin middleware for resource permission
+router.delete('/:id', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  petController.deletePet
+);
+
+// Endpoints for file upload with validation and authorization
+router.put('/:id/image', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  upload.single('image'), 
+  petController.updatePetImage
+);
+
+router.put('/:id/images/multiple', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  upload.array('images', 10), 
+  petController.updatePetMultipleImages
+);
+
+router.delete('/:id/images', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  validatePetImage, 
+  petController.removePetImage
+);
 
 module.exports = router;
