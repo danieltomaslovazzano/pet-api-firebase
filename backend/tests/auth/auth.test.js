@@ -3,10 +3,21 @@ const axios = require('axios');
 const config = require('../config');
 const { describe, it, expect, beforeAll, afterAll } = require('@jest/globals');
 const admin = require('../setup');
-const { generateReport } = require('../utils');
+const { generateReport, registerModuleConfig } = require('../utils');
 
 // Load environment variables for testing
 require('dotenv').config();
+
+// Register auth-specific test configuration
+registerModuleConfig('auth', {
+  reportSections: [
+    'User Registration Tests', 
+    'User Login Tests', 
+    'Password Reset Tests', 
+    'Email Verification Tests', 
+    'Logout Tests'
+  ]
+});
 
 // Test helper functions
 const makeRequest = async (method, endpoint, data = null, token = null) => {

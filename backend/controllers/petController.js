@@ -9,33 +9,78 @@ const axios = require('axios');
 exports.createPet = async (req, res) => {
   try {
     const petData = req.body;
-
-    // Validate that an array of external image URLs is provided
-    if (!petData.images || !Array.isArray(petData.images) || petData.images.length === 0) {
-      return res.status(400).json({ error: 'At least one image URL must be provided in petData.images' });
+    
+    // Additional controller-level validation to ensure required fields are present
+    // This is a backup in case middleware validation somehow fails
+    const requiredFields = ['name', 'species', 'status', 'images'];
+    const missingFields = requiredFields.filter(field => !petData[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: missingFields.map(field => ({
+          field,
+          message: `${field} is required`
+        }))
+      });
     }
-
-    const processedUrls = [];
+    
+    // Type validation for critical fields
+    if (!Array.isArray(petData.images) || petData.images.length === 0) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: [{
+          field: 'images',
+          message: 'At least one image URL is required'
+        }]
+      });
+    }
+    
+    if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: [{
+          field: 'age',
+          message: 'Age must be a non-negative integer'
+        }]
+      });
+    }
+    
     // Process each external image URL
+    const processedUrls = [];
     for (const url of petData.images) {
-      // Download the image from the external URL
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
-      const imageBuffer = Buffer.from(response.data, 'binary');
+      try {
+        // Download the image from the external URL
+        const response = await axios.get(url, { responseType: 'arraybuffer' });
+        const imageBuffer = Buffer.from(response.data, 'binary');
 
-      // Compress the image using your utility (defaults: 800x800, quality 70)
-      const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70);
+        // Compress the image using your utility (defaults: 800x800, quality 70)
+        const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70);
 
-      // Generate a unique filename (using timestamp and a random string)
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.jpg`;
+        // Generate a unique filename (using timestamp and a random string)
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.jpg`;
 
-      // Upload the compressed image to Firebase Storage and get its public URL
-      const newUrl = await uploadImageToStorage(compressedBuffer, fileName);
+        // Upload the compressed image to Firebase Storage and get its public URL
+        const newUrl = await uploadImageToStorage(compressedBuffer, fileName);
 
-      processedUrls.push(newUrl);
+        processedUrls.push(newUrl);
+      } catch (imageError) {
+        console.error('Error processing image URL:', imageError);
+        return res.status(400).json({ 
+          error: 'Failed to process image URL', 
+          details: imageError.message,
+          url 
+        });
+      }
     }
 
     // Replace the petData images array with the processed Firebase Storage URLs
     petData.images = processedUrls;
+    
+    // Add user ID from authenticated user
+    if (req.user && req.user.uid) {
+      petData.userId = req.user.uid;
+    }
 
     // Create the pet record in Firestore
     petModel.createPet(petData, (err, newPet) => {
@@ -75,6 +120,45 @@ exports.getPetById = (req, res) => {
 exports.updatePet = (req, res) => {
     const { id } = req.params;
     const petData = req.body;
+    
+    // Validate data types for critical fields if they are being updated
+    if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: [{
+          field: 'age',
+          message: 'Age must be a non-negative integer'
+        }]
+      });
+    }
+    
+    // Validate images array if it's being updated
+    if (petData.images !== undefined) {
+      if (!Array.isArray(petData.images) || petData.images.length === 0) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: [{
+            field: 'images',
+            message: 'At least one image URL is required'
+          }]
+        });
+      }
+    }
+    
+    // Validate status if it's being updated
+    if (petData.status !== undefined) {
+      const validStatuses = ['available', 'adopted', 'lost', 'found'];
+      if (!validStatuses.includes(petData.status)) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: [{
+            field: 'status',
+            message: 'Status must be one of: available, adopted, lost, found'
+          }]
+        });
+      }
+    }
+    
     petModel.updatePet(id, petData, (err, updatedPet) => {
         if (err) {
             return res.status(500).json({ error: 'Error updating pet' });
