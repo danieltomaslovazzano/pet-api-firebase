@@ -3,15 +3,25 @@ const express = require('express');
 const router = express.Router();
 const petController = require('../controllers/petController');
 const { verifyToken } = require('../middlewares/authentication');
-const { protectResource, requireAuth } = require('../middlewares');
+const { 
+  protectResource, 
+  requireAuth, 
+  ownerOrAdmin 
+} = require('../middlewares');
+const { loadPetResource } = require('../middlewares/resourceLoaders');
+const { checkPermission } = require('../middlewares/authorization');
 const multer = require('multer');
 const upload = multer();
 const {
   validateCreatePet,
   validateUpdatePet,
   validatePetId,
-  validatePetImage
+  validatePetImage,
+  validateSearchQuery
 } = require('../middlewares/validation/petValidation');
+
+// Search endpoint - must come before /:id to avoid conflict
+router.get('/search', validateSearchQuery, petController.searchPets);
 
 // Public endpoints:
 router.get('/', petController.getPets);
@@ -25,38 +35,39 @@ router.post('/',
   petController.createPet
 );
 
-// Using the new middleware composition patterns
+// Fix: Use ownerOrAdmin middleware for resource permission
 router.put('/:id', 
   validatePetId, 
-  ...protectResource('pets', 'update'),
+  ownerOrAdmin('pets'),
   validateUpdatePet,
   petController.updatePet
 );
 
+// Fix: Use ownerOrAdmin middleware for resource permission
 router.delete('/:id', 
   validatePetId, 
-  ...protectResource('pets', 'delete'),
+  ownerOrAdmin('pets'),
   petController.deletePet
 );
 
 // Endpoints for file upload with validation and authorization
 router.put('/:id/image', 
   validatePetId, 
-  ...protectResource('pets', 'updateImage'),
+  ownerOrAdmin('pets'),
   upload.single('image'), 
   petController.updatePetImage
 );
 
 router.put('/:id/images/multiple', 
   validatePetId, 
-  ...protectResource('pets', 'updateImage'),
+  ownerOrAdmin('pets'),
   upload.array('images', 10), 
   petController.updatePetMultipleImages
 );
 
 router.delete('/:id/images', 
   validatePetId, 
-  ...protectResource('pets', 'removeImage'),
+  ownerOrAdmin('pets'),
   validatePetImage, 
   petController.removePetImage
 );

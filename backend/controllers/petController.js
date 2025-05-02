@@ -5,7 +5,11 @@ const { compressImage } = require('../utils/imageUtils');
 const { uploadImageToStorage } = require('../utils/storageUtils');
 const axios = require('axios');
 
-
+/**
+ * Create a new pet
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.createPet = async (req, res) => {
   try {
     const petData = req.body;
@@ -95,10 +99,34 @@ exports.createPet = async (req, res) => {
   }
 };
 
+/**
+ * Get all pets with optional filtering and sorting
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.getPets = (req, res) => {
-    petModel.getPets((err, pets) => {
+    // Extract filter and pagination parameters
+    const { 
+      species, status, breed, 
+      page = 1, 
+      limit = 10, 
+      sort = 'createdAt'
+    } = req.query;
+    
+    // Build filter object
+    const filters = {};
+    if (species) filters.species = species;
+    if (status) filters.status = status;
+    if (breed) filters.breed = breed;
+    
+    // Parse pagination parameters
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    
+    // Call the model with filter, pagination and sorting options
+    petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort, (err, pets) => {
         if (err) {
-            return res.status(500).json({ error: 'Error retrieving pets' });
+            return res.status(500).json({ error: 'Error retrieving pets', details: err.message });
         }
         res.status(200).json(pets);
     });
@@ -177,6 +205,52 @@ exports.deletePet = (req, res) => {
     });
 };
 
+/**
+ * Search pets based on query parameters
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.searchPets = (req, res) => {
+    // Extract search parameters
+    const { 
+        name, species, status, breed,
+        page = 1, 
+        limit = 10, 
+        sort = 'name' 
+    } = req.query;
+    
+    // Build search criteria object
+    const searchCriteria = {};
+    if (name) searchCriteria.name = name;
+    if (species) searchCriteria.species = species;
+    if (status) searchCriteria.status = status;
+    if (breed) searchCriteria.breed = breed;
+    
+    // Parse pagination parameters
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    
+    // Call the model with search criteria
+    petModel.searchPets(searchCriteria, pageNumber, pageSize, sort, (err, pets) => {
+        if (err) {
+            return res.status(500).json({ 
+                error: 'Error searching pets', 
+                details: err.message 
+            });
+        }
+        
+        res.status(200).json({
+            results: pets,
+            pagination: {
+                page: pageNumber,
+                limit: pageSize,
+                total: pets.length, // In a production app, this would be a separate count query
+                hasMore: pets.length === pageSize // Simple check if there might be more results
+            }
+        });
+    });
+};
+
 exports.updatePetImage = async (req, res) => {
   try {
     const petId = req.params.id;
@@ -249,31 +323,28 @@ exports.updatePetMultipleImages = async (req, res) => {
   }
 };
 
-
-exports.removePetImage = async (req, res) => {
-  try {
-    const petId = req.params.id;
-    const pet = req.resourceObj; // Now provided by the loadPetResource middleware
-    const { imageUrl } = req.body;
-    
-    if (!imageUrl) {
-      return res.status(400).json({ error: 'imageUrl must be provided in the request body' });
-    }
-    
-    // Proceed to remove the image
-    petModel.removePetImage(petId, imageUrl, (err, updatedPet) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error removing pet image', details: err.message });
+exports.removePetImage = (req, res) => {
+  const petId = req.params.id;
+  const { imageUrl } = req.body;
+  
+  petModel.removePetImage(petId, imageUrl, (err, updatedPet) => {
+    if (err) {
+      if (err.message.includes('A pet record must have at least one image')) {
+        return res.status(400).json({ 
+          error: 'Cannot remove the last image', 
+          details: err.message 
+        });
       }
-      res.status(200).json({
-        message: 'Image removed and pet record updated successfully',
-        pet: updatedPet
+      return res.status(500).json({ 
+        error: 'Error removing pet image', 
+        details: err.message 
       });
+    }
+    res.status(200).json({
+      message: 'Image removed successfully',
+      pet: updatedPet
     });
-  } catch (error) {
-    console.error('Error in removePetImage controller:', error);
-    res.status(500).json({ error: 'Failed to remove image', details: error.message });
-  }
+  });
 };
 
 exports.createPetFromUrls = async (req, res) => {
