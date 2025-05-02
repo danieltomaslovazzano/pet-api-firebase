@@ -2,11 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { verifyToken } = require('../middlewares/auth');
-const { checkRoles } = require('../middlewares/role');
+const { requireAuth } = require('../middlewares');
 
 // Aplicar middleware de autenticación a todas las rutas
-router.use(verifyToken);
+router.use(requireAuth);
 
 // GET /users - Obtener todos los usuarios
 router.get('/', userController.getUsers);

@@ -180,41 +180,31 @@ exports.deletePet = (req, res) => {
 exports.updatePetImage = async (req, res) => {
   try {
     const petId = req.params.id;
+    const pet = req.resourceObj; // Now provided by the loadPetResource middleware
     
-    // First, retrieve the pet record to check ownership
-    petModel.getPetById(petId, async (err, petData) => {
-      if (err || !petData) {
-        return res.status(404).json({ error: 'Pet not found' });
+    // Ensure a file is provided (via multer)
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+    
+    // Compress the image using Sharp (our utility function)
+    const compressedBuffer = await compressImage(req.file.buffer, 800, 800, 70);
+    
+    // Create a unique filename
+    const fileName = `${petId}_${Date.now()}.jpg`;
+    
+    // Upload the compressed image to Firebase Storage
+    const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
+    
+    // Update the pet record by merging this new image URL with existing ones
+    petModel.updatePetImages(petId, [imageUrl], (err, updatedPet) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error updating pet record', details: err.message });
       }
-      // Check if the current user is the owner OR has moderator/admin privileges
-      if (req.user.uid !== petData.userId && !['moderator', 'admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Forbidden: You can only update your own pet record' });
-      }
-      
-      // Ensure a file is provided (via multer)
-      if (!req.file) {
-        return res.status(400).json({ error: 'No image file provided' });
-      }
-      
-      // Compress the image using Sharp (our utility function)
-      const compressedBuffer = await compressImage(req.file.buffer, 800, 800, 70);
-      
-      // Create a unique filename
-      const fileName = `${petId}_${Date.now()}.jpg`;
-      
-      // Upload the compressed image to Firebase Storage
-      const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
-      
-      // Update the pet record by merging this new image URL with existing ones
-      petModel.updatePetImages(petId, [imageUrl], (err, updatedPet) => {
-        if (err) {
-          return res.status(500).json({ error: 'Error updating pet record', details: err.message });
-        }
-        res.status(200).json({
-          message: 'Image uploaded and pet record updated successfully',
-          pet: updatedPet,
-          imageUrl: imageUrl
-        });
+      res.status(200).json({
+        message: 'Image uploaded and pet record updated successfully',
+        pet: updatedPet,
+        imageUrl: imageUrl
       });
     });
   } catch (error) {
@@ -227,40 +217,30 @@ exports.updatePetImage = async (req, res) => {
 exports.updatePetMultipleImages = async (req, res) => {
   try {
     const petId = req.params.id;
+    const pet = req.resourceObj; // Now provided by the loadPetResource middleware
     
-    // Retrieve pet record to check ownership
-    petModel.getPetById(petId, async (err, petData) => {
-      if (err || !petData) {
-        return res.status(404).json({ error: 'Pet not found' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No image files provided' });
+    }
+    
+    const uploadedUrls = [];
+    
+    for (const file of req.files) {
+      const compressedBuffer = await compressImage(file.buffer, 800, 800, 70);
+      const fileName = `${petId}_${Date.now()}_${Math.random().toString(36).substring(2,8)}.jpg`;
+      const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
+      uploadedUrls.push(imageUrl);
+    }
+    
+    // Merge new image URLs with the existing images in the pet record
+    petModel.updatePetImages(petId, uploadedUrls, (err, updatedPet) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error updating pet images', details: err.message });
       }
-      // Check if the current user is the owner OR has moderator/admin privileges
-      if (req.user.uid !== petData.userId && !['moderator', 'admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Forbidden: You can only update your own pet record' });
-      }
-      
-      if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: 'No image files provided' });
-      }
-      
-      const uploadedUrls = [];
-      
-      for (const file of req.files) {
-        const compressedBuffer = await compressImage(file.buffer, 800, 800, 70);
-        const fileName = `${petId}_${Date.now()}_${Math.random().toString(36).substring(2,8)}.jpg`;
-        const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
-        uploadedUrls.push(imageUrl);
-      }
-      
-      // Merge new image URLs with the existing images in the pet record
-      petModel.updatePetImages(petId, uploadedUrls, (err, updatedPet) => {
-        if (err) {
-          return res.status(500).json({ error: 'Error updating pet images', details: err.message });
-        }
-        res.status(200).json({
-          message: 'Images uploaded and pet record updated successfully',
-          pet: updatedPet,
-          imageUrls: uploadedUrls
-        });
+      res.status(200).json({
+        message: 'Images uploaded and pet record updated successfully',
+        pet: updatedPet,
+        imageUrls: uploadedUrls
       });
     });
   } catch (error) {
@@ -273,32 +253,21 @@ exports.updatePetMultipleImages = async (req, res) => {
 exports.removePetImage = async (req, res) => {
   try {
     const petId = req.params.id;
+    const pet = req.resourceObj; // Now provided by the loadPetResource middleware
     const { imageUrl } = req.body;
     
     if (!imageUrl) {
       return res.status(400).json({ error: 'imageUrl must be provided in the request body' });
     }
     
-    // Retrieve the pet record to check ownership
-    petModel.getPetById(petId, (err, petData) => {
-      if (err || !petData) {
-        return res.status(404).json({ error: 'Pet not found' });
+    // Proceed to remove the image
+    petModel.removePetImage(petId, imageUrl, (err, updatedPet) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error removing pet image', details: err.message });
       }
-      
-      // Allow removal only if the user is the owner or has a moderator/admin role
-      if (req.user.uid !== petData.userId && !['moderator', 'admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Forbidden: You can only remove images from your own pet record' });
-      }
-      
-      // Proceed to remove the image
-      petModel.removePetImage(petId, imageUrl, (err, updatedPet) => {
-        if (err) {
-          return res.status(500).json({ error: 'Error removing pet image', details: err.message });
-        }
-        res.status(200).json({
-          message: 'Image removed and pet record updated successfully',
-          pet: updatedPet
-        });
+      res.status(200).json({
+        message: 'Image removed and pet record updated successfully',
+        pet: updatedPet
       });
     });
   } catch (error) {
