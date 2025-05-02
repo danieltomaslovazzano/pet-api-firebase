@@ -8,6 +8,25 @@ const petsCollection = db.collection('pets');
 
 exports.createPet = async (petData, callback) => {
   try {
+    // Validate required fields
+    const requiredFields = ['name', 'species', 'status', 'images'];
+    for (const field of requiredFields) {
+      if (!petData[field]) {
+        return callback(new Error(`Missing required field: ${field}`));
+      }
+    }
+    
+    // Validate images is an array with at least one item
+    if (!Array.isArray(petData.images) || petData.images.length === 0) {
+      return callback(new Error('At least one image URL is required'));
+    }
+    
+    // Validate status is one of the allowed values
+    const validStatuses = ['available', 'adopted', 'lost', 'found'];
+    if (!validStatuses.includes(petData.status)) {
+      return callback(new Error('Status must be one of: available, adopted, lost, found'));
+    }
+    
     const id = uuidv4();
     petData.id = id;
     petData.createdAt = admin.firestore.FieldValue.serverTimestamp();
@@ -51,6 +70,37 @@ exports.getPetById = async (id, callback) => {
 
 exports.updatePet = async (id, petData, callback) => {
   try {
+    // Validate if the pet exists before updating
+    const petDoc = await petsCollection.doc(id).get();
+    if (!petDoc.exists) {
+      return callback(new Error('Pet not found'));
+    }
+    
+    // If updating status, validate it's one of the allowed values
+    if (petData.status) {
+      const validStatuses = ['available', 'adopted', 'lost', 'found'];
+      if (!validStatuses.includes(petData.status)) {
+        return callback(new Error('Status must be one of: available, adopted, lost, found'));
+      }
+    }
+    
+    // If updating images, validate it's an array with at least one item
+    if (petData.images) {
+      if (!Array.isArray(petData.images) || petData.images.length === 0) {
+        return callback(new Error('At least one image URL is required'));
+      }
+    }
+    
+    // If updating age, validate it's a non-negative integer
+    if (petData.age !== undefined) {
+      if (isNaN(petData.age) || petData.age < 0) {
+        return callback(new Error('Age must be a non-negative integer'));
+      }
+      
+      // Convert to number to ensure proper storage
+      petData.age = Number(petData.age);
+    }
+    
     petData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
     // Update only the provided fields (Firestore merges updates)
     await petsCollection.doc(id).update(petData);
