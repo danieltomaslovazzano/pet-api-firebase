@@ -124,7 +124,7 @@ describe('Authentication Middleware', () => {
     // Should return 401 unauthorized
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ 
-      error: 'Not authorized: Token not provided' 
+      error: 'Token no proporcionado' 
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -139,7 +139,7 @@ describe('Authentication Middleware', () => {
     // Should return 401 unauthorized
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ 
-      error: 'Not authorized: Token not provided' 
+      error: 'Token no proporcionado' 
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -156,7 +156,7 @@ describe('Authentication Middleware', () => {
     // Should return 401 unauthorized with specific message
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ 
-      error: 'Not authorized: Invalid token' 
+      error: 'Token inválido' 
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -173,7 +173,7 @@ describe('Authentication Middleware', () => {
     // Should return 401 unauthorized with expired message
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ 
-      error: 'Not authorized: Token expired' 
+      error: 'Token expirado' 
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -190,7 +190,7 @@ describe('Authentication Middleware', () => {
     // Should return 403 forbidden for disabled accounts
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({ 
-      error: 'Not authorized: User account disabled' 
+      error: 'Cuenta de usuario deshabilitada' 
     });
     expect(next).not.toHaveBeenCalled();
   });
