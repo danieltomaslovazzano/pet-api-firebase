@@ -1,4 +1,4 @@
-const { body, param, validationResult } = require('express-validator');
+const { body, param, query, validationResult } = require('express-validator');
 
 /**
  * Validates pet creation request data
@@ -161,6 +161,67 @@ exports.validatePetImage = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ 
         error: 'Invalid image URL', 
+        details: errors.array().map(err => ({
+          field: err.path,
+          message: err.msg
+        }))
+      });
+    }
+    next();
+  }
+];
+
+/**
+ * Validates search query parameters
+ */
+exports.validateSearchQuery = [
+  query()
+    .custom((value, { req }) => {
+      // Ensure at least one search parameter is provided
+      const hasSearchParam = req.query.name || req.query.species || req.query.status || req.query.breed;
+      if (!hasSearchParam) {
+        throw new Error('At least one search parameter is required (name, species, status, or breed)');
+      }
+      return true;
+    }),
+  
+  // Optional search parameters validation
+  query('name')
+    .optional()
+    .isString().withMessage('Name must be a string'),
+  
+  query('species')
+    .optional()
+    .isString().withMessage('Species must be a string'),
+  
+  query('status')
+    .optional()
+    .isString().withMessage('Status must be a string')
+    .isIn(['available', 'adopted', 'lost', 'found']).withMessage('Status must be one of: available, adopted, lost, found'),
+  
+  query('breed')
+    .optional()
+    .isString().withMessage('Breed must be a string'),
+  
+  // Pagination and sorting params
+  query('page')
+    .optional()
+    .isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  
+  query('limit')
+    .optional()
+    .isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  
+  query('sort')
+    .optional()
+    .isString().withMessage('Sort must be a string'),
+  
+  // Validation handler middleware
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        error: 'Invalid search parameters', 
         details: errors.array().map(err => ({
           field: err.path,
           message: err.msg

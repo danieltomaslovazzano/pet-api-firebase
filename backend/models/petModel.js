@@ -43,6 +43,10 @@ exports.createPet = async (petData, callback) => {
   }
 };
 
+/**
+ * Get all pets, with optional pagination
+ * @deprecated Use getPetsWithFilters instead
+ */
 exports.getPets = async (callback) => {
   try {
     const snapshot = await petsCollection.get();
@@ -51,6 +55,144 @@ exports.getPets = async (callback) => {
       pets.push(doc.data());
     });
     callback(null, pets);
+  } catch (error) {
+    callback(error);
+  }
+};
+
+/**
+ * Get pets with filtering, pagination, and sorting
+ * @param {Object} filters - Filter criteria (species, status, breed, etc.)
+ * @param {Number} page - Page number (1-based)
+ * @param {Number} limit - Results per page
+ * @param {String} sortField - Field to sort by
+ * @param {Function} callback - Callback function (err, pets)
+ */
+exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = 'createdAt', callback) => {
+  try {
+    // To avoid Firestore index requirements, we'll use a client-side filtering approach
+    // This is not optimal for large datasets but works for our demo
+    
+    // Get all pets first
+    const snapshot = await petsCollection.get();
+    let pets = [];
+    
+    // Extract all pet data
+    snapshot.forEach(doc => {
+      pets.push(doc.data());
+    });
+    
+    // Apply filters in memory
+    if (filters) {
+      if (filters.species) {
+        // Case-insensitive filtering for species
+        pets = pets.filter(pet => 
+          pet.species && pet.species.toLowerCase() === filters.species.toLowerCase()
+        );
+      }
+      
+      if (filters.status) {
+        pets = pets.filter(pet => 
+          pet.status && pet.status.toLowerCase() === filters.status.toLowerCase()
+        );
+      }
+      
+      if (filters.breed) {
+        // Case-insensitive filtering for breed
+        pets = pets.filter(pet => 
+          pet.breed && pet.breed.toLowerCase() === filters.breed.toLowerCase()
+        );
+      }
+    }
+    
+    // Apply sorting
+    if (sortField) {
+      const sortDirection = sortField.startsWith('-') ? -1 : 1;
+      const actualField = sortField.startsWith('-') ? sortField.substring(1) : sortField;
+      
+      pets.sort((a, b) => {
+        // Handle different data types appropriately
+        if (typeof a[actualField] === 'string' && typeof b[actualField] === 'string') {
+          return a[actualField].localeCompare(b[actualField]) * sortDirection;
+        } else {
+          if (a[actualField] < b[actualField]) return -1 * sortDirection;
+          if (a[actualField] > b[actualField]) return 1 * sortDirection;
+          return 0;
+        }
+      });
+    }
+    
+    // Apply pagination
+    const pageSize = Math.min(limit, 100); // Cap at 100 for performance
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const paginatedPets = pets.slice(startIndex, endIndex);
+    
+    callback(null, paginatedPets);
+  } catch (error) {
+    callback(error);
+  }
+};
+
+/**
+ * Search for pets based on search criteria
+ * @param {Object} searchCriteria - Search parameters
+ * @param {Number} page - Page number (1-based)
+ * @param {Number} limit - Results per page
+ * @param {String} sortField - Field to sort by
+ * @param {Function} callback - Callback function (err, pets)
+ */
+exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'name', callback) => {
+  try {
+    // Since Firestore doesn't support full-text search, we'll implement a simple
+    // search by getting all pets and filtering in memory
+    // For production, consider using Algolia, Elasticsearch, or Firebase Extensions
+    
+    const snapshot = await petsCollection.get();
+    let pets = [];
+    
+    // Collect all pets
+    snapshot.forEach(doc => {
+      pets.push(doc.data());
+    });
+    
+    // Apply search filters - case insensitive string matching
+    if (searchCriteria) {
+      pets = pets.filter(pet => {
+        // Check each search criterion
+        for (const [field, value] of Object.entries(searchCriteria)) {
+          if (!pet[field] || !String(pet[field]).toLowerCase().includes(String(value).toLowerCase())) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+    
+    // Apply sorting
+    if (sortField) {
+      const sortDirection = sortField.startsWith('-') ? -1 : 1;
+      const actualField = sortField.startsWith('-') ? sortField.substring(1) : sortField;
+      
+      pets.sort((a, b) => {
+        // Handle different data types appropriately
+        if (typeof a[actualField] === 'string' && typeof b[actualField] === 'string') {
+          return a[actualField].localeCompare(b[actualField]) * sortDirection;
+        } else {
+          if (a[actualField] < b[actualField]) return -1 * sortDirection;
+          if (a[actualField] > b[actualField]) return 1 * sortDirection;
+          return 0;
+        }
+      });
+    }
+    
+    // Apply pagination
+    const pageSize = Math.min(limit, 100); // Cap at 100 for performance
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = page * pageSize;
+    const paginatedPets = pets.slice(startIndex, endIndex);
+    
+    callback(null, paginatedPets);
   } catch (error) {
     callback(error);
   }
