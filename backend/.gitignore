@@ -12,3 +12,8 @@ config/pet-api-dev-35115-firebase-adminsdk-fbsvc-834051197d.json
 tests/users/reports/
 tests/pets/reports/
 tests/auth/reports/
+tests/admin/reports/
+tests/membership/reports/
+tests/organization/reports/
+tests/conversation/reports/
+tests/message/reports/
