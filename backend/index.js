@@ -13,6 +13,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const authRoutes = require('./routes/authRoutes'); // Import auth routes
 const organizationRoutes = require('./routes/organizationRoutes');
+const membershipRoutes = require('./routes/membershipRoutes');
 
 
 // Configurar CORS
@@ -37,6 +38,7 @@ app.use('/api/pets', petRoutes);
 app.use('/api/organizations', organizationRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/memberships', membershipRoutes);
 
 // Global error handler (optional)
 //app.use((err, req, res, next) => {
