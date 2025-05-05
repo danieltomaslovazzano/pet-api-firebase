@@ -105,3 +105,47 @@ exports.getMembershipByUserAndOrg = async (userId, organizationId, callback) => 
     callback(error);
   }
 };
+
+// Obtener todas las membresías de un usuario
+exports.getMembershipsByUser = async (userId, callback) => {
+  try {
+    const snapshot = await membershipsCollection
+      .where('userId', '==', userId)
+      .get();
+    
+    if (snapshot.empty) {
+      return callback(null, []);
+    }
+    
+    const memberships = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    callback(null, memberships);
+  } catch (error) {
+    callback(error);
+  }
+};
+
+// Obtener todas las membresías de una organización
+exports.getMembershipsByOrganization = async (organizationId, callback) => {
+  try {
+    const snapshot = await membershipsCollection
+      .where('organizationId', '==', organizationId)
+      .get();
+    
+    if (snapshot.empty) {
+      return callback(null, []);
+    }
+    
+    const memberships = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    callback(null, memberships);
+  } catch (error) {
+    callback(error);
+  }
+};
