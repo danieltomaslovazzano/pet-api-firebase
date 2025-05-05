@@ -870,6 +870,28 @@ const isExpectedBehavior = (testCase, result) => {
   // Special case handling for known API behaviors
   const testCaseLower = testCase.toLowerCase();
   
+  // User-specific test cases that should be marked as successful even with error status codes
+  if (testCaseLower.includes('datos incompletos') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('permisos insuficientes') && result.status === 403) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('sin permisos') && result.status === 403) {
+    return true;
+  }
+  
+  // Cases where we expect a permission denied (403)
+  if ((testCaseLower.includes('acceder al perfil de otro') || 
+       testCaseLower.includes('actualizar otro usuario') ||
+       testCaseLower.includes('ver organizaciones de otro') ||
+       testCaseLower.includes('eliminar otro usuario')) && 
+      result.status === 403) {
+    return true;
+  }
+  
   // Pet creation with valid data should return 201 but currently returns 500
   // Mark as failure to align with the expectation in the test
   if (testCaseLower.includes('create pet with valid data')) {
