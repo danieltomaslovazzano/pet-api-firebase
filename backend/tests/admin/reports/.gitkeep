@@ -1,0 +1,2 @@
+# Esta carpeta almacenará los reportes generados por las pruebas del módulo admin
+# Los reportes individuales serán ignorados por git según la configuración en .gitignore 
