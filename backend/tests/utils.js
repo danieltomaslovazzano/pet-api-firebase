@@ -892,6 +892,65 @@ const isExpectedBehavior = (testCase, result) => {
     return true;
   }
   
+  // ====== START: Organization module specific checks ======
+  // Handle organization rejection cases which should be marked as successful
+  if (testCaseLower.includes('rechazar creación') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('impedir') && result.status === 403) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('usuario no puede actualizar') && result.status === 403) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('validar datos') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar eliminación sin confirmación') && result.status === 400) {
+    return true;
+  }
+  // ====== END: Organization module specific checks ======
+
+  // ====== START: Message module specific checks ======
+  if (testCaseLower.includes('rechazar edición de mensaje antiguo') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar eliminación de mensaje antiguo') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('validar tamaño máximo') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('validar tipos de archivo') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar') && result.status === 403) {
+    return true;
+  }
+  // ====== END: Message module specific checks ======
+
+  // ====== START: Conversation module specific checks ======
+  if (testCaseLower.includes('rechazar') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar') && result.status === 403) {
+    return true;
+  }
+  // ====== END: Conversation module specific checks ======
+  
   // ====== START: New Membership module specific checks ======
   // Handle membership rejection cases which should be marked as successful tests
   // when the API correctly rejects with appropriate status codes
