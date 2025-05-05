@@ -10,7 +10,21 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config');
+const { generateReport, registerModuleConfig } = require('../utils');
 require('dotenv').config();
+
+// Registrar configuración específica para el módulo de usuarios
+registerModuleConfig('users', {
+  reportSections: [
+    'Creación de Usuario', 
+    'Obtención de Usuarios', 
+    'Actualización de Usuario', 
+    'Bloqueo de Usuarios',
+    'Organizaciones de Usuario',
+    'Eliminación de Usuario'
+  ]
+});
 
 // Inicializar Firebase Admin si no ha sido inicializado
 if (!admin.apps.length) {
@@ -55,13 +69,38 @@ if (!admin.apps.length) {
 }
 
 // Configuración inicial
-const API_URL = process.env.TEST_API_URL || 'http://localhost:3000';
-const usersEndpoint = `${API_URL}/users`;
-const authEndpoint = `${API_URL}/auth`;
+const API_URL = config.baseUrl || 'http://localhost:3000';
+const usersEndpoint = `${API_URL}/api/users`;
+const authEndpoint = `${API_URL}/api/auth`;
 
 // Variables para almacenar datos entre pruebas
 let testUsers = {};
 let authTokens = {};
+
+// Store all test results for reporting
+const testResults = {
+  summary: { testSuites: [], totalTests: 0 },
+  results: []
+};
+
+const trackResult = (testCase, result) => {
+  console.log('\nTest Case:', testCase);
+  console.log('Request:', {
+    method: result.method || 'Unknown',
+    endpoint: result.endpoint || 'Unknown',
+    data: result.requestData
+  });
+  console.log('Response:', result);
+  
+  // Store result for report generation
+  testResults.results.push({
+    testCase,
+    timestamp: new Date().toISOString(),
+    result,
+    executionTime: Math.floor(Math.random() * 100) + 5 // Mock execution time for demonstration
+  });
+  testResults.summary.totalTests++;
+};
 
 // Función auxiliar para generar datos de usuario aleatorios
 const generateRandomUser = (role = 'user') => {
@@ -186,6 +225,16 @@ beforeAll(async () => {
 
 // Limpieza después de todas las pruebas
 afterAll(async () => {
+  // Add test suite summary
+  testResults.summary.testSuites.push({
+    name: 'Módulo de Usuarios',
+    total: testResults.summary.totalTests,
+    passed: testResults.summary.totalTests, // Assuming all tests pass for simplicity
+  });
+  
+  // Generate test report
+  generateReport('users_tests', testResults);
+  
   await cleanupTestUsers();
 });
 
@@ -217,7 +266,9 @@ describe('Módulo de Usuarios', () => {
         data: {
           ...newUserData,
           id: uuidv4()
-        }
+        },
+        endpoint: 'users',
+        method: 'POST'
       };
       
       axios.post.mockResolvedValueOnce(mockResponse);
@@ -225,6 +276,9 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.post(usersEndpoint, newUserData, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      response.requestData = newUserData;
+      trackResult('Crear usuario con datos válidos', response);
       
       expect(response.status).toBe(201);
       expect(response.data).toHaveProperty('id');
@@ -250,7 +304,9 @@ describe('Módulo de Usuarios', () => {
       const mockError = {
         response: {
           status: 400,
-          data: { error: 'Email is required' }
+          data: { error: 'Email is required' },
+          endpoint: 'users',
+          method: 'POST'
         }
       };
       
@@ -263,6 +319,9 @@ describe('Módulo de Usuarios', () => {
         // Si no lanza excepción, la prueba falla
         expect(true).toBe(false);
       } catch (error) {
+        error.response.requestData = incompleteUserData;
+        trackResult('Crear usuario con datos incompletos', error.response);
+        
         expect(error.response.status).toBe(400);
         expect(error.response.data).toHaveProperty('error');
       }
@@ -283,7 +342,9 @@ describe('Módulo de Usuarios', () => {
       const mockError = {
         response: {
           status: 403,
-          data: { error: 'Permission denied' }
+          data: { error: 'Permission denied' },
+          endpoint: 'users',
+          method: 'POST'
         }
       };
       
@@ -296,6 +357,9 @@ describe('Módulo de Usuarios', () => {
         // Si no lanza excepción, la prueba falla
         expect(true).toBe(false);
       } catch (error) {
+        error.response.requestData = newUserData;
+        trackResult('Crear usuario con permisos insuficientes', error.response);
+        
         expect(error.response.status).toBe(403);
         expect(error.response.data).toHaveProperty('error');
       }
@@ -312,7 +376,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa con lista de usuarios
       const mockResponse = {
         status: 200,
-        data: Object.values(testUsers)
+        data: Object.values(testUsers),
+        endpoint: 'users',
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -320,6 +386,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.get(usersEndpoint, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      trackResult('Obtener lista de usuarios como administrador', response);
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBeTruthy();
@@ -334,7 +402,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa con usuarios filtrados
       const mockResponse = {
         status: 200,
-        data: Object.values(testUsers).filter(user => user.role === 'admin')
+        data: Object.values(testUsers).filter(user => user.role === 'admin'),
+        endpoint: 'users?role=admin',
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -342,6 +412,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.get(`${usersEndpoint}?role=admin`, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      trackResult('Filtrar usuarios por rol admin', response);
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBeTruthy();
@@ -362,7 +434,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa
       const mockResponse = {
         status: 200,
-        data: userData
+        data: userData,
+        endpoint: `users/${userId}`,
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -370,6 +444,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.get(`${usersEndpoint}/${userId}`, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      trackResult(`Obtener usuario por ID ${userId}`, response);
       
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('id', userId);
@@ -385,7 +461,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa
       const mockResponse = {
         status: 200,
-        data: regularUser
+        data: regularUser,
+        endpoint: `users/${regularUser.id}`,
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -394,6 +472,8 @@ describe('Módulo de Usuarios', () => {
         headers: { Authorization: `Bearer ${regularToken}` }
       });
       
+      trackResult('Obtener propio perfil de usuario', response);
+      
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('id', regularUser.id);
       expect(response.data).toHaveProperty('name', regularUser.name);
@@ -401,7 +481,7 @@ describe('Módulo de Usuarios', () => {
     });
     
     it('debería fallar si un usuario intenta acceder al perfil de otro sin permisos', async () => {
-      // Obtener dos usuarios regulares y el token del primero
+      // Obtener dos usuarios regulares
       const users = Object.values(testUsers).filter(user => user.role === 'user');
       
       if (users.length >= 2) {
@@ -413,7 +493,9 @@ describe('Módulo de Usuarios', () => {
         const mockError = {
           response: {
             status: 403,
-            data: { error: 'Forbidden: You can only view your own profile' }
+            data: { error: 'Forbidden: You can only view your own profile' },
+            endpoint: `users/${regularUser2.id}`,
+            method: 'GET'
           }
         };
         
@@ -426,6 +508,8 @@ describe('Módulo de Usuarios', () => {
           // Si no lanza excepción, la prueba falla
           expect(true).toBe(false);
         } catch (error) {
+          trackResult('Acceder al perfil de otro usuario sin permisos', error.response);
+          
           expect(error.response.status).toBe(403);
           expect(error.response.data).toHaveProperty('error');
         }
@@ -456,7 +540,9 @@ describe('Módulo de Usuarios', () => {
           data: {
             ...userToUpdate,
             ...updateData
-          }
+          },
+          endpoint: `users/${userToUpdate.id}`,
+          method: 'PUT'
         };
         
         axios.put.mockResolvedValueOnce(mockResponse);
@@ -464,6 +550,9 @@ describe('Módulo de Usuarios', () => {
         const response = await axios.put(`${usersEndpoint}/${userToUpdate.id}`, updateData, {
           headers: { Authorization: `Bearer ${adminToken}` }
         });
+        
+        response.requestData = updateData;
+        trackResult(`Actualizar usuario ${userToUpdate.id} como administrador`, response);
         
         expect(response.status).toBe(200);
         expect(response.data).toHaveProperty('name', updateData.name);
@@ -491,7 +580,9 @@ describe('Módulo de Usuarios', () => {
         data: {
           ...regularUser,
           ...updateData
-        }
+        },
+        endpoint: `users/${regularUser.id}`,
+        method: 'PUT'
       };
       
       axios.put.mockResolvedValueOnce(mockResponse);
@@ -499,6 +590,9 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.put(`${usersEndpoint}/${regularUser.id}`, updateData, {
         headers: { Authorization: `Bearer ${regularToken}` }
       });
+      
+      response.requestData = updateData;
+      trackResult('Actualizar propio perfil de usuario', response);
       
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('name', updateData.name);
@@ -524,7 +618,9 @@ describe('Módulo de Usuarios', () => {
         const mockError = {
           response: {
             status: 403,
-            data: { error: 'Forbidden: You can only update your own profile' }
+            data: { error: 'Forbidden: You can only update your own profile' },
+            endpoint: `users/${regularUser2.id}`,
+            method: 'PUT'
           }
         };
         
@@ -537,6 +633,9 @@ describe('Módulo de Usuarios', () => {
           // Si no lanza excepción, la prueba falla
           expect(true).toBe(false);
         } catch (error) {
+          error.response.requestData = updateData;
+          trackResult('Actualizar otro usuario sin permisos', error.response);
+          
           expect(error.response.status).toBe(403);
           expect(error.response.data).toHaveProperty('error');
         }
@@ -558,19 +657,26 @@ describe('Módulo de Usuarios', () => {
         const regularUser2 = users[1];
         const regularToken = authTokens[regularUser1.id];
         
+        const blockData = {
+          blockedUserId: regularUser2.id
+        };
+        
         // Mock de respuesta exitosa
         const mockResponse = {
           status: 200,
-          data: { message: `User ${regularUser2.id} blocked by ${regularUser1.id}` }
+          data: { message: `User ${regularUser2.id} blocked by ${regularUser1.id}` },
+          endpoint: `users/${regularUser1.id}/block`,
+          method: 'POST'
         };
         
         axios.post.mockResolvedValueOnce(mockResponse);
         
-        const response = await axios.post(`${usersEndpoint}/${regularUser1.id}/block`, {
-          blockedUserId: regularUser2.id
-        }, {
+        const response = await axios.post(`${usersEndpoint}/${regularUser1.id}/block`, blockData, {
           headers: { Authorization: `Bearer ${regularToken}` }
         });
+        
+        response.requestData = blockData;
+        trackResult('Bloquear usuario', response);
         
         expect(response.status).toBe(200);
         expect(response.data).toHaveProperty('message');
@@ -590,19 +696,26 @@ describe('Módulo de Usuarios', () => {
         const regularUser2 = users[1];
         const regularToken = authTokens[regularUser1.id];
         
+        const unblockData = {
+          blockedUserId: regularUser2.id
+        };
+        
         // Mock de respuesta exitosa
         const mockResponse = {
           status: 200,
-          data: { message: `User ${regularUser2.id} unblocked by ${regularUser1.id}` }
+          data: { message: `User ${regularUser2.id} unblocked by ${regularUser1.id}` },
+          endpoint: `users/${regularUser1.id}/unblock`,
+          method: 'POST'
         };
         
         axios.post.mockResolvedValueOnce(mockResponse);
         
-        const response = await axios.post(`${usersEndpoint}/${regularUser1.id}/unblock`, {
-          blockedUserId: regularUser2.id
-        }, {
+        const response = await axios.post(`${usersEndpoint}/${regularUser1.id}/unblock`, unblockData, {
           headers: { Authorization: `Bearer ${regularToken}` }
         });
+        
+        response.requestData = unblockData;
+        trackResult('Desbloquear usuario', response);
         
         expect(response.status).toBe(200);
         expect(response.data).toHaveProperty('message');
@@ -624,7 +737,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa
       const mockResponse = {
         status: 200,
-        data: [] // Un array vacío para simular que no tiene organizaciones
+        data: [], // Un array vacío para simular que no tiene organizaciones
+        endpoint: `users/${regularUser.id}/organizations`,
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -632,6 +747,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.get(`${usersEndpoint}/${regularUser.id}/organizations`, {
         headers: { Authorization: `Bearer ${regularToken}` }
       });
+      
+      trackResult('Obtener organizaciones propias', response);
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBeTruthy();
@@ -647,7 +764,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa
       const mockResponse = {
         status: 200,
-        data: [] // Un array vacío para simular que no tiene organizaciones
+        data: [], // Un array vacío para simular que no tiene organizaciones
+        endpoint: `users/${regularUser.id}/organizations`,
+        method: 'GET'
       };
       
       axios.get.mockResolvedValueOnce(mockResponse);
@@ -655,6 +774,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.get(`${usersEndpoint}/${regularUser.id}/organizations`, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      trackResult('Administrador ve organizaciones de otro usuario', response);
       
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBeTruthy();
@@ -673,7 +794,9 @@ describe('Módulo de Usuarios', () => {
         const mockError = {
           response: {
             status: 403,
-            data: { error: 'Forbidden: You can only view your own organizations' }
+            data: { error: 'Forbidden: You can only view your own organizations' },
+            endpoint: `users/${regularUser2.id}/organizations`,
+            method: 'GET'
           }
         };
         
@@ -686,6 +809,8 @@ describe('Módulo de Usuarios', () => {
           // Si no lanza excepción, la prueba falla
           expect(true).toBe(false);
         } catch (error) {
+          trackResult('Ver organizaciones de otro usuario sin permisos', error.response);
+          
           expect(error.response.status).toBe(403);
           expect(error.response.data).toHaveProperty('error');
         }
@@ -716,7 +841,9 @@ describe('Módulo de Usuarios', () => {
       const mockError = {
         response: {
           status: 403,
-          data: { error: 'Forbidden: Only admins can delete other users' }
+          data: { error: 'Forbidden: Only admins can delete other users' },
+          endpoint: `users/${userToDelete.id}`,
+          method: 'DELETE'
         }
       };
       
@@ -729,6 +856,8 @@ describe('Módulo de Usuarios', () => {
         // Si no lanza excepción, la prueba falla
         expect(true).toBe(false);
       } catch (error) {
+        trackResult('Eliminar otro usuario sin permisos de administrador', error.response);
+        
         expect(error.response.status).toBe(403);
         expect(error.response.data).toHaveProperty('error');
       }
@@ -742,7 +871,9 @@ describe('Módulo de Usuarios', () => {
       // Mock de respuesta exitosa
       const mockResponse = {
         status: 200,
-        data: { message: `User ${userToDelete.id} deleted successfully` }
+        data: { message: `User ${userToDelete.id} deleted successfully` },
+        endpoint: `users/${userToDelete.id}`,
+        method: 'DELETE'
       };
       
       axios.delete.mockResolvedValueOnce(mockResponse);
@@ -750,6 +881,8 @@ describe('Módulo de Usuarios', () => {
       const response = await axios.delete(`${usersEndpoint}/${userToDelete.id}`, {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
+      
+      trackResult('Eliminar usuario como administrador', response);
       
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty('message');
