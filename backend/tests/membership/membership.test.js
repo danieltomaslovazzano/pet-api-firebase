@@ -135,6 +135,13 @@ describe('Módulo de Membresía', () => {
           organizationId: testOrgs.org2.id,
           role: 'org-staff',
           createdAt: new Date().toISOString()
+        },
+        membership2: {
+          id: 'membership2',
+          userId: testUsers.orgadmin1.uid,
+          organizationId: testOrgs.org2.id,
+          role: 'org-admin',
+          createdAt: new Date().toISOString()
         }
       };
       
@@ -580,6 +587,75 @@ describe('Módulo de Membresía', () => {
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBe(true);
     });
+
+    it('debería obtener una membresía específica por ID', async () => {
+      // Configurar datos de prueba
+      const membershipId = testMemberships.user1ToOrg1.id;
+      
+      // Configurar mock para este test específico
+      axios.get.mockResolvedValueOnce({
+        status: 200,
+        data: testMemberships.user1ToOrg1
+      });
+      
+      // Ejecutar la llamada a la API (simulada)
+      const response = await axios.get(`${membershipEndpoint}/${membershipId}`, {
+        headers: { Authorization: `Bearer ${authTokens.admin1}` }
+      });
+      
+      // Registrar resultado para el reporte
+      trackResult('Obtener membresía específica por ID', {
+        method: 'GET',
+        endpoint: `${membershipEndpoint}/${membershipId}`,
+        status: response.status,
+        data: response.data
+      });
+      
+      // Verificar respuesta
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('id', membershipId);
+      expect(response.data).toHaveProperty('userId');
+      expect(response.data).toHaveProperty('organizationId');
+      expect(response.data).toHaveProperty('role');
+    });
+
+    it('debería rechazar acceso a membresía de otro usuario sin permisos', async () => {
+      // Configurar datos de prueba
+      const membershipId = testMemberships.membership2.id;
+      const requestingUser = testUsers.user1;
+      
+      // Mock para simular error cuando un usuario sin permisos intenta acceder a membresía ajena
+      axios.get.mockRejectedValueOnce({
+        response: {
+          status: 403,
+          data: {
+            message: 'You do not have permission to view this membership'
+          }
+        }
+      });
+      
+      // Ejecutar la llamada a la API y verificar que falla
+      try {
+        await axios.get(`${membershipEndpoint}/${membershipId}`, {
+          headers: { Authorization: `Bearer ${authTokens[requestingUser.uid]}` }
+        });
+        
+        // Si llegamos aquí, el test falló porque no se rechazó la petición
+        fail('Debería haber fallado por falta de permisos');
+      } catch (error) {
+        // Registrar resultado para el reporte
+        trackResult('Rechazar acceso a membresía ajena', {
+          method: 'GET',
+          endpoint: `${membershipEndpoint}/${membershipId}`,
+          status: error.response.status,
+          data: error.response.data
+        });
+        
+        // Verificar error
+        expect(error.response.status).toBe(403);
+        expect(error.response.data.message).toContain('permission');
+      }
+    });
   });
   
   // 3. Pruebas de actualización de membresías
@@ -738,6 +814,49 @@ describe('Módulo de Membresía', () => {
         expect(error.response.data.message).toContain('No tienes permisos');
       }
     });
+
+    it('debería actualizar una membresía usando PUT', async () => {
+      // Configurar datos de prueba
+      const membershipId = testMemberships.user1ToOrg1.id;
+      const updateData = {
+        role: 'org-moderator',
+        permissions: ['view', 'edit']
+      };
+      
+      // Configurar mock para simular la respuesta exitosa
+      axios.put.mockResolvedValueOnce({
+        status: 200,
+        data: {
+          ...testMemberships.user1ToOrg1,
+          ...updateData,
+          updatedAt: new Date().toISOString()
+        }
+      });
+      
+      // Ejecutar la llamada a la API (simulada)
+      const response = await axios.put(`${membershipEndpoint}/${membershipId}`, updateData, {
+        headers: { Authorization: `Bearer ${authTokens.admin1}` }
+      });
+      
+      // Registrar resultado para el reporte
+      trackResult('Actualizar membresía usando PUT', {
+        method: 'PUT',
+        endpoint: `${membershipEndpoint}/${membershipId}`,
+        requestData: updateData,
+        status: response.status,
+        data: response.data
+      });
+      
+      // Verificar respuesta
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('id', membershipId);
+      expect(response.data.role).toBe(updateData.role);
+      expect(response.data.permissions).toEqual(updateData.permissions);
+      expect(response.data).toHaveProperty('updatedAt');
+      
+      // Actualizar testMemberships para pruebas posteriores
+      testMemberships.user1ToOrg1 = response.data;
+    });
   });
   
   // 4. Pruebas de eliminación de membresías
@@ -831,22 +950,22 @@ describe('Módulo de Membresía', () => {
     
     it('debería rechazar eliminación sin permisos adecuados', async () => {
       // Membresía de un usuario en la organización 1
-      const membershipId = testMemberships.user2ToOrg1.id;
+      const membershipId = testMemberships.membership2.id;
       
       // Configurar mock para simular el error
       axios.delete.mockRejectedValueOnce({
         response: {
           status: 403,
           data: {
-            message: 'No tienes permisos para eliminar esta membresía'
+            message: 'Unauthorized. Only admins can remove members.'
           }
         }
       });
       
-      // Ejecutar la llamada a la API con usuario no autorizado
+      // Ejecutar la llamada a la API y verificar que falla
       try {
         await axios.delete(`${membershipEndpoint}/${membershipId}`, {
-          headers: { Authorization: `Bearer ${authTokens.orgstaff1}` } // Usuario de otra organización
+          headers: { Authorization: `Bearer ${authTokens.user2}` }
         });
         
         // Si llegamos aquí, el test falló porque no se rechazó la petición
@@ -862,7 +981,7 @@ describe('Módulo de Membresía', () => {
         
         // Verificar error
         expect(error.response.status).toBe(403);
-        expect(error.response.data.message).toContain('No tienes permisos');
+        expect(error.response.data.message).toContain('Unauthorized');
       }
     });
     
@@ -900,6 +1019,78 @@ describe('Módulo de Membresía', () => {
         // Verificar error
         expect(error.response.status).toBe(409);
         expect(error.response.data.message).toContain('última membresía administrativa');
+      }
+    });
+
+    it('debería eliminar una membresía específica', async () => {
+      // Configurar datos de prueba
+      const membershipId = testMemberships.user1ToOrg1.id;
+      
+      // Configurar mock para simular la respuesta exitosa
+      axios.delete.mockResolvedValueOnce({
+        status: 200,
+        data: {
+          message: 'Member removed successfully'
+        }
+      });
+      
+      // Ejecutar la llamada a la API (simulada)
+      const response = await axios.delete(`${membershipEndpoint}/${membershipId}`, {
+        headers: { Authorization: `Bearer ${authTokens.admin1}` }
+      });
+      
+      // Registrar resultado para el reporte
+      trackResult('Eliminar membresía específica', {
+        method: 'DELETE',
+        endpoint: `${membershipEndpoint}/${membershipId}`,
+        status: response.status,
+        data: response.data
+      });
+      
+      // Verificar respuesta
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('message');
+      expect(response.data.message).toContain('removed successfully');
+      
+      // Eliminar de testMemberships para pruebas posteriores
+      delete testMemberships.user1ToOrg1;
+    });
+
+    it('debería rechazar eliminación de membresía sin permisos', async () => {
+      // Configurar datos de prueba
+      const membershipId = testMemberships.membership2.id;
+      const requestingUser = testUsers.user2; // Usuario sin permisos en esa organización
+      
+      // Mock para simular error cuando un usuario sin permisos intenta eliminar
+      axios.delete.mockRejectedValueOnce({
+        response: {
+          status: 403,
+          data: {
+            message: 'Unauthorized. Only admins can remove members.'
+          }
+        }
+      });
+      
+      // Ejecutar la llamada a la API y verificar que falla
+      try {
+        await axios.delete(`${membershipEndpoint}/${membershipId}`, {
+          headers: { Authorization: `Bearer ${authTokens[requestingUser.uid]}` }
+        });
+        
+        // Si llegamos aquí, el test falló porque no se rechazó la petición
+        fail('Debería haber fallado por falta de permisos');
+      } catch (error) {
+        // Registrar resultado para el reporte
+        trackResult('Rechazar eliminación sin permisos', {
+          method: 'DELETE',
+          endpoint: `${membershipEndpoint}/${membershipId}`,
+          status: error.response.status,
+          data: error.response.data
+        });
+        
+        // Verificar error
+        expect(error.response.status).toBe(403);
+        expect(error.response.data.message).toContain('Unauthorized');
       }
     });
   });
