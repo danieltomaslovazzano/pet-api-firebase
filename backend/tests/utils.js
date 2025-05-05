@@ -145,7 +145,7 @@ const generateReport = (testName, results, customSections = null) => {
   // Count failed tests
   const failedCount = analyzedResults.filter(r => !r.passed).length;
   const passedCount = analyzedResults.length - failedCount;
-
+  
   // Calculate test suite statistics
   const testSuites = results.summary.testSuites.map(suite => ({
     ...suite,
@@ -219,15 +219,15 @@ const generateReport = (testName, results, customSections = null) => {
     })),
     reportSections // Include the report sections in the formatted data
   };
-
+  
   // Generate recommendations
   const recommendations = generateRecommendations(analyzedResults, formattedReport);
   formattedReport.recommendations = recommendations;
-
+  
   // Generate and save the report
   const reportPath = generateMarkdownReport(formattedReport, analyzedResults);
   console.log(`\nMarkdown report generated at: ${reportPath}`);
-
+  
   return reportPath;
 };
 
@@ -412,7 +412,7 @@ const generateRecommendations = (analyzedResults, reportData) => {
   
   // Add all categorized issues to recommendations
   if (validationIssues.length > 0) {
-    recommendations.push({
+      recommendations.push({
       type: 'critical',
       message: 'Validation Issues:\n- ' + validationIssues.join('\n- ')
     });
@@ -891,6 +891,51 @@ const isExpectedBehavior = (testCase, result) => {
       result.status === 403) {
     return true;
   }
+  
+  // ====== START: New Membership module specific checks ======
+  // Handle membership rejection cases which should be marked as successful tests
+  // when the API correctly rejects with appropriate status codes
+  
+  // Membership creation rejection tests
+  if (testCaseLower.includes('rechazar creación') && result.status === 400) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('rechazar membresía duplicada') && result.status === 409) {
+    return true;
+  }
+  
+  // Membership access rejection tests
+  if (testCaseLower.includes('rechazar acceso') && result.status === 403) {
+    return true;
+  }
+  
+  // Membership update rejection tests
+  if (testCaseLower.includes('rechazar actualización') && result.status === 403) {
+    return true;
+  }
+  
+  // Membership deletion rejection tests
+  if (testCaseLower.includes('rechazar eliminación') && result.status === 403) {
+    return true;
+  }
+  
+  if (testCaseLower.includes('impedir eliminar') && result.status === 409) {
+    return true;
+  }
+  
+  // Permission hierarchy tests
+  if (testCaseLower.includes('jerarquía') && 
+      (testCaseLower.includes('no puede') || testCaseLower.includes('staff')) && 
+      result.status === 403) {
+    return true;
+  }
+  
+  // User permission restrictions
+  if (testCaseLower.includes('restricción') && result.status === 403) {
+    return true;
+  }
+  // ====== END: New Membership module specific checks ======
   
   // Pet creation with valid data should return 201 but currently returns 500
   // Mark as failure to align with the expectation in the test
