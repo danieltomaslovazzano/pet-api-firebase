@@ -4,6 +4,10 @@
 
 This document outlines the comprehensive plan to migrate the pet-api-firebase application from Firebase Firestore to PostgreSQL using Prisma as the ORM and Railway as the PostgreSQL database provider.
 
+> **NOTE:** This plan is supported by two additional documents:
+> - [Models Analysis](./models-analysis.md) - Detailed analysis of data models and transformation strategy
+> - [Authentication Strategy](./authentication-strategy.md) - Specific approach for handling authentication during migration
+
 ## Current Architecture
 
 The application currently uses:
@@ -55,6 +59,12 @@ We will use a phased approach to minimize disruption:
 
 ### Phase 2: Schema Design
 
+> **Reference:** See [Models Analysis](./models-analysis.md) for detailed information on:
+> - Current Firebase model structures
+> - Recommended type mappings
+> - Relationships transformation
+> - Indexing strategy
+
 1. **Create Prisma Schema** based on existing Firestore collections:
    - Users
    - Pets
@@ -74,6 +84,8 @@ We will use a phased approach to minimize disruption:
 
 ### Phase 3: Data Migration
 
+> **Reference:** See [Models Analysis](./models-analysis.md) "Migration Testing Plan" section for the detailed approach to testing migration for each model.
+
 1. **Create Migration Scripts**:
    - Script to extract data from Firebase Firestore
    - Script to transform data into proper SQL structure
@@ -90,6 +102,8 @@ We will use a phased approach to minimize disruption:
 
 ### Phase 4: Code Refactoring
 
+> **Reference:** For authentication-related changes, see [Authentication Strategy](./authentication-strategy.md) for the detailed hybrid approach and code examples.
+
 1. **Create New Model Layer**:
    - Implement model interfaces that match existing API contracts
    - Develop new Prisma-based model implementations
@@ -105,8 +119,9 @@ We will use a phased approach to minimize disruption:
    - Add new capabilities enabled by PostgreSQL where beneficial
 
 4. **Authentication Integration**:
-   - Decide whether to keep Firebase Auth or migrate to a different auth system
-   - Implement any necessary auth adapters
+   - Follow the hybrid approach detailed in the Authentication Strategy document
+   - Implement dual-write system to maintain Firebase Auth while using PostgreSQL
+   - Adapt middleware to work with both systems
 
 ### Phase 5: Testing
 
@@ -116,11 +131,11 @@ We will use a phased approach to minimize disruption:
 
 2. **Integration Testing**:
    - Test API endpoints with new database
-   - Verify authentication works correctly
+   - Verify authentication works correctly (following the hybrid approach from Authentication Strategy)
 
 3. **Performance Testing**:
    - Compare query performance between old and new implementation
-   - Optimize as needed
+   - Optimize as needed (referring to Performance Optimization Opportunities in Models Analysis)
 
 4. **Regression Testing**:
    - Ensure all existing functionality works as expected
@@ -144,6 +159,8 @@ We will use a phased approach to minimize disruption:
    - Implement error tracking
 
 ## Database Schema Design
+
+> **NOTE:** This schema design is based on the detailed analysis in [Models Analysis](./models-analysis.md). Refer to that document for the reasoning behind each design decision.
 
 ### Users
 ```prisma
@@ -270,7 +287,7 @@ model Message {
 | Data loss during migration | High | Medium | Create backups, validate data before/after migration |
 | Query performance regression | Medium | Medium | Performance testing, index optimization |
 | API contract changes | High | Low | Comprehensive testing of all endpoints |
-| Authentication issues | High | Medium | Thorough testing of auth flows |
+| Authentication issues | High | Medium | Follow hybrid approach in Authentication Strategy document |
 | Deployment downtime | Medium | Medium | Use staging environment, plan for low-traffic deployment |
 
 ## Timeline
@@ -278,9 +295,9 @@ model Message {
 | Phase | Estimated Duration | Dependencies |
 |-------|-------------------|--------------|
 | Setup & Infrastructure | 1-2 days | None |
-| Schema Design | 2-3 days | Phase 1 |
+| Schema Design | 2-3 days | Phase 1, Models Analysis document |
 | Data Migration | 3-5 days | Phase 2 |
-| Code Refactoring | 5-10 days | Phase 3 |
+| Code Refactoring | 5-10 days | Phase 3, Authentication Strategy document |
 | Testing | 3-5 days | Phase 4 |
 | Deployment | 1-2 days | Phase 5 |
 
@@ -291,6 +308,7 @@ model Message {
 3. **Documentation updates**
 4. **Developer training on Prisma**
 5. **Clean up Firebase resources (after successful migration)**
+6. **Reevaluate authentication strategy** (as outlined in the Authentication Strategy document)
 
 ## Rollback Plan
 
