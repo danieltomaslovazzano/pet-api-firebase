@@ -6,7 +6,7 @@
  * 
  * Features:
  * - Firebase token verification
- * - User data loading from Firestore
+ * - User data loading from either Firestore or PostgreSQL (based on adapter)
  * - Detailed error handling for various token scenarios
  * - Security logging for authentication events
  * - Backward compatibility with legacy error messages
@@ -19,6 +19,7 @@
  */
 
 const admin = require('firebase-admin');
+const { userModel } = require('../models/adapter');
 const { logAuthDebug, logAuthError } = require('../utils/loggerUtil');
 
 /**
@@ -75,29 +76,36 @@ exports.verifyToken = async (req, res, next) => {
         method
       });
       
-      // Fetch additional user data from Firestore
-      const db = admin.firestore();
-      const userDoc = await db.collection('users').doc(decodedToken.uid).get();
-      
-      if (userDoc.exists) {
-        // Add user data to the request object, including role
-        const userData = userDoc.data();
-        req.user = {
-          ...req.user,
-          ...userData
-        };
+      // Fetch user data using our model adapter (will be from either Firebase or PostgreSQL)
+      try {
+        const userData = await userModel.getUserById(decodedToken.uid);
         
-        logAuthDebug({
-          type: 'user_data_loaded',
+        if (userData) {
+          // Add user data to the request object, including role
+          req.user = {
+            ...req.user,
+            ...userData
+          };
+          
+          logAuthDebug({
+            type: 'user_data_loaded',
+            userId: decodedToken.uid,
+            role: userData.role || 'user',
+            hasUserData: true
+          });
+        } else {
+          logAuthDebug({
+            type: 'user_data_missing',
+            userId: decodedToken.uid,
+            message: 'User authenticated but no user data found'
+          });
+        }
+      } catch (userDataError) {
+        // Log the error but don't fail the request if we can't fetch user data
+        // The token is still valid, we just don't have extra user info
+        logAuthError('Error fetching user data', {
           userId: decodedToken.uid,
-          role: userData.role || 'user',
-          hasUserData: true
-        });
-      } else {
-        logAuthDebug({
-          type: 'user_data_missing',
-          userId: decodedToken.uid,
-          message: 'User authenticated but no Firestore data found'
+          error: userDataError.message
         });
       }
       

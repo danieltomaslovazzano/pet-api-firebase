@@ -1,6 +1,5 @@
 // controllers/organizationController.js
-const organizationModel = require('../models/organizationModel');
-const membershipModel = require('../models/membershipModel');
+const { organizationModel, membershipModel } = require('../models/adapter');
 
 exports.createOrganization = (req, res) => {
   // Añadir el ID del usuario actual como creador

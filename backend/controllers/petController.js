@@ -1,5 +1,5 @@
 // controllers/petController.js
-const petModel = require('../models/petModel');
+const { petModel } = require('../models/adapter');
 // controllers/petController.js
 const { compressImage } = require('../utils/imageUtils');
 const { uploadImageToStorage } = require('../utils/storageUtils');

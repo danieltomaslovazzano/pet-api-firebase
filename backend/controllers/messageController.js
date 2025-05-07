@@ -1,5 +1,5 @@
 // controllers/messageController.js
-const messageModel = require('../models/messageModel');
+const { messageModel } = require('../models/adapter');
 
 exports.createMessage = (req, res) => {
   const messageData = req.body;

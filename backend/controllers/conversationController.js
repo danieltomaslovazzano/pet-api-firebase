@@ -1,5 +1,5 @@
 /* controllers/conversationController.js */
-const conversationModel = require('../models/conversationModel');
+const { conversationModel } = require('../models/adapter');
 
 exports.createConversation = (req, res) => {
   const conversationData = req.body; // Se espera { participants: [ 'userId1', 'userId2', ... ] }

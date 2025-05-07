@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String         @id
+  email         String         @unique
+  name          String?
+  role          String         @default("user")
+  status        String         @default("active")
+  profileImage  String?
+  phone         String?
+  address       String?
+  blockedUsers  String[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Relationships
+  pets          Pet[]
+  memberships   Membership[]
+  sentMessages  Message[]      @relation("SentMessages")
+  conversations Conversation[] @relation("UserConversations")
+}
+
+// Pet model
+model Pet {
+  id          String    @id @default(uuid())
+  name        String
+  species     String
+  breed       String?
+  age         Int?
+  gender      String?
+  size        String?
+  color       String?
+  status      String
+  description String?
+  images      String[]
+  location    Json?
+  ownerId     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relationships
+  owner       User?     @relation(fields: [ownerId], references: [id])
+
+  // Indexes
+  @@index([ownerId])
+  @@index([species])
+  @@index([status])
+}
+
+// Organization model
+model Organization {
+  id           String        @id @default(uuid())
+  name         String
+  description  String?
+  logo         String?
+  address      String?
+  phone        String?
+  email        String?
+  status       String        @default("active")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  // Relationships
+  memberships  Membership[]
+
+  // Indexes
+  @@index([status])
+}
+
+// Membership model (junction table between Users and Organizations)
+model Membership {
+  id             String       @id @default(uuid())
+  userId         String
+  organizationId String
+  role           String
+  status         String       @default("active")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  // Relationships
+  user          User         @relation(fields: [userId], references: [id])
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  
+  // Unique constraint to prevent duplicate memberships
+  @@unique([userId, organizationId])
+  
+  // Indexes
+  @@index([userId])
+  @@index([organizationId])
+  @@index([role])
+  @@index([status])
+}
+
+// Conversation model
+model Conversation {
+  id            String      @id @default(uuid())
+  title         String?
+  status        String      @default("active")
+  createdAt     DateTime    @default(now())
+  lastMessageAt DateTime    @default(now())
+  
+  // Relationships
+  participants  User[]      @relation("UserConversations")
+  messages      Message[]
+
+  // Indexes
+  @@index([status])
+  @@index([lastMessageAt])
+}
+
+// Message model
+model Message {
+  id              String       @id @default(uuid())
+  conversationId  String
+  senderId        String
+  content         String
+  status          String       @default("sent")
+  timestamp       DateTime     @default(now())
+  attachments     Json?
+  location        Json?
+  
+  // Relationships
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  sender          User         @relation("SentMessages", fields: [senderId], references: [id])
+
+  // Indexes
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([status])
+  @@index([timestamp])
+}
+
+// Models will be defined based on our analysis of the current Firebase collections
+// See the models-analysis.md document for details on the transformation approach 

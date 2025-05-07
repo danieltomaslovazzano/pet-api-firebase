@@ -28,12 +28,14 @@
  * );
  */
 
-const petModel = require('../models/petModel');
-const userModel = require('../models/userModel');
-const organizationModel = require('../models/organizationModel');
-const membershipModel = require('../models/membershipModel');
-const conversationModel = require('../models/conversationModel');
-const messageModel = require('../models/messageModel');
+const { 
+  petModel, 
+  userModel, 
+  organizationModel, 
+  membershipModel, 
+  conversationModel, 
+  messageModel 
+} = require('../models/adapter');
 const { logAuthDebug, logAuthError } = require('../utils/loggerUtil');
 
 /**

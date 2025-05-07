@@ -1,6 +1,6 @@
 // controllers/userController.js
 const admin = require('firebase-admin');
-const userModel = require('../models/userModel');
+const { userModel } = require('../models/adapter');
 const db = admin.firestore();
 
 exports.createUser = (req, res) => {
@@ -15,12 +15,16 @@ exports.createUser = (req, res) => {
 
 exports.getUserById = (req, res) => {
   const { id } = req.params;
-  userModel.getUserById(id, (err, user) => {
-    if (err) {
-      return res.status(404).json({ error: 'User not found', details: err.message });
-    }
-    res.status(200).json(user);
-  });
+  userModel.getUserById(id)
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.status(200).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Error retrieving user', details: err.message });
+    });
 };
 
 exports.updateUser = (req, res) => {
@@ -58,9 +62,14 @@ exports.getUsers = (req, res) => {
   const filters = {
     name: req.query.name,
     email: req.query.email,
-    role: req.query.role
+    role: req.query.role,
+    status: req.query.status,
+    searchTerm: req.query.searchTerm
     // Puedes agregar más filtros aquí
   };
+
+  // Remove undefined filters
+  Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
 
   userModel.getUsers(filters, (err, users) => {
     if (err) {
@@ -121,16 +130,16 @@ exports.getAdminUserById = async (req, res) => {
     // Get user from Firebase Auth
     const userRecord = await admin.auth().getUser(id);
     
-    // Get user from Firestore
-    const userDoc = await db.collection('users').doc(id).get();
+    // Get user from database using our model
+    const user = await userModel.getUserById(id);
     
-    if (!userDoc.exists) {
-      return res.status(404).json({ error: 'User not found in Firestore' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found in database' });
     }
     
     // Combine data from both sources
     const userData = {
-      ...userDoc.data(),
+      ...user,
       uid: userRecord.uid,
       email: userRecord.email,
       emailVerified: userRecord.emailVerified,

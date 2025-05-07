@@ -1,5 +1,5 @@
 // controllers/membershipController.js
-const membershipModel = require('../models/membershipModel');
+const { membershipModel } = require('../models/adapter');
 
 exports.getMemberships = (req, res) => {
   const { userId, organizationId } = req.query;
