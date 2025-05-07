@@ -8,6 +8,57 @@
 const { prisma } = require('../../config/prisma');
 const { v4: uuidv4 } = require('uuid');
 
+// Validation constants
+const VALID_SPECIES = ['dog', 'cat', 'bird', 'fish', 'reptile', 'other'];
+const VALID_STATUSES = ['available', 'adopted', 'lost', 'found'];
+
+/**
+ * Validate pet data
+ * @param {Object} petData - Pet data to validate
+ * @returns {Error|null} - Error if validation fails, null if valid
+ */
+const validatePetData = (petData) => {
+  // Validate required fields
+  const requiredFields = ['name', 'species', 'status', 'images'];
+  for (const field of requiredFields) {
+    if (!petData[field]) {
+      return new Error(`${field.charAt(0).toUpperCase() + field.slice(1)} is required`);
+    }
+  }
+
+  // Validate species
+  if (!VALID_SPECIES.includes(petData.species)) {
+    return new Error('Invalid species value');
+  }
+
+  // Validate status
+  if (!VALID_STATUSES.includes(petData.status)) {
+    return new Error('Invalid status value');
+  }
+
+  // Validate images
+  if (!Array.isArray(petData.images) || petData.images.length === 0) {
+    return new Error('At least one image URL is required');
+  }
+
+  // Validate image URLs
+  for (const image of petData.images) {
+    if (!image.match(/^https?:\/\/.+/)) {
+      return new Error('Invalid image URL format');
+    }
+  }
+
+  // Validate age
+  if (petData.age !== undefined && petData.age !== null) {
+    const age = Number(petData.age);
+    if (isNaN(age) || age < 0) {
+      return new Error('Age must be a positive number');
+    }
+  }
+
+  return null;
+};
+
 /**
  * Create a new pet
  * @param {Object} petData - Pet data to create
@@ -15,25 +66,12 @@ const { v4: uuidv4 } = require('uuid');
  */
 exports.createPet = async (petData, callback) => {
   try {
-    // Validate required fields
-    const requiredFields = ['name', 'species', 'status', 'images'];
-    for (const field of requiredFields) {
-      if (!petData[field]) {
-        return callback(new Error(`Missing required field: ${field}`));
-      }
+    // Validate pet data
+    const validationError = validatePetData(petData);
+    if (validationError) {
+      return callback(validationError);
     }
-    
-    // Validate images is an array with at least one item
-    if (!Array.isArray(petData.images) || petData.images.length === 0) {
-      return callback(new Error('At least one image URL is required'));
-    }
-    
-    // Validate status is one of the allowed values
-    const validStatuses = ['available', 'adopted', 'lost', 'found'];
-    if (!validStatuses.includes(petData.status)) {
-      return callback(new Error('Status must be one of: available, adopted, lost, found'));
-    }
-    
+
     // Generate a UUID for the pet
     const id = uuidv4();
     
@@ -251,29 +289,13 @@ exports.updatePet = async (id, petData, callback) => {
       return callback(new Error('Pet not found'));
     }
     
-    // If updating status, validate it's one of the allowed values
-    if (petData.status) {
-      const validStatuses = ['available', 'adopted', 'lost', 'found'];
-      if (!validStatuses.includes(petData.status)) {
-        return callback(new Error('Status must be one of: available, adopted, lost, found'));
-      }
-    }
+    // Create merged data for validation
+    const mergedData = { ...existingPet, ...petData };
     
-    // If updating images, validate it's an array with at least one item
-    if (petData.images) {
-      if (!Array.isArray(petData.images) || petData.images.length === 0) {
-        return callback(new Error('At least one image URL is required'));
-      }
-    }
-    
-    // If updating age, validate it's a non-negative integer
-    if (petData.age !== undefined) {
-      if (isNaN(petData.age) || petData.age < 0) {
-        return callback(new Error('Age must be a non-negative integer'));
-      }
-      
-      // Convert to number to ensure proper storage
-      petData.age = Number(petData.age);
+    // Validate pet data
+    const validationError = validatePetData(mergedData);
+    if (validationError) {
+      return callback(validationError);
     }
     
     // Format location data for PostgreSQL JSON field if it's being updated
@@ -378,6 +400,31 @@ exports.getPetStats = async (callback) => {
     callback(null, stats);
   } catch (error) {
     console.error('Error getting pet statistics from PostgreSQL:', error);
+    callback(error);
+  }
+};
+
+/**
+ * Get a pet with its owner information
+ * @param {string} id - Pet ID
+ * @param {Function} callback - Callback function (error, pet)
+ */
+exports.getPetWithOwner = async (id, callback) => {
+  try {
+    const pet = await prisma.pet.findUnique({
+      where: { id },
+      include: {
+        owner: true
+      }
+    });
+
+    if (!pet) {
+      return callback(new Error('Pet not found'));
+    }
+
+    callback(null, pet);
+  } catch (error) {
+    console.error('Error getting pet with owner from PostgreSQL:', error);
     callback(error);
   }
 }; 

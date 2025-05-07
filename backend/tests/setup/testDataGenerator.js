@@ -7,6 +7,10 @@
 
 const { v4: uuidv4 } = require('uuid');
 
+// Validation constants
+const VALID_SPECIES = ['dog', 'cat', 'bird', 'fish', 'reptile', 'other'];
+const VALID_STATUSES = ['available', 'adopted', 'lost', 'found'];
+
 const testDataGenerator = {
   generateId: () => uuidv4(),
   
@@ -32,15 +36,20 @@ const testDataGenerator = {
   generatePet: (overrides = {}) => ({
     id: uuidv4(),
     name: `Test Pet ${uuidv4().slice(0, 8)}`,
-    species: 'dog',
+    species: VALID_SPECIES[0], // 'dog'
     breed: 'Mixed',
     age: 2,
     gender: 'male',
     size: 'medium',
     color: 'brown',
-    status: 'available',
+    status: VALID_STATUSES[0], // 'available'
     description: 'A lovely test pet',
-    images: [],
+    images: [`https://example.com/pet-${uuidv4()}.jpg`], // At least one valid image URL
+    location: {
+      latitude: 37.7749,
+      longitude: -122.4194,
+      address: 'San Francisco, CA'
+    },
     ownerId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
