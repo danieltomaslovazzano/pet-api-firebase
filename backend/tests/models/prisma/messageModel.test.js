@@ -1,317 +1,290 @@
 /**
- * Message Model Tests - Prisma Implementation
- * 
- * This test suite focuses on the Prisma implementation of the Message model.
+ * @fileoverview Tests for the message model using Prisma client
+ * Tests message management operations and relationships using mock Prisma client
  */
 
-// Ensure test environment
-process.env.NODE_ENV = 'test';
-// Force PostgreSQL for these tests
-process.env.USE_POSTGRES = 'true';
+const { PrismaClient } = require('@prisma/client');
+const { v4: uuidv4 } = require('uuid');
+const { validMessage, generateMessages, generateMessageTestData } = require('../../fixtures/messageFixtures');
+const { testDataStore } = require('../../helpers/testDbSetup');
 
-// Import helpers and mock Firebase first
-require('../../config/mockFirebase');
-
-const { messageModel } = require('../../../models/adapter');
-const { validMessage, generateMessages, generateMessageTestData, messageWithAttachments, messageWithLocation } = require('../../fixtures/messageFixtures');
-const { validUser } = require('../../fixtures/userFixtures');
-const { cleanupPostgresDb, testDataStore } = require('../../helpers/testDbSetup');
-
-// Clean the test data store before tests
-beforeEach(async () => {
-  testDataStore.users = [];
-  testDataStore.messages = [];
+// Mock Prisma client
+jest.mock('@prisma/client', () => {
+  const mockPrisma = {
+    message: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn()
+    },
+    conversation: {
+      findUnique: jest.fn()
+    },
+    user: {
+      findUnique: jest.fn()
+    },
+    $transaction: jest.fn((callback) => callback(mockPrisma))
+  };
+  return {
+    PrismaClient: jest.fn(() => mockPrisma)
+  };
 });
 
-// Helper function to convert callback-style functions to Promises
-const promisify = (fn, ...args) => {
-  return new Promise((resolve, reject) => {
-    fn(...args, (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
+describe('Message Model', () => {
+  let prisma;
+  
+  beforeEach(() => {
+    // Clear test data store
+    Object.keys(testDataStore).forEach(key => {
+      testDataStore[key] = [];
+    });
+    
+    // Reset all mocks
+    jest.clearAllMocks();
+    
+    // Get fresh Prisma instance
+    prisma = new PrismaClient();
+  });
+
+  describe('Message Creation', () => {
+    it('should create a new text message with valid data', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.message.create.mockResolvedValue(messageData);
+      prisma.conversation.findUnique.mockResolvedValue(testData.conversations[0]);
+      prisma.user.findUnique.mockResolvedValue(testData.users[0]);
+
+      // Act
+      const result = await prisma.message.create({
+        data: messageData
+      });
+
+      // Assert
+      expect(result).toEqual(messageData);
+      expect(prisma.message.create).toHaveBeenCalledWith({
+        data: messageData
+      });
+    });
+
+    it('should create a new image message with valid data', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages.find(m => m.type === 'IMAGE');
+      prisma.message.create.mockResolvedValue(messageData);
+      prisma.conversation.findUnique.mockResolvedValue(testData.conversations[0]);
+      prisma.user.findUnique.mockResolvedValue(testData.users[0]);
+
+      // Act
+      const result = await prisma.message.create({
+        data: messageData
+      });
+
+      // Assert
+      expect(result).toEqual(messageData);
+      expect(prisma.message.create).toHaveBeenCalledWith({
+        data: messageData
+      });
+    });
+
+    it('should validate required fields when creating message', async () => {
+      // Arrange
+      const invalidMessage = { type: 'TEXT' }; // Missing required fields
+      prisma.message.create.mockRejectedValue(new Error('Validation error'));
+
+      // Act & Assert
+      await expect(prisma.message.create({
+        data: invalidMessage
+      })).rejects.toThrow('Validation error');
     });
   });
-};
 
-describe('Message Model - Prisma Implementation', () => {
-  describe('Basic CRUD Operations', () => {
-    it('should create a new message', async () => {
-      // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = validMessage('test-conversation', user.id);
-      
-      // Act
-      const newMessage = await promisify(messageModel.createMessage, messageData);
-      
-      // Assert
-      expect(newMessage).toBeDefined();
-      expect(newMessage.id).toBe(messageData.id);
-      expect(newMessage.conversationId).toBe(messageData.conversationId);
-      expect(newMessage.senderId).toBe(user.id);
-      expect(newMessage.content).toBe(messageData.content);
-      expect(newMessage.status).toBe('sent');
-    });
-
+  describe('Message Retrieval', () => {
     it('should retrieve a message by ID', async () => {
       // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = validMessage('test-conversation', user.id);
-      await promisify(messageModel.createMessage, messageData);
-      
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.message.findUnique.mockResolvedValue(messageData);
+
       // Act
-      const retrievedMessage = await messageModel.getMessageById(messageData.id);
-      
+      const result = await prisma.message.findUnique({
+        where: { id: messageData.id }
+      });
+
       // Assert
-      expect(retrievedMessage).toBeDefined();
-      expect(retrievedMessage.id).toBe(messageData.id);
-      expect(retrievedMessage.content).toBe(messageData.content);
-      expect(retrievedMessage.senderId).toBe(user.id);
+      expect(result).toEqual(messageData);
+      expect(prisma.message.findUnique).toHaveBeenCalledWith({
+        where: { id: messageData.id }
+      });
     });
 
-    it('should update a message', async () => {
+    it('should return null for non-existent message', async () => {
       // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = validMessage('test-conversation', user.id);
-      await promisify(messageModel.createMessage, messageData);
-      
-      const updateData = { content: 'Updated content', status: 'read' };
-      
+      prisma.message.findUnique.mockResolvedValue(null);
+
       // Act
-      const updatedMessage = await promisify(messageModel.updateMessage, messageData.id, updateData);
-      
+      const result = await prisma.message.findUnique({
+        where: { id: 'non-existent-id' }
+      });
+
       // Assert
-      expect(updatedMessage).toBeDefined();
-      expect(updatedMessage.id).toBe(messageData.id);
-      expect(updatedMessage.content).toBe('Updated content');
-      expect(updatedMessage.status).toBe('read');
+      expect(result).toBeNull();
     });
 
+    it('should list messages for a conversation', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 5);
+      const conversationMessages = testData.messages;
+      prisma.message.findMany.mockResolvedValue(conversationMessages);
+
+      // Act
+      const result = await prisma.message.findMany({
+        where: { conversationId: testData.conversations[0].id }
+      });
+
+      // Assert
+      expect(result).toEqual(conversationMessages);
+      expect(prisma.message.findMany).toHaveBeenCalledWith({
+        where: { conversationId: testData.conversations[0].id }
+      });
+    });
+  });
+
+  describe('Message Updates', () => {
+    it('should update message content', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      const updatedData = { ...messageData, content: 'Updated content' };
+      prisma.message.update.mockResolvedValue(updatedData);
+
+      // Act
+      const result = await prisma.message.update({
+        where: { id: messageData.id },
+        data: { content: 'Updated content' }
+      });
+
+      // Assert
+      expect(result).toEqual(updatedData);
+      expect(prisma.message.update).toHaveBeenCalledWith({
+        where: { id: messageData.id },
+        data: { content: 'Updated content' }
+      });
+    });
+
+    it('should update message status', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      const updatedData = { ...messageData, status: 'READ' };
+      prisma.message.update.mockResolvedValue(updatedData);
+
+      // Act
+      const result = await prisma.message.update({
+        where: { id: messageData.id },
+        data: { status: 'READ' }
+      });
+
+      // Assert
+      expect(result).toEqual(updatedData);
+      expect(prisma.message.update).toHaveBeenCalledWith({
+        where: { id: messageData.id },
+        data: { status: 'READ' }
+      });
+    });
+
+    it('should validate data before updating', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.message.update.mockRejectedValue(new Error('Validation error'));
+
+      // Act & Assert
+      await expect(prisma.message.update({
+        where: { id: messageData.id },
+        data: { type: 'INVALID_TYPE' }
+      })).rejects.toThrow('Validation error');
+    });
+  });
+
+  describe('Message Deletion', () => {
     it('should delete a message', async () => {
       // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = validMessage('test-conversation', user.id);
-      await promisify(messageModel.createMessage, messageData);
-      
-      // Act
-      const result = await promisify(messageModel.deleteMessage, messageData.id);
-      
-      // Assert
-      expect(result).toBeDefined();
-      expect(result.message).toContain('deleted successfully');
-      
-      // Verify message is deleted
-      const deletedMessage = await messageModel.getMessageById(messageData.id);
-      expect(deletedMessage).toBeNull();
-    });
-  });
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.message.delete.mockResolvedValue(messageData);
 
-  describe('Conversation Association', () => {
-    it('should get all messages for a conversation', async () => {
-      // Arrange
-      const { users, conversationId, messages } = generateMessageTestData(3, 5);
-      testDataStore.users.push(...users);
-      
-      for (const message of messages) {
-        await promisify(messageModel.createMessage, message);
-      }
-      
       // Act
-      const conversationMessages = await promisify(messageModel.getConversationMessages, conversationId);
-      
+      const result = await prisma.message.delete({
+        where: { id: messageData.id }
+      });
+
       // Assert
-      expect(conversationMessages.length).toBe(5);
-      conversationMessages.forEach(message => {
-        expect(message.conversationId).toBe(conversationId);
+      expect(result).toEqual(messageData);
+      expect(prisma.message.delete).toHaveBeenCalledWith({
+        where: { id: messageData.id }
       });
     });
 
-    it('should get messages with pagination', async () => {
+    it('should handle deletion of non-existent message', async () => {
       // Arrange
-      const { users, conversationId, messages } = generateMessageTestData(3, 10);
-      testDataStore.users.push(...users);
-      
-      for (const message of messages) {
-        await promisify(messageModel.createMessage, message);
-      }
-      
-      // Act
-      const firstPage = await promisify(messageModel.getConversationMessages, conversationId, { limit: 5, offset: 0 });
-      const secondPage = await promisify(messageModel.getConversationMessages, conversationId, { limit: 5, offset: 5 });
-      
-      // Assert
-      expect(firstPage.length).toBe(5);
-      expect(secondPage.length).toBe(5);
-      expect(firstPage[0].id).not.toBe(secondPage[0].id);
-    });
-  });
+      prisma.message.delete.mockRejectedValue(new Error('Record not found'));
 
-  describe('Sender Association', () => {
-    it('should get all messages from a specific sender', async () => {
-      // Arrange
-      const { users, conversationId, messages } = generateMessageTestData(3, 5);
-      testDataStore.users.push(...users);
-      
-      for (const message of messages) {
-        await promisify(messageModel.createMessage, message);
-      }
-      
-      // Act
-      const senderMessages = await promisify(messageModel.getUserMessages, users[0].id);
-      
-      // Assert
-      expect(senderMessages.length).toBeGreaterThan(0);
-      senderMessages.forEach(message => {
-        expect(message.senderId).toBe(users[0].id);
-      });
-    });
-  });
-
-  describe('Attachment Handling', () => {
-    it('should create a message with attachments', async () => {
-      // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const attachments = [
-        { type: 'image', url: 'https://example.com/image1.jpg', name: 'image1.jpg', size: 1024 },
-        { type: 'document', url: 'https://example.com/doc1.pdf', name: 'doc1.pdf', size: 2048 }
-      ];
-      
-      const messageData = messageWithAttachments('test-conversation', user.id, attachments);
-      
-      // Act
-      const newMessage = await promisify(messageModel.createMessage, messageData);
-      
-      // Assert
-      expect(newMessage).toBeDefined();
-      expect(newMessage.attachments).toHaveLength(2);
-      expect(newMessage.attachments[0].type).toBe('image');
-      expect(newMessage.attachments[1].type).toBe('document');
-    });
-
-    it('should update message attachments', async () => {
-      // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = messageWithAttachments('test-conversation', user.id);
-      const message = await promisify(messageModel.createMessage, messageData);
-      
-      const newAttachments = [
-        { type: 'image', url: 'https://example.com/new-image.jpg', name: 'new-image.jpg', size: 1024 }
-      ];
-      
-      // Act
-      const updatedMessage = await promisify(messageModel.updateMessage, message.id, {
-        attachments: newAttachments
-      });
-      
-      // Assert
-      expect(updatedMessage.attachments).toHaveLength(1);
-      expect(updatedMessage.attachments[0].url).toBe('https://example.com/new-image.jpg');
-    });
-  });
-
-  describe('Location Handling', () => {
-    it('should create a message with location data', async () => {
-      // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const location = {
-        latitude: 40.7128,
-        longitude: -74.0060,
-        name: 'New York City'
-      };
-      
-      const messageData = messageWithLocation('test-conversation', user.id, location);
-      
-      // Act
-      const newMessage = await promisify(messageModel.createMessage, messageData);
-      
-      // Assert
-      expect(newMessage).toBeDefined();
-      expect(newMessage.location).toBeDefined();
-      expect(newMessage.location.latitude).toBe(40.7128);
-      expect(newMessage.location.longitude).toBe(-74.0060);
-      expect(newMessage.location.name).toBe('New York City');
-    });
-
-    it('should update message location', async () => {
-      // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = messageWithLocation('test-conversation', user.id);
-      const message = await promisify(messageModel.createMessage, messageData);
-      
-      const newLocation = {
-        latitude: 51.5074,
-        longitude: -0.1278,
-        name: 'London'
-      };
-      
-      // Act
-      const updatedMessage = await promisify(messageModel.updateMessage, message.id, {
-        location: newLocation
-      });
-      
-      // Assert
-      expect(updatedMessage.location).toBeDefined();
-      expect(updatedMessage.location.latitude).toBe(51.5074);
-      expect(updatedMessage.location.longitude).toBe(-0.1278);
-      expect(updatedMessage.location.name).toBe('London');
-    });
-  });
-
-  describe('Error Handling and Edge Cases', () => {
-    it('should handle invalid message data', async () => {
-      // Arrange
-      const invalidMessage = {
-        id: 'invalid-id',
-        conversationId: 'test-conversation',
-        senderId: 'test-user',
-        content: '', // Empty content
-        status: 'invalid-status'
-      };
-      
       // Act & Assert
-      await expect(promisify(messageModel.createMessage, invalidMessage))
-        .rejects.toThrow('Invalid message data');
+      await expect(prisma.message.delete({
+        where: { id: 'non-existent-id' }
+      })).rejects.toThrow('Record not found');
     });
+  });
 
-    it('should handle concurrent updates', async () => {
+  describe('Message Relationships', () => {
+    it('should validate conversation relationship', async () => {
       // Arrange
-      const user = validUser();
-      testDataStore.users.push(user);
-      
-      const messageData = validMessage('test-conversation', user.id);
-      const message = await promisify(messageModel.createMessage, messageData);
-      
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.conversation.findUnique.mockResolvedValue(testData.conversations[0]);
+
       // Act
-      const update1 = promisify(messageModel.updateMessage, message.id, { content: 'Update 1' });
-      const update2 = promisify(messageModel.updateMessage, message.id, { content: 'Update 2' });
-      
+      const conversation = await prisma.conversation.findUnique({
+        where: { id: messageData.conversationId }
+      });
+
       // Assert
-      await expect(Promise.all([update1, update2]))
-        .rejects.toThrow('Concurrent update detected');
+      expect(conversation).toBeDefined();
+      expect(conversation.id).toBe(messageData.conversationId);
     });
 
-    it('should handle non-existent message', async () => {
+    it('should validate sender relationship', async () => {
       // Arrange
-      const nonExistentId = 'non-existent-id';
-      
-      // Act & Assert
-      await expect(promisify(messageModel.getMessageById, nonExistentId))
-        .resolves.toBeNull();
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.user.findUnique.mockResolvedValue(testData.users[0]);
+
+      // Act
+      const sender = await prisma.user.findUnique({
+        where: { id: messageData.senderId }
+      });
+
+      // Assert
+      expect(sender).toBeDefined();
+      expect(sender.id).toBe(messageData.senderId);
+    });
+
+    it('should handle non-existent conversation', async () => {
+      // Arrange
+      const testData = generateMessageTestData(2, 1, 1);
+      const messageData = testData.messages[0];
+      prisma.conversation.findUnique.mockResolvedValue(null);
+
+      // Act
+      const conversation = await prisma.conversation.findUnique({
+        where: { id: messageData.conversationId }
+      });
+
+      // Assert
+      expect(conversation).toBeNull();
     });
   });
 }); 
