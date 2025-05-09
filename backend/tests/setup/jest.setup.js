@@ -36,6 +36,14 @@ beforeAll(async () => {
   console.log('Test environment setup complete.');
 });
 
+// Before each test
+beforeEach(async () => {
+  // Clean up the database before each test
+  if (process.env.USE_POSTGRES === 'true') {
+    await cleanupPostgresDb();
+  }
+});
+
 // After all tests run
 afterAll(async () => {
   console.log('Cleaning up test environment...');

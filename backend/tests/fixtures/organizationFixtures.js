@@ -1,71 +1,83 @@
 /**
  * Organization Test Fixtures
  * 
- * This file provides test data generators for organization-related tests.
+ * Provides functions to generate valid test data for organization-related tests.
  */
 
 const { v4: uuidv4 } = require('uuid');
 
 /**
- * Generate a valid organization object
- * @param {Object} overrides - Properties to override the default values
+ * Generate a valid organization object for testing
+ * @param {Object} overrides - Optional overrides for the default organization data
  * @returns {Object} A valid organization object
  */
-const validOrganization = (overrides = {}) => ({
-  id: uuidv4(),
-  name: `Test Organization ${Math.random().toString(36).substring(7)}`,
-  description: 'Test organization description',
-  logo: 'https://example.com/logo.png',
-  address: '123 Test St, Test City',
-  phone: '123-456-7890',
-  email: `test${Math.random().toString(36).substring(7)}@example.com`,
-  status: 'active',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  ...overrides
-});
+function validOrganization(overrides = {}) {
+  const defaultOrg = {
+    id: uuidv4(),
+    name: `Test Organization ${Date.now()}`,
+    description: 'A test organization',
+    email: `org-${Date.now()}@test.com`,
+    phone: '+1234567890',
+    address: {
+      street: '123 Test St',
+      city: 'Test City',
+      state: 'TS',
+      zipCode: '12345',
+      country: 'Test Country'
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    status: 'ACTIVE',
+    type: 'BUSINESS',
+    settings: {
+      allowMemberInvites: true,
+      requireApproval: false,
+      maxMembers: 100
+    }
+  };
+
+  return { ...defaultOrg, ...overrides };
+}
 
 /**
- * Generate multiple organization objects
+ * Generate multiple valid organization objects
  * @param {number} count - Number of organizations to generate
- * @param {Object} baseOverrides - Base properties to override for all organizations
- * @returns {Array} Array of organization objects
+ * @param {Object} baseOverrides - Optional base overrides for all organizations
+ * @returns {Array} Array of valid organization objects
  */
-const generateOrganizations = (count, baseOverrides = {}) => {
-  const organizations = [];
-  for (let i = 0; i < count; i++) {
-    const status = i % 2 === 0 ? 'active' : 'inactive';
-    organizations.push(validOrganization({
+function generateOrganizations(count = 5, baseOverrides = {}) {
+  return Array.from({ length: count }, (_, index) => 
+    validOrganization({
       ...baseOverrides,
-      status,
-      name: `Test Organization ${i + 1}`,
-      email: `org${i + 1}@example.com`
-    }));
-  }
-  return organizations;
-};
+      name: `Test Organization ${index + 1}`,
+      email: `org-${index + 1}@test.com`
+    })
+  );
+}
 
 /**
- * Generate a valid membership object
- * @param {string} userId - User ID
- * @param {string} organizationId - Organization ID
- * @param {string} role - Member role
- * @param {Object} overrides - Properties to override the default values
- * @returns {Object} A valid membership object
+ * Generate a valid organization member object
+ * @param {string} organizationId - ID of the organization
+ * @param {string} userId - ID of the user
+ * @param {Object} overrides - Optional overrides for the member data
+ * @returns {Object} A valid organization member object
  */
-const validMembership = (userId, organizationId, role = 'member', overrides = {}) => ({
-  id: uuidv4(),
-  userId,
-  organizationId,
-  role,
-  status: 'active',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  ...overrides
-});
+function validOrganizationMember(organizationId, userId, overrides = {}) {
+  const defaultMember = {
+    id: uuidv4(),
+    organizationId,
+    userId,
+    role: 'MEMBER',
+    joinedAt: new Date(),
+    status: 'ACTIVE',
+    permissions: ['READ', 'WRITE']
+  };
+
+  return { ...defaultMember, ...overrides };
+}
 
 module.exports = {
   validOrganization,
   generateOrganizations,
-  validMembership
+  validOrganizationMember
 }; 

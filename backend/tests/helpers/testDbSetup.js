@@ -48,6 +48,11 @@ async function cleanupPostgresDb() {
     testDataStore[key] = [];
   });
 
+  // Reset any mock implementations
+  if (global.prismaMock) {
+    mockReset(global.prismaMock);
+  }
+
   console.log('[TEST] Mock test database cleared successfully');
 }
 
@@ -82,12 +87,21 @@ async function createPostgresTestData(testData) {
       });
     }
     
-    // Create pets if provided
-    if (testData.pets && testData.pets.length > 0) {
-      createdData.pets = testData.pets.map(petData => {
-        const newPet = { ...petData };
-        testDataStore.pets.push(newPet);
-        return newPet;
+    // Create organizations if provided
+    if (testData.organizations && testData.organizations.length > 0) {
+      createdData.organizations = testData.organizations.map(orgData => {
+        const newOrg = { ...orgData };
+        testDataStore.organizations.push(newOrg);
+        return newOrg;
+      });
+    }
+    
+    // Create memberships if provided
+    if (testData.memberships && testData.memberships.length > 0) {
+      createdData.memberships = testData.memberships.map(membershipData => {
+        const newMembership = { ...membershipData };
+        testDataStore.memberships.push(newMembership);
+        return newMembership;
       });
     }
     
