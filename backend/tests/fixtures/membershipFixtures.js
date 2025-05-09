@@ -1,86 +1,91 @@
 /**
  * Membership Test Fixtures
  * 
- * This file provides test data generators for membership-related tests.
+ * Provides functions to generate valid test data for membership-related tests.
  */
 
 const { v4: uuidv4 } = require('uuid');
 
 /**
- * Generate a valid membership object
- * @param {string} userId - User ID
- * @param {string} organizationId - Organization ID
- * @param {string} role - Member role (default: 'member')
- * @param {Object} overrides - Properties to override the default values
+ * Generate a valid membership object for testing
+ * @param {string} userId - ID of the user
+ * @param {string} organizationId - ID of the organization
+ * @param {Object} overrides - Optional overrides for the default membership data
  * @returns {Object} A valid membership object
  */
-const validMembership = (userId, organizationId, role = 'member', overrides = {}) => ({
-  id: uuidv4(),
-  userId,
-  organizationId,
-  role,
-  status: 'active',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  ...overrides
-});
+function validMembership(userId, organizationId, overrides = {}) {
+  const defaultMembership = {
+    id: uuidv4(),
+    userId,
+    organizationId,
+    role: 'MEMBER',
+    status: 'ACTIVE',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    permissions: ['READ', 'WRITE'],
+    metadata: {
+      joinedAt: new Date(),
+      invitedBy: null,
+      lastActive: new Date()
+    }
+  };
+
+  return { ...defaultMembership, ...overrides };
+}
 
 /**
- * Generate multiple membership objects
- * @param {number} count - Number of memberships to generate
- * @param {string} organizationId - Organization ID
- * @param {Array<string>} userIds - Array of user IDs
- * @param {Object} baseOverrides - Base properties to override for all memberships
- * @returns {Array} Array of membership objects
+ * Generate multiple valid membership objects
+ * @param {Array} userIds - Array of user IDs
+ * @param {string} organizationId - ID of the organization
+ * @param {Object} baseOverrides - Optional base overrides for all memberships
+ * @returns {Array} Array of valid membership objects
  */
-const generateMemberships = (count, organizationId, userIds, baseOverrides = {}) => {
-  const memberships = [];
-  const roles = ['member', 'admin', 'moderator'];
-  
-  for (let i = 0; i < count; i++) {
-    const userId = userIds[i % userIds.length];
-    const role = roles[i % roles.length];
-    const status = i % 2 === 0 ? 'active' : 'inactive';
-    
-    memberships.push(validMembership(userId, organizationId, role, {
+function generateMemberships(userIds, organizationId, baseOverrides = {}) {
+  return userIds.map((userId, index) => 
+    validMembership(userId, organizationId, {
       ...baseOverrides,
-      status
-    }));
-  }
-  return memberships;
-};
+      role: index === 0 ? 'ADMIN' : 'MEMBER', // First user is admin
+      permissions: index === 0 ? ['READ', 'WRITE', 'ADMIN'] : ['READ', 'WRITE']
+    })
+  );
+}
 
 /**
- * Generate test data for membership operations
+ * Generate test data for membership-related tests
  * @param {number} userCount - Number of users to generate
  * @param {number} orgCount - Number of organizations to generate
  * @returns {Object} Object containing users, organizations, and memberships
  */
-const generateMembershipTestData = (userCount = 5, orgCount = 2) => {
-  const users = Array(userCount).fill().map(() => ({
+function generateMembershipTestData(userCount = 3, orgCount = 2) {
+  const users = Array.from({ length: userCount }, (_, i) => ({
     id: uuidv4(),
-    name: `Test User ${Math.random().toString(36).substring(7)}`,
-    email: `user${Math.random().toString(36).substring(7)}@test.com`
+    email: `user${i + 1}@test.com`,
+    name: `Test User ${i + 1}`
   }));
 
-  const organizations = Array(orgCount).fill().map(() => ({
+  const organizations = Array.from({ length: orgCount }, (_, i) => ({
     id: uuidv4(),
-    name: `Test Organization ${Math.random().toString(36).substring(7)}`,
-    status: 'active'
+    name: `Test Organization ${i + 1}`,
+    email: `org${i + 1}@test.com`
   }));
 
   const memberships = [];
+  
+  // Create memberships for each user in each organization
   organizations.forEach(org => {
     const orgMemberships = generateMemberships(
-      Math.floor(userCount / orgCount),
-      org.id,
-      users.map(u => u.id)
+      users.map(u => u.id),
+      org.id
     );
     memberships.push(...orgMemberships);
   });
 
-  return { users, organizations, memberships };
-};
+  return {
+    users,
+    organizations,
+    memberships
+  };
+}
 
 module.exports = {
   validMembership,

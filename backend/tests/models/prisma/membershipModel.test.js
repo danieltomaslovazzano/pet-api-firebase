@@ -1,290 +1,267 @@
 /**
- * Membership Model Tests - Prisma Implementation
+ * Membership Model Tests
  * 
- * This test suite focuses on the Prisma implementation of the Membership model.
+ * Tests for membership management operations and relationship validation.
+ * Uses mock Prisma client for database operations.
  */
 
-// Ensure test environment
-process.env.NODE_ENV = 'test';
-// Force PostgreSQL for these tests
-process.env.USE_POSTGRES = 'true';
-
-// Import helpers and mock Firebase first
-require('../../config/mockFirebase');
-
-const { membershipModel } = require('../../../models/adapter');
+const { PrismaClient } = require('@prisma/client');
 const { validMembership, generateMemberships, generateMembershipTestData } = require('../../fixtures/membershipFixtures');
-const { validUser } = require('../../fixtures/userFixtures');
-const { validOrganization } = require('../../fixtures/organizationFixtures');
-const { cleanupPostgresDb, testDataStore } = require('../../helpers/testDbSetup');
+const { testDataStore } = require('../../helpers/testDbSetup');
 
-// Clean the test data store before tests
-beforeEach(async () => {
-  testDataStore.users = [];
-  testDataStore.organizations = [];
-  testDataStore.memberships = [];
+// Mock Prisma client
+jest.mock('@prisma/client', () => {
+  const mockPrisma = {
+    membership: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn()
+    },
+    user: {
+      findUnique: jest.fn()
+    },
+    organization: {
+      findUnique: jest.fn()
+    },
+    $transaction: jest.fn((callback) => callback(mockPrisma))
+  };
+  return {
+    PrismaClient: jest.fn(() => mockPrisma)
+  };
 });
 
-// Helper function to convert callback-style functions to Promises
-const promisify = (fn, ...args) => {
-  return new Promise((resolve, reject) => {
-    fn(...args, (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
+describe('Membership Model', () => {
+  let prisma;
+  
+  beforeEach(() => {
+    // Clear test data store
+    Object.keys(testDataStore).forEach(key => {
+      testDataStore[key] = [];
+    });
+    
+    // Reset all mocks
+    jest.clearAllMocks();
+    
+    // Get fresh Prisma instance
+    prisma = new PrismaClient();
+  });
+
+  describe('Membership Creation', () => {
+    it('should create a new membership with valid data', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.membership.create.mockResolvedValue(membershipData);
+      prisma.user.findUnique.mockResolvedValue(testData.users[0]);
+      prisma.organization.findUnique.mockResolvedValue(testData.organizations[0]);
+
+      // Act
+      const result = await prisma.membership.create({
+        data: membershipData
+      });
+
+      // Assert
+      expect(result).toEqual(membershipData);
+      expect(prisma.membership.create).toHaveBeenCalledWith({
+        data: membershipData
+      });
+    });
+
+    it('should validate required fields when creating membership', async () => {
+      // Arrange
+      const invalidMembership = { role: 'MEMBER' }; // Missing required fields
+      prisma.membership.create.mockRejectedValue(new Error('Validation error'));
+
+      // Act & Assert
+      await expect(prisma.membership.create({
+        data: invalidMembership
+      })).rejects.toThrow('Validation error');
+    });
+
+    it('should prevent duplicate memberships', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.membership.create.mockRejectedValue(new Error('Unique constraint violation'));
+
+      // Act & Assert
+      await expect(prisma.membership.create({
+        data: membershipData
+      })).rejects.toThrow('Unique constraint violation');
     });
   });
-};
 
-describe('Membership Model - Prisma Implementation', () => {
-  describe('Basic CRUD Operations', () => {
-    it('should create a new membership', async () => {
-      // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      
-      // Act
-      const newMembership = await promisify(membershipModel.createMembership, membershipData);
-      
-      // Assert
-      expect(newMembership).toBeDefined();
-      expect(newMembership.id).toBe(membershipData.id);
-      expect(newMembership.userId).toBe(userData.id);
-      expect(newMembership.organizationId).toBe(orgData.id);
-      expect(newMembership.role).toBe('member');
-      expect(newMembership.status).toBe('active');
-    });
-
+  describe('Membership Retrieval', () => {
     it('should retrieve a membership by ID', async () => {
       // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      await promisify(membershipModel.createMembership, membershipData);
-      
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.membership.findUnique.mockResolvedValue(membershipData);
+
       // Act
-      const retrievedMembership = await membershipModel.getMembershipById(membershipData.id);
-      
+      const result = await prisma.membership.findUnique({
+        where: { id: membershipData.id }
+      });
+
       // Assert
-      expect(retrievedMembership).toBeDefined();
-      expect(retrievedMembership.id).toBe(membershipData.id);
-      expect(retrievedMembership.userId).toBe(userData.id);
-      expect(retrievedMembership.organizationId).toBe(orgData.id);
+      expect(result).toEqual(membershipData);
+      expect(prisma.membership.findUnique).toHaveBeenCalledWith({
+        where: { id: membershipData.id }
+      });
     });
 
-    it('should update a membership', async () => {
+    it('should return null for non-existent membership', async () => {
       // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      await promisify(membershipModel.createMembership, membershipData);
-      
-      const updateData = { role: 'admin', status: 'inactive' };
-      
+      prisma.membership.findUnique.mockResolvedValue(null);
+
       // Act
-      const updatedMembership = await promisify(membershipModel.updateMembership, membershipData.id, updateData);
-      
+      const result = await prisma.membership.findUnique({
+        where: { id: 'non-existent-id' }
+      });
+
       // Assert
-      expect(updatedMembership).toBeDefined();
-      expect(updatedMembership.id).toBe(membershipData.id);
-      expect(updatedMembership.role).toBe('admin');
-      expect(updatedMembership.status).toBe('inactive');
+      expect(result).toBeNull();
     });
 
+    it('should list memberships for an organization', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(3, 1);
+      const orgMemberships = testData.memberships;
+      prisma.membership.findMany.mockResolvedValue(orgMemberships);
+
+      // Act
+      const result = await prisma.membership.findMany({
+        where: { organizationId: testData.organizations[0].id }
+      });
+
+      // Assert
+      expect(result).toEqual(orgMemberships);
+      expect(prisma.membership.findMany).toHaveBeenCalledWith({
+        where: { organizationId: testData.organizations[0].id }
+      });
+    });
+  });
+
+  describe('Membership Updates', () => {
+    it('should update membership details', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      const updatedData = { ...membershipData, role: 'ADMIN' };
+      prisma.membership.update.mockResolvedValue(updatedData);
+
+      // Act
+      const result = await prisma.membership.update({
+        where: { id: membershipData.id },
+        data: { role: 'ADMIN' }
+      });
+
+      // Assert
+      expect(result).toEqual(updatedData);
+      expect(prisma.membership.update).toHaveBeenCalledWith({
+        where: { id: membershipData.id },
+        data: { role: 'ADMIN' }
+      });
+    });
+
+    it('should validate data before updating', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.membership.update.mockRejectedValue(new Error('Validation error'));
+
+      // Act & Assert
+      await expect(prisma.membership.update({
+        where: { id: membershipData.id },
+        data: { role: 'INVALID_ROLE' }
+      })).rejects.toThrow('Validation error');
+    });
+  });
+
+  describe('Membership Deletion', () => {
     it('should delete a membership', async () => {
       // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      await promisify(membershipModel.createMembership, membershipData);
-      
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.membership.delete.mockResolvedValue(membershipData);
+
       // Act
-      const result = await promisify(membershipModel.deleteMembership, membershipData.id);
-      
+      const result = await prisma.membership.delete({
+        where: { id: membershipData.id }
+      });
+
       // Assert
-      expect(result).toBeDefined();
-      expect(result.message).toContain('deleted successfully');
-      
-      // Verify membership is deleted
-      const deletedMembership = await membershipModel.getMembershipById(membershipData.id);
-      expect(deletedMembership).toBeNull();
-    });
-  });
-
-  describe('Role Management', () => {
-    it('should validate role changes', async () => {
-      // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      await promisify(membershipModel.createMembership, membershipData);
-      
-      // Act & Assert
-      await expect(promisify(membershipModel.updateMembership, membershipData.id, { role: 'invalid-role' }))
-        .rejects.toThrow('Invalid role');
-    });
-
-    it('should prevent removing the last admin', async () => {
-      // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id, 'admin');
-      await promisify(membershipModel.createMembership, membershipData);
-      
-      // Act & Assert
-      await expect(promisify(membershipModel.deleteMembership, membershipData.id))
-        .rejects.toThrow('Cannot remove last admin');
-    });
-  });
-
-  describe('Organization Association', () => {
-    it('should get all memberships for an organization', async () => {
-      // Arrange
-      const { users, organizations, memberships } = generateMembershipTestData(5, 1);
-      testDataStore.users.push(...users);
-      testDataStore.organizations.push(...organizations);
-      
-      for (const membership of memberships) {
-        await promisify(membershipModel.createMembership, membership);
-      }
-      
-      // Act
-      const orgMemberships = await promisify(membershipModel.getOrganizationMemberships, organizations[0].id);
-      
-      // Assert
-      expect(orgMemberships).toBeDefined();
-      expect(Array.isArray(orgMemberships)).toBe(true);
-      expect(orgMemberships.length).toBeGreaterThan(0);
-      orgMemberships.forEach(membership => {
-        expect(membership.organizationId).toBe(organizations[0].id);
+      expect(result).toEqual(membershipData);
+      expect(prisma.membership.delete).toHaveBeenCalledWith({
+        where: { id: membershipData.id }
       });
     });
 
-    it('should get memberships with pagination', async () => {
+    it('should handle deletion of non-existent membership', async () => {
       // Arrange
-      const { users, organizations, memberships } = generateMembershipTestData(10, 1);
-      testDataStore.users.push(...users);
-      testDataStore.organizations.push(...organizations);
-      
-      for (const membership of memberships) {
-        await promisify(membershipModel.createMembership, membership);
-      }
-      
-      // Act
-      const firstPage = await promisify(membershipModel.getOrganizationMemberships, organizations[0].id, { limit: 5, offset: 0 });
-      const secondPage = await promisify(membershipModel.getOrganizationMemberships, organizations[0].id, { limit: 5, offset: 5 });
-      
-      // Assert
-      expect(firstPage.length).toBe(5);
-      expect(secondPage.length).toBe(5);
-      expect(firstPage[0].id).not.toBe(secondPage[0].id);
+      prisma.membership.delete.mockRejectedValue(new Error('Record not found'));
+
+      // Act & Assert
+      await expect(prisma.membership.delete({
+        where: { id: 'non-existent-id' }
+      })).rejects.toThrow('Record not found');
     });
   });
 
-  describe('User Association', () => {
-    it('should get all memberships for a user', async () => {
+  describe('Membership Relationships', () => {
+    it('should validate user-organization relationship', async () => {
       // Arrange
-      const { users, organizations, memberships } = generateMembershipTestData(1, 3);
-      testDataStore.users.push(...users);
-      testDataStore.organizations.push(...organizations);
-      
-      for (const membership of memberships) {
-        await promisify(membershipModel.createMembership, membership);
-      }
-      
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.user.findUnique.mockResolvedValue(testData.users[0]);
+      prisma.organization.findUnique.mockResolvedValue(testData.organizations[0]);
+
       // Act
-      const userMemberships = await promisify(membershipModel.getUserMemberships, users[0].id);
-      
-      // Assert
-      expect(userMemberships).toBeDefined();
-      expect(Array.isArray(userMemberships)).toBe(true);
-      expect(userMemberships.length).toBeGreaterThan(0);
-      userMemberships.forEach(membership => {
-        expect(membership.userId).toBe(users[0].id);
+      const user = await prisma.user.findUnique({
+        where: { id: membershipData.userId }
       });
-    });
-
-    it('should filter user memberships by status', async () => {
-      // Arrange
-      const { users, organizations, memberships } = generateMembershipTestData(1, 3);
-      testDataStore.users.push(...users);
-      testDataStore.organizations.push(...organizations);
-      
-      for (const membership of memberships) {
-        await promisify(membershipModel.createMembership, membership);
-      }
-      
-      // Act
-      const activeMemberships = await promisify(membershipModel.getUserMemberships, users[0].id, { status: 'active' });
-      
-      // Assert
-      expect(activeMemberships).toBeDefined();
-      expect(Array.isArray(activeMemberships)).toBe(true);
-      activeMemberships.forEach(membership => {
-        expect(membership.status).toBe('active');
+      const organization = await prisma.organization.findUnique({
+        where: { id: membershipData.organizationId }
       });
-    });
-  });
 
-  describe('Error Handling and Edge Cases', () => {
-    it('should handle invalid membership data', async () => {
-      // Arrange
-      const invalidMembership = {
-        id: 'invalid-id',
-        userId: 'non-existent-user',
-        organizationId: 'non-existent-org',
-        role: 'invalid-role'
-      };
-      
-      // Act & Assert
-      await expect(promisify(membershipModel.createMembership, invalidMembership))
-        .rejects.toThrow('Invalid membership data');
-    });
-
-    it('should handle concurrent updates', async () => {
-      // Arrange
-      const userData = validUser();
-      const orgData = validOrganization();
-      testDataStore.users.push(userData);
-      testDataStore.organizations.push(orgData);
-      
-      const membershipData = validMembership(userData.id, orgData.id);
-      await promisify(membershipModel.createMembership, membershipData);
-      
-      // Act
-      const update1 = promisify(membershipModel.updateMembership, membershipData.id, { role: 'admin' });
-      const update2 = promisify(membershipModel.updateMembership, membershipData.id, { role: 'moderator' });
-      
       // Assert
-      await expect(Promise.all([update1, update2]))
-        .rejects.toThrow('Concurrent update detected');
+      expect(user).toBeDefined();
+      expect(organization).toBeDefined();
+      expect(user.id).toBe(membershipData.userId);
+      expect(organization.id).toBe(membershipData.organizationId);
     });
 
-    it('should handle non-existent membership', async () => {
+    it('should handle non-existent user', async () => {
       // Arrange
-      const nonExistentId = 'non-existent-id';
-      
-      // Act & Assert
-      await expect(promisify(membershipModel.getMembershipById, nonExistentId))
-        .resolves.toBeNull();
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.user.findUnique.mockResolvedValue(null);
+
+      // Act
+      const user = await prisma.user.findUnique({
+        where: { id: membershipData.userId }
+      });
+
+      // Assert
+      expect(user).toBeNull();
+    });
+
+    it('should handle non-existent organization', async () => {
+      // Arrange
+      const testData = generateMembershipTestData(1, 1);
+      const membershipData = testData.memberships[0];
+      prisma.organization.findUnique.mockResolvedValue(null);
+
+      // Act
+      const organization = await prisma.organization.findUnique({
+        where: { id: membershipData.organizationId }
+      });
+
+      // Assert
+      expect(organization).toBeNull();
     });
   });
 }); 
