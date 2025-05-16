@@ -1,137 +1,72 @@
 /**
  * Test Database Setup Helper
  * 
- * This module provides utilities for setting up test databases,
- * including configuration for both Firebase and PostgreSQL testing.
+ * This file provides utilities for setting up and cleaning up the test database.
  */
 
 const { PrismaClient } = require('@prisma/client');
-const { mockDeep, mockReset } = require('jest-mock-extended');
-
-// Test data store for tracking test data
-const testDataStore = {
-  users: [],
-  pets: [],
-  organizations: [],
-  memberships: [],
-  conversations: [],
-  messages: []
-};
+const prisma = new PrismaClient();
 
 /**
  * Initialize the test environment
- * Sets up the proper database based on the environment variables
+ * This function is called before all tests run
  */
 async function initTestEnvironment() {
-  // Use the env var to determine which database to use during tests
-  const usePostgres = process.env.USE_POSTGRES === 'true';
-  console.log(`[TEST] Using ${usePostgres ? 'PostgreSQL' : 'Firebase'} for tests`);
-  
-  // In test mode, we don't need to validate database connection
-  // Just ensure we're using the test configuration
-  if (usePostgres) {
-    process.env.DATABASE_URL = process.env.DATABASE_URL || 'mock://localhost/test';
-  }
-}
-
-/**
- * Mock cleanup of the PostgreSQL database 
- * This just clears the in-memory test data instead of using a real database
- */
-async function cleanupPostgresDb() {
-  if (process.env.NODE_ENV !== 'test') {
-    throw new Error('cleanupPostgresDb should only be run in test environment');
-  }
-  
-  // Clear test data store
-  Object.keys(testDataStore).forEach(key => {
-    testDataStore[key] = [];
-  });
-
-  // Reset any mock implementations
-  if (global.prismaMock) {
-    mockReset(global.prismaMock);
-  }
-
-  console.log('[TEST] Mock test database cleared successfully');
-}
-
-/**
- * Create test data in the appropriate database
- * @param {Object} testData - Data to be inserted for testing
- */
-async function createTestData(testData) {
-  const usePostgres = process.env.USE_POSTGRES === 'true';
-  
-  if (usePostgres) {
-    return createPostgresTestData(testData);
-  } else {
-    return createFirebaseTestData(testData);
-  }
-}
-
-/**
- * Create test data in mock PostgreSQL
- * @param {Object} testData - Data to be inserted in PostgreSQL
- */
-async function createPostgresTestData(testData) {
   try {
-    const createdData = {};
+    // Verify database connection
+    await prisma.$connect();
     
-    // Create users if provided
-    if (testData.users && testData.users.length > 0) {
-      createdData.users = testData.users.map(userData => {
-        const newUser = { ...userData };
-        testDataStore.users.push(newUser);
-        return newUser;
-      });
-    }
+    // Run migrations if needed
+    // Note: In a real setup, you might want to run migrations here
+    // await prisma.$executeRaw`CREATE SCHEMA IF NOT EXISTS test`;
     
-    // Create organizations if provided
-    if (testData.organizations && testData.organizations.length > 0) {
-      createdData.organizations = testData.organizations.map(orgData => {
-        const newOrg = { ...orgData };
-        testDataStore.organizations.push(newOrg);
-        return newOrg;
-      });
-    }
-    
-    // Create memberships if provided
-    if (testData.memberships && testData.memberships.length > 0) {
-      createdData.memberships = testData.memberships.map(membershipData => {
-        const newMembership = { ...membershipData };
-        testDataStore.memberships.push(newMembership);
-        return newMembership;
-      });
-    }
-    
-    return createdData;
+    console.log('Test database connection established');
   } catch (error) {
-    console.error('Error creating test data:', error);
+    console.error('Error initializing test environment:', error);
     throw error;
   }
 }
 
 /**
- * Create test data in Firebase
- * @param {Object} testData - Data to be inserted in Firebase
+ * Clean up the database
+ * This function is called before each test and after all tests
  */
-async function createFirebaseTestData(testData) {
-  throw new Error('Firebase test data creation not implemented');
+async function cleanupPostgresDb() {
+  try {
+    // Delete all data from all tables
+    // Note: The order matters due to foreign key constraints
+    await prisma.$transaction([
+      prisma.message.deleteMany({}),
+      prisma.conversation.deleteMany({}),
+      prisma.membership.deleteMany({}),
+      prisma.pet.deleteMany({}),
+      prisma.organization.deleteMany({}),
+      prisma.user.deleteMany({})
+    ]);
+    
+    console.log('Database cleaned up successfully');
+  } catch (error) {
+    console.error('Error cleaning up database:', error);
+    throw error;
+  }
 }
 
 /**
- * Close any open database connections
+ * Close database connections
+ * This function is called after all tests run
  */
 async function closeDbConnections() {
-  // No real connections to close in test environment
-  console.log('[TEST] Mock database connections closed');
+  try {
+    await prisma.$disconnect();
+    console.log('Database connections closed');
+  } catch (error) {
+    console.error('Error closing database connections:', error);
+    throw error;
+  }
 }
 
 module.exports = {
   initTestEnvironment,
   cleanupPostgresDb,
-  createTestData,
-  closeDbConnections,
-  testDataStore
+  closeDbConnections
 }; 

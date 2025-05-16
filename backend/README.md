@@ -27,6 +27,7 @@ Table of Contents:
    - DELETE /pets/:id
 - Testing with cURL
 - Future Enhancements
+- Testing Setup
 
 ------------------------------------------------------------
 Introduction:
@@ -257,6 +258,37 @@ Future Enhancements:
 - Integrate authentication and authorization.
 - Write automated tests for the API.
 - Generate interactive API documentation (e.g., using Swagger).
+
+------------------------------------------------------------
+Testing Setup:
+------------------------------------------------------------
+
+1. Environment Setup:
+   - Copy `.env.test.example` to `.env.test`
+   - Update the values in `.env.test` with your test environment credentials
+   - Never commit `.env.test` to version control
+
+2. Database Setup:
+   - The test database runs in a Docker container
+   - Start the test database: `npm run test:setup`
+   - Stop the test database: `npm run test:teardown`
+
+3. Running Tests:
+   - Run all tests: `npm test`
+   - Run tests in watch mode: `npm run test:watch`
+   - Generate coverage report: `npm run test:coverage`
+   - Run tests in CI mode: `npm run test:ci`
+
+4. Test Configuration:
+   - Test configuration is in `config/test.config.js`
+   - Sensitive data should be loaded from environment variables
+   - Never commit real credentials to version control
+
+5. Best Practices:
+   - Use the test database for all tests
+   - Clean up test data after each test
+   - Mock external services (Firebase, etc.)
+   - Use environment variables for sensitive data
 
 ------------------------------------------------------------
 

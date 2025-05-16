@@ -1,7 +1,6 @@
 // controllers/adminController.js - Añadir estas funciones al final del archivo
 const admin = require('../config/firebase');
-const userModel = require('../models/userModel');
-const petModel = require('../models/petModel'); // Asegúrate de que este modelo exista
+const { userModel, petModel } = require('../models/adapter');
 
 // Acción masiva para gestionar múltiples usuarios
 exports.bulkAction = async (req, res) => {
@@ -27,14 +26,6 @@ exports.bulkAction = async (req, res) => {
           try {
             // Eliminar de Firebase Auth
             await admin.auth().deleteUser(userId);
-            
-            // Eliminar de Firestore usando el modelo
-            await new Promise((resolve, reject) => {
-              userModel.deleteUser(userId, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-              });
-            });
             
             results.push({ userId, status: 'success' });
           } catch (error) {
@@ -78,14 +69,6 @@ exports.bulkAction = async (req, res) => {
           try {
             // Establecer custom claim para el rol
             await admin.auth().setCustomUserClaims(userId, { role });
-            
-            // Actualizar en Firestore también
-            await new Promise((resolve, reject) => {
-              userModel.updateUser(userId, { role }, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-              });
-            });
             
             results.push({ userId, status: 'success' });
           } catch (error) {

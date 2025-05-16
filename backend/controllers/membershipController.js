@@ -50,24 +50,26 @@ exports.getMemberships = (req, res) => {
   }
 };
 
-exports.getMembershipById = (req, res) => {
-  // The membership is already loaded in req.resourceObj by the loadMembershipResource middleware
-  const membership = req.resourceObj;
-  
-  // Check if the user has permission to view this membership
-  if (req.user.uid !== membership.userId && req.user.role !== 'admin') {
-    // Check if the user is an admin of the organization
-    membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin', (err, isAdmin) => {
-      if (err || !isAdmin) {
+exports.getMembershipById = async (req, res) => {
+  try {
+    // The membership is already loaded in req.resourceObj by the loadMembershipResource middleware
+    const membership = req.resourceObj;
+    
+    // Check if the user has permission to view this membership
+    if (req.user.uid !== membership.userId && req.user.role !== 'admin') {
+      // Check if the user is an admin of the organization
+      const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
+      
+      if (!isAdmin) {
         return res.status(403).json({ error: 'You do not have permission to view this membership' });
       }
-      
-      // User is admin of the organization, allow access
-      res.status(200).json(membership);
-    });
-  } else {
-    // User is either the member or a global admin
+    }
+    
+    // User is either the member, a global admin, or an org admin
     res.status(200).json(membership);
+  } catch (error) {
+    console.error('Error in getMembershipById:', error);
+    res.status(500).json({ error: 'Error retrieving membership', details: error.message });
   }
 };
 

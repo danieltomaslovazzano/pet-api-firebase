@@ -12,35 +12,20 @@
 
 const { PrismaClient } = require('@prisma/client');
 const { mockDeep, mockReset } = require('jest-mock-extended');
-const admin = require('firebase-admin');
 const testDataGenerator = require('./testDataGenerator');
 
 // Create mock Prisma client
 const prismaMock = mockDeep();
 
-// Mock Firebase Admin
-const mockFirebaseAdmin = {
-  auth: jest.fn(() => ({
-    verifyIdToken: jest.fn(),
-    createUser: jest.fn(),
-    updateUser: jest.fn(),
-    deleteUser: jest.fn(),
-    getUser: jest.fn(),
-    listUsers: jest.fn(),
-    setCustomUserClaims: jest.fn()
-  }))
-};
-
 // Test environment variables
 const testEnvVars = {
   NODE_ENV: 'test',
-  USE_POSTGRES: 'true',
   DATABASE_URL: 'mock://localhost/test',
+  JWT_SECRET: 'test-jwt-secret',
+  JWT_EXPIRES_IN: '1h',
   FIREBASE_PROJECT_ID: 'test-project',
   FIREBASE_PRIVATE_KEY: 'test-key',
-  FIREBASE_CLIENT_EMAIL: 'test@test.com',
-  JWT_SECRET: 'test-jwt-secret',
-  JWT_EXPIRES_IN: '1h'
+  FIREBASE_CLIENT_EMAIL: 'test@test.com'
 };
 
 // Test data store
@@ -234,29 +219,29 @@ function setupPrismaMocks() {
 const authMock = {
   setup() {
     // Mock Firebase Admin
-    jest.mock('firebase-admin', () => mockFirebaseAdmin);
+    const admin = require('firebase-admin');
     
     // Setup default mock implementations
-    mockFirebaseAdmin.auth().verifyIdToken.mockResolvedValue({
+    admin.auth().verifyIdToken.mockResolvedValue({
       uid: 'test-user-id',
       email: 'test@example.com',
       role: 'user'
     });
     
-    mockFirebaseAdmin.auth().createUser.mockResolvedValue({
+    admin.auth().createUser.mockResolvedValue({
       uid: 'test-user-id',
       email: 'test@example.com',
       displayName: 'Test User'
     });
-
-    mockFirebaseAdmin.auth().getUser.mockResolvedValue({
+    
+    admin.auth().getUser.mockResolvedValue({
       uid: 'test-user-id',
       email: 'test@example.com',
       displayName: 'Test User',
       customClaims: { role: 'user' }
     });
-
-    mockFirebaseAdmin.auth().listUsers.mockResolvedValue({
+    
+    admin.auth().listUsers.mockResolvedValue({
       users: [
         {
           uid: 'test-user-id',
@@ -266,46 +251,35 @@ const authMock = {
         }
       ]
     });
-
-    mockFirebaseAdmin.auth().setCustomUserClaims.mockResolvedValue();
+    
+    admin.auth().setCustomUserClaims.mockResolvedValue();
   },
   
   reset() {
     jest.clearAllMocks();
   },
-
-  // Helper methods for tests
+  
   mockUserWithRole(uid, role) {
-    mockFirebaseAdmin.auth().verifyIdToken.mockResolvedValue({
+    const admin = require('firebase-admin');
+    admin.auth().verifyIdToken.mockResolvedValue({
       uid,
       email: 'test@example.com',
       role
     });
   },
-
+  
   mockUserNotFound() {
-    mockFirebaseAdmin.auth().verifyIdToken.mockRejectedValue(
+    const admin = require('firebase-admin');
+    admin.auth().verifyIdToken.mockRejectedValue(
       new Error('User not found')
     );
   }
 };
 
-// Export all utilities
 module.exports = {
   prismaMock,
-  testEnvVars,
-  testDataStore,
-  testDataGenerator,
-  TransactionManager,
   testIsolation,
   authMock,
-  setupTestEnvironment: async () => {
-    await testIsolation.setup();
-    authMock.setup();
-    return new TransactionManager();
-  },
-  teardownTestEnvironment: async () => {
-    await testIsolation.teardown();
-    authMock.reset();
-  }
+  testDataStore,
+  TransactionManager
 }; 

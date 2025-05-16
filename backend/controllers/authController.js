@@ -50,16 +50,6 @@ const authController = {
       
       const { idToken, refreshToken, expiresIn, localId } = response.data;
       
-      // Crear documento de usuario en Firestore
-      await admin.firestore().collection('users').doc(localId).set({
-        name,
-        email,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        role: 'user',
-        emailVerified: false,
-        disabled: false
-      });
-      
       // Enviar email de verificación
       await admin.auth().generateEmailVerificationLink(email);
       

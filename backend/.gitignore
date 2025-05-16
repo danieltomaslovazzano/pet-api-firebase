@@ -1,5 +1,7 @@
 # Environment files
-.env*
+.env
+.env.*
+!.env.test.example
 
 # Firebase service account keys
 */config/*-firebase-adminsdk-*.json

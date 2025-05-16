@@ -251,7 +251,7 @@ const userModel = {
   },
 
   /**
-   * Get user with pets
+   * Get user with their pets
    * @param {string} userId - User ID
    * @returns {Promise<Object>} - User with pets
    */
@@ -270,6 +270,7 @@ const userModel = {
 
       return user;
     } catch (error) {
+      console.error('Error getting user with pets from PostgreSQL:', error);
       throw error;
     }
   },
@@ -553,6 +554,61 @@ const userModel = {
     } catch (error) {
       console.error('Error getting blocked users from PostgreSQL:', error);
       callback(error);
+    }
+  },
+
+  /**
+   * Create a user and pet in a transaction
+   * @param {Object} userData - User data
+   * @param {Object} petData - Pet data
+   * @returns {Promise<Object>} - Object with user and pet
+   */
+  createUserWithPet: async (userData, petData) => {
+    try {
+      // Validate required fields
+      if (!userData.email) {
+        throw new Error('Email is required for user');
+      }
+      if (!petData.name || !petData.species) {
+        throw new Error('Name and species are required for pet');
+      }
+
+      // Execute transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Create user first
+        const user = await tx.user.create({
+          data: {
+            id: userData.id || undefined,
+            email: userData.email,
+            name: userData.name || 'User',
+            role: userData.role || 'user',
+            status: userData.status || 'active',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        // Then create pet with owner reference
+        const pet = await tx.pet.create({
+          data: {
+            name: petData.name,
+            species: petData.species,
+            breed: petData.breed || null,
+            status: petData.status || 'available',
+            images: petData.images || ['https://example.com/default-pet-image.jpg'],
+            ownerId: user.id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        return { user, pet };
+      });
+
+      return result;
+    } catch (error) {
+      console.error('Error in createUserWithPet transaction:', error);
+      throw error;
     }
   }
 };

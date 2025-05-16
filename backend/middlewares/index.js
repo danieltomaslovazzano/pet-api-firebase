@@ -35,7 +35,7 @@ const { checkPermission } = require('./authorization');
  * Require authentication
  * Simple middleware that only checks if user is authenticated
  */
-exports.requireAuth = verifyToken;
+const requireAuth = verifyToken;
 
 /**
  * Protect a resource with standard permission checks
@@ -65,7 +65,7 @@ exports.requireAuth = verifyToken;
  * }), petController.updatePet);
  * ```
  */
-exports.protectResource = (resource, action, options = {}) => {
+const protectResource = (resource, action, options = {}) => {
   // Return appropriate middleware chain based on resource type
   switch(resource) {
     case 'pets':
@@ -133,7 +133,7 @@ exports.protectResource = (resource, action, options = {}) => {
  * @param {Object} options - Additional options for permission checking
  * @returns {Array} Array of middleware functions
  */
-exports.protectCollection = (resource, action, options = {}) => {
+const protectCollection = (resource, action, options = {}) => {
   return [
     verifyToken,
     checkPermission(resource, action, options)
@@ -148,7 +148,7 @@ exports.protectCollection = (resource, action, options = {}) => {
  * @param {Object} options - Additional options for permission checking
  * @returns {Array} Array of middleware functions
  */
-exports.protectOrganizationResource = (resource, action, options = {}) => {
+const protectOrganizationResource = (resource, action, options = {}) => {
   return [
     verifyToken,
     loadOrganizationResource,
@@ -181,7 +181,7 @@ exports.protectOrganizationResource = (resource, action, options = {}) => {
  * router.get('/reports', requireRole(['admin', 'moderator']), reportController.getReports);
  * ```
  */
-exports.requireRole = (roles) => {
+const requireRole = (roles) => {
   return [
     verifyToken,
     checkPermission('system', 'access', { requiredRoles: Array.isArray(roles) ? roles : [roles] })
@@ -192,7 +192,7 @@ exports.requireRole = (roles) => {
  * Require admin role
  * Convenience method for the common case of requiring admin access
  */
-exports.requireAdmin = exports.requireRole('admin');
+const requireAdmin = requireRole('admin');
 
 /**
  * Require org-admin role for a specific organization
@@ -200,7 +200,7 @@ exports.requireAdmin = exports.requireRole('admin');
  * @param {String} options - Additional options
  * @returns {Array} Array of middleware functions
  */
-exports.requireOrgAdmin = (options = {}) => {
+const requireOrgAdmin = (options = {}) => {
   return [
     verifyToken,
     loadOrganizationResource,
@@ -218,7 +218,7 @@ exports.requireOrgAdmin = (options = {}) => {
  * @param {String} resource - Resource type
  * @returns {Array} Array of middleware functions
  */
-exports.ownerOrAdmin = (resource) => {
+const ownerOrAdmin = (resource) => {
   const loaderMap = {
     'pets': loadPetResource,
     'users': loadUserResource,
@@ -241,4 +241,22 @@ exports.ownerOrAdmin = (resource) => {
       ownerOrAdminOnly: true 
     })
   ];
+};
+
+// Export all middlewares
+module.exports = {
+  loadPetResource,
+  loadUserResource,
+  loadOrganizationResource,
+  loadMembershipResource,
+  loadConversationResource,
+  loadMessageResource,
+  requireAuth,
+  protectResource,
+  protectCollection,
+  protectOrganizationResource,
+  requireRole,
+  requireAdmin,
+  requireOrgAdmin,
+  ownerOrAdmin
 }; 

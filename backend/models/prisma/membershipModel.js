@@ -51,24 +51,24 @@ exports.createMembership = async (membershipData, callback) => {
 };
 
 /**
- * Get membership by ID
- * @param {string} id - Membership ID
- * @param {Function} callback - Callback function (error, membership)
+ * Get a membership by ID
+ * @param {String} id - Membership ID
+ * @returns {Promise<Object>} - Membership object
  */
-exports.getMembershipById = async (id, callback) => {
+exports.getMembershipById = async (id) => {
   try {
     const membership = await prisma.membership.findUnique({
       where: { id }
     });
     
     if (!membership) {
-      return callback(new Error('Membership not found'));
+      throw new Error('Membership not found');
     }
     
-    callback(null, membership);
+    return membership;
   } catch (error) {
     console.error('Error getting membership from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 

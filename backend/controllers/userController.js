@@ -3,6 +3,8 @@ const admin = require('firebase-admin');
 const { userModel } = require('../models/adapter');
 const db = admin.firestore();
 
+// [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+
 exports.createUser = (req, res) => {
   const userData = req.body;
   userModel.createUser(userData, (err, newUser) => {

@@ -252,23 +252,23 @@ exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'n
 
 /**
  * Get a pet by ID
- * @param {string} id - Pet ID
- * @param {Function} callback - Callback function (error, pet)
+ * @param {String} id - Pet ID
+ * @returns {Promise<Object>} - Pet object
  */
-exports.getPetById = async (id, callback) => {
+exports.getPetById = async (id) => {
   try {
     const pet = await prisma.pet.findUnique({
       where: { id }
     });
     
     if (!pet) {
-      return callback(new Error('Pet not found'));
+      throw new Error('Pet not found');
     }
     
-    callback(null, pet);
+    return pet;
   } catch (error) {
-    console.error('Error getting pet by ID from PostgreSQL:', error);
-    callback(error);
+    console.error('Error getting pet from PostgreSQL:', error);
+    throw error;
   }
 };
 

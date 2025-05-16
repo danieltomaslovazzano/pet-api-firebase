@@ -165,28 +165,26 @@ exports.loadOrganizationResource = (req, res, next) => {
  * This middleware loads the membership data and attaches it to the request
  * for authorization checks and controllers.
  */
-exports.loadMembershipResource = (req, res, next) => {
-  const id = req.params.id || req.params.membershipId;
-  
-  if (!id) {
-    return res.status(400).json({ error: 'Missing membership ID in request parameters' });
-  }
-  
-  logAuthDebug({
-    type: 'loading_resource',
-    resourceType: 'membership',
-    resourceId: id,
-    userId: req.user?.uid
-  });
-  
-  membershipModel.getMembershipById(id, (err, membership) => {
-    if (err) {
-      logAuthError('Error loading membership resource', { id, error: err.message });
-      
-      if (err.message === 'Membership not found') {
-        return res.status(404).json({ error: 'Membership not found' });
-      }
-      return res.status(500).json({ error: 'Error retrieving membership' });
+exports.loadMembershipResource = async (req, res, next) => {
+  try {
+    const id = req.params.id || req.params.membershipId;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'Missing membership ID in request parameters' });
+    }
+    
+    logAuthDebug({
+      type: 'loading_resource',
+      resourceType: 'membership',
+      resourceId: id,
+      userId: req.user?.uid
+    });
+    
+    const membership = await membershipModel.getMembershipById(id);
+    
+    if (!membership) {
+      logAuthError('Membership resource not found', { id });
+      return res.status(404).json({ error: 'Membership not found' });
     }
     
     logAuthDebug({
@@ -200,7 +198,10 @@ exports.loadMembershipResource = (req, res, next) => {
     // Attach the membership data to the request
     req.resourceObj = membership;
     next();
-  });
+  } catch (error) {
+    logAuthError('Error loading membership resource', { id: req.params.id, error: error.message });
+    return res.status(500).json({ error: 'Error retrieving membership' });
+  }
 };
 
 /**

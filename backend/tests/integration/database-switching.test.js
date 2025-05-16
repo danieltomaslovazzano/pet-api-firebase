@@ -1,8 +1,8 @@
 /**
  * Database Switching Integration Tests
  * 
- * This test suite verifies that the adapter pattern correctly handles switching 
- * between Firebase and PostgreSQL database implementations.
+ * This test suite verifies that the adapter pattern correctly handles database operations
+ * with the Prisma implementation.
  */
 
 const { userModel, petModel } = require('../../models/adapter');
@@ -21,98 +21,23 @@ const promisify = (fn, ...args) => {
   });
 };
 
-describe('Database Switching Tests', () => {
+describe('Database Operations Tests', () => {
   // Clean PostgreSQL database before tests
   beforeAll(async () => {
-    // Force PostgreSQL for initial cleanup
-    process.env.USE_POSTGRES = 'true';
     await cleanupPostgresDb();
   });
   
   afterAll(async () => {
-    // Restore default
-    process.env.USE_POSTGRES = 'true';
     await cleanupPostgresDb();
   });
   
-  describe('Runtime Switching', () => {
-    it('should use PostgreSQL when USE_POSTGRES is true', async () => {
-      // Arrange
-      process.env.USE_POSTGRES = 'true';
-      const userId = uuidv4();
-      const userData = validUser({ id: userId });
-      
-      // Act
-      const createdUser = await promisify(userModel.createUser, userData);
-      
-      // Assert
-      expect(createdUser).toBeDefined();
-      expect(createdUser.id).toBe(userId);
-      
-      // Verify the user exists in PostgreSQL
-      const retrievedUser = await userModel.getUserById(userId);
-      expect(retrievedUser).toBeDefined();
-      expect(retrievedUser.id).toBe(userId);
-    });
-    
-    // Note: This test is commented out as it requires Firebase setup
-    // Uncomment and adapt when Firebase is properly configured
-    /*
-    it('should use Firebase when USE_POSTGRES is false', async () => {
-      // Arrange
-      process.env.USE_POSTGRES = 'false';
-      const userId = uuidv4();
-      const userData = validUser({ id: userId });
-      
-      // Act
-      const createdUser = await promisify(userModel.createUser, userData);
-      
-      // Assert
-      expect(createdUser).toBeDefined();
-      expect(createdUser.id).toBe(userId);
-      
-      // Verify the user exists in Firebase
-      const retrievedUser = await userModel.getUserById(userId);
-      expect(retrievedUser).toBeDefined();
-      expect(retrievedUser.id).toBe(userId);
-      
-      // Clean up - delete the test user
-      await promisify(userModel.deleteUser, userId);
-    });
-    */
-    
-    it('should switch to PostgreSQL when USE_POSTGRES changes to true', async () => {
-      // Arrange - First use Firebase
-      process.env.USE_POSTGRES = 'false';
-      
-      // Then switch to PostgreSQL
-      process.env.USE_POSTGRES = 'true';
-      const userData = validUser();
-      
-      // Act - This should now use PostgreSQL
-      const createdUser = await promisify(userModel.createUser, userData);
-      
-      // Assert
-      expect(createdUser).toBeDefined();
-      expect(createdUser.id).toBe(userData.id);
-      
-      // Verify the user was created in PostgreSQL
-      const retrievedUser = await userModel.getUserById(userData.id);
-      expect(retrievedUser).toBeDefined();
-    });
-  });
-  
-  describe('API Consistency', () => {
-    beforeEach(() => {
-      // Use PostgreSQL for these tests
-      process.env.USE_POSTGRES = 'true';
-    });
-    
-    it('should provide consistent user CRUD operations', async () => {
+  describe('Basic CRUD Operations', () => {
+    it('should perform user CRUD operations successfully', async () => {
       // Create
       const userData = validUser();
       const createdUser = await promisify(userModel.createUser, userData);
       expect(createdUser).toBeDefined();
+      expect(createdUser.id).toBe(userData.id);
       
       // Read
       const readUser = await userModel.getUserById(userData.id);
@@ -135,7 +60,7 @@ describe('Database Switching Tests', () => {
       expect(deletedUser).toBeNull();
     });
     
-    it('should provide consistent pet CRUD operations', async () => {
+    it('should perform pet CRUD operations successfully', async () => {
       // Create
       const petData = validPet();
       const createdPet = await promisify(petModel.createPet, petData);
@@ -162,12 +87,55 @@ describe('Database Switching Tests', () => {
       expect(deletedPet).toBeNull();
     });
   });
-  
-  // This test is disabled by default as it requires both databases to be configured
-  describe.skip('Cross-Database Validation', () => {
-    it('should maintain data consistency when switching databases', async () => {
-      // This test would validate that data is consistent between the databases
-      // It's skipped as it would require real synchronization between Firebase and PostgreSQL
+
+  describe('Prisma-specific Features', () => {
+    it('should handle transactions correctly', async () => {
+      const userData = validUser();
+      const petData = validPet({ ownerId: userData.id });
+
+      // Create user and pet in a transaction
+      const result = await userModel.createUserWithPet(userData, petData);
+      expect(result).toBeDefined();
+      expect(result.user.id).toBe(userData.id);
+      expect(result.pet.ownerId).toBe(userData.id);
+
+      // Verify both were created
+      const user = await userModel.getUserById(userData.id);
+      const pet = await petModel.getPetById(petData.id);
+      expect(user).toBeDefined();
+      expect(pet).toBeDefined();
+      expect(pet.ownerId).toBe(user.id);
+    });
+
+    it('should handle relationships correctly', async () => {
+      // Create a user
+      const userData = validUser();
+      const user = await promisify(userModel.createUser, userData);
+
+      // Create pets for the user
+      const pet1 = await promisify(petModel.createPet, validPet({ ownerId: user.id }));
+      const pet2 = await promisify(petModel.createPet, validPet({ ownerId: user.id }));
+
+      // Get user with pets
+      const userWithPets = await userModel.getUserWithPets(user.id);
+      expect(userWithPets).toBeDefined();
+      expect(userWithPets.pets).toHaveLength(2);
+      expect(userWithPets.pets[0].ownerId).toBe(user.id);
+      expect(userWithPets.pets[1].ownerId).toBe(user.id);
+    });
+
+    it('should handle cascading deletes', async () => {
+      // Create a user with pets
+      const userData = validUser();
+      const user = await promisify(userModel.createUser, userData);
+      const pet = await promisify(petModel.createPet, validPet({ ownerId: user.id }));
+
+      // Delete the user
+      await promisify(userModel.deleteUser, user.id);
+
+      // Verify pet was also deleted
+      const deletedPet = await petModel.getPetById(pet.id);
+      expect(deletedPet).toBeNull();
     });
   });
 }); 

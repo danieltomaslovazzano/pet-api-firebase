@@ -1,10 +1,24 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('../config/pet-api-dev-35115-firebase-adminsdk-fbsvc-a48b0c2ce5.json');
+const { PrismaClient } = require('@prisma/client');
 
-// Initialize Firebase Admin for testing
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: process.env.FIREBASE_DATABASE_URL
+// Initialize Prisma client for testing
+const prisma = new PrismaClient();
+
+// Clean up database before tests
+beforeAll(async () => {
+  // Clean up all tables
+  await prisma.$transaction([
+    prisma.message.deleteMany(),
+    prisma.conversation.deleteMany(),
+    prisma.membership.deleteMany(),
+    prisma.pet.deleteMany(),
+    prisma.user.deleteMany(),
+    prisma.organization.deleteMany(),
+  ]);
 });
 
-module.exports = admin; 
+// Disconnect Prisma after tests
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+
+module.exports = prisma; 

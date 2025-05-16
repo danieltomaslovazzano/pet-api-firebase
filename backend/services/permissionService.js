@@ -370,26 +370,8 @@ async function checkSameOrganization(user, resource) {
  * @returns {Boolean} Whether the user is an admin
  */
 async function checkIsOrgAdmin(userId, orgId) {
-  try {
-    const db = admin.firestore();
-    
-    // Check the membership document
-    const membershipDoc = await db.collection('memberships')
-      .where('organizationId', '==', orgId)
-      .where('userId', '==', userId)
-      .where('role', '==', 'org-admin')
-      .limit(1)
-      .get();
-    
-    return !membershipDoc.empty;
-  } catch (error) {
-    logAuthError('Error checking organization admin status', {
-      error: error.message,
-      userId,
-      orgId
-    });
-    return false;
-  }
+  // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+  return false;
 }
 
 /**
@@ -400,26 +382,8 @@ async function checkIsOrgAdmin(userId, orgId) {
  * @returns {Boolean} Whether the user is staff
  */
 async function checkIsOrgStaff(userId, orgId) {
-  try {
-    const db = admin.firestore();
-    
-    // Check the membership document
-    const membershipDoc = await db.collection('memberships')
-      .where('organizationId', '==', orgId)
-      .where('userId', '==', userId)
-      .where('role', '==', 'org-staff')
-      .limit(1)
-      .get();
-    
-    return !membershipDoc.empty;
-  } catch (error) {
-    logAuthError('Error checking organization staff status', {
-      error: error.message,
-      userId,
-      orgId
-    });
-    return false;
-  }
+  // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+  return false;
 }
 
 /**
@@ -430,25 +394,8 @@ async function checkIsOrgStaff(userId, orgId) {
  * @returns {Boolean} Whether the user is a member
  */
 async function checkIsOrgMember(userId, orgId) {
-  try {
-    const db = admin.firestore();
-    
-    // Check the membership document
-    const membershipDoc = await db.collection('memberships')
-      .where('organizationId', '==', orgId)
-      .where('userId', '==', userId)
-      .limit(1)
-      .get();
-    
-    return !membershipDoc.empty;
-  } catch (error) {
-    logAuthError('Error checking organization membership', {
-      error: error.message,
-      userId,
-      orgId
-    });
-    return false;
-  }
+  // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+  return false;
 }
 
 /**
@@ -459,26 +406,8 @@ async function checkIsOrgMember(userId, orgId) {
  * @returns {Boolean} Whether the user is the owner
  */
 async function checkIsOrgOwner(userId, orgId) {
-  try {
-    const db = admin.firestore();
-    
-    // Get the organization document
-    const orgDoc = await db.collection('organizations').doc(orgId).get();
-    
-    if (!orgDoc.exists) {
-      return false;
-    }
-    
-    const orgData = orgDoc.data();
-    return orgData.ownerId === userId;
-  } catch (error) {
-    logAuthError('Error checking organization ownership', {
-      error: error.message,
-      userId,
-      orgId
-    });
-    return false;
-  }
+  // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+  return false;
 }
 
 /**
@@ -488,41 +417,8 @@ async function checkIsOrgOwner(userId, orgId) {
  * @returns {Array} Array of organization objects
  */
 async function getUserOrganizations(userId) {
-  try {
-    const db = admin.firestore();
-    
-    // Get all memberships for this user
-    const membershipsSnapshot = await db.collection('memberships')
-      .where('userId', '==', userId)
-      .get();
-    
-    if (membershipsSnapshot.empty) {
-      return [];
-    }
-    
-    // Extract the organization IDs
-    const orgIds = membershipsSnapshot.docs.map(doc => doc.data().organizationId);
-    
-    // Get the organization details
-    const organizations = [];
-    for (const orgId of orgIds) {
-      const orgDoc = await db.collection('organizations').doc(orgId).get();
-      if (orgDoc.exists) {
-        organizations.push({
-          id: orgDoc.id,
-          ...orgDoc.data()
-        });
-      }
-    }
-    
-    return organizations;
-  } catch (error) {
-    logAuthError('Error getting user organizations', {
-      error: error.message,
-      userId
-    });
-    return [];
-  }
+  // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
+  return [];
 }
 
 module.exports = {

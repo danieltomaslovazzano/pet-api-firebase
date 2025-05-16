@@ -27,7 +27,7 @@ function validOrganization(overrides = {}) {
     },
     createdAt: new Date(),
     updatedAt: new Date(),
-    status: 'ACTIVE',
+    status: 'active',
     type: 'BUSINESS',
     settings: {
       allowMemberInvites: true,
@@ -67,10 +67,10 @@ function validOrganizationMember(organizationId, userId, overrides = {}) {
     id: uuidv4(),
     organizationId,
     userId,
-    role: 'MEMBER',
+    role: 'member',
     joinedAt: new Date(),
-    status: 'ACTIVE',
-    permissions: ['READ', 'WRITE']
+    status: 'active',
+    permissions: ['read', 'write']
   };
 
   return { ...defaultMember, ...overrides };

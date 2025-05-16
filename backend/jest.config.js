@@ -14,10 +14,12 @@ module.exports = {
   // Coverage configuration
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov'],
+  coverageReporters: ['text', 'lcov', 'html'],
   collectCoverageFrom: [
     'models/**/*.js',
     'controllers/**/*.js',
+    'middlewares/**/*.js',
+    'utils/**/*.js',
     '!**/node_modules/**',
     '!**/vendor/**'
   ],
@@ -33,12 +35,33 @@ module.exports = {
   
   // Control the test environment through env vars
   globals: {
-    // Additional environment variables can be set here if needed
+    NODE_ENV: 'test'
   },
-  
-  // Test suite timeout
-  testTimeout: 60000,
   
   // Module directories
   moduleDirectories: ['node_modules', '<rootDir>'],
+  
+  // Transform configuration
+  transform: {
+    '^.+\\.js$': 'babel-jest'
+  },
+  
+  // Babel configuration
+  transformIgnorePatterns: [
+    '/node_modules/(?!@babel).+\\.js$'
+  ],
+  
+  // Module name mapper for ES modules
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
+
+  // Clear mocks between tests
+  clearMocks: true,
+
+  // Reset modules between tests
+  resetModules: true,
+
+  // Restore mocks between tests
+  restoreMocks: true
 }; 
