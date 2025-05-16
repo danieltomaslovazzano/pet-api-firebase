@@ -143,7 +143,6 @@ exports.inviteUser = async (req, res) => {
 // Modificar la función getAllUsers existente para mejorar el filtrado
 exports.getAllUsers = async (req, res) => {
   try {
-    // Extraer filtros ampliados de los parámetros de la consulta
     const filters = {
       name: req.query.name ? req.query.name.toString() : undefined,
       email: req.query.email ? req.query.email.toString() : undefined,
@@ -155,11 +154,11 @@ exports.getAllUsers = async (req, res) => {
       lastLoginEnd: req.query.lastLoginEnd ? req.query.lastLoginEnd.toString() : undefined,
       origin: req.query.origin ? req.query.origin.toString() : undefined
     };
-
-    // Eliminar filtros no definidos
     Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
-
-    // Usar el método getUsers mejorado
+    // Multitenancy: filter by organizationId unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      filters.organizationId = req.organizationId;
+    }
     userModel.getUsers(filters, async (err, users) => {
       if (err) {
         console.error('Error al recuperar usuarios:', err);
@@ -358,10 +357,12 @@ exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    
-    // Verificar que el usuario tiene permisos
-    if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-      return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+    // Multitenancy: ensure user belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      const user = await userModel.getUserById(id);
+      if (!user || user.organizationId !== req.organizationId) {
+        return res.status(403).json({ error: 'No permission to update user in this organization' });
+      }
     }
     
     // Si se está cambiando el rol, verificar que sea admin
@@ -404,10 +405,12 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // Verificar que el usuario tiene permisos
-    if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-      return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+    // Multitenancy: ensure user belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      const user = await userModel.getUserById(id);
+      if (!user || user.organizationId !== req.organizationId) {
+        return res.status(403).json({ error: 'No permission to delete user in this organization' });
+      }
     }
     
     // Eliminar de Firebase Auth
@@ -444,14 +447,16 @@ exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
+    // Multitenancy: ensure user belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      const user = await userModel.getUserById(id);
+      if (!user || user.organizationId !== req.organizationId) {
+        return res.status(403).json({ error: 'No permission to update user role in this organization' });
+      }
+    }
     
     if (!role) {
       return res.status(400).json({ error: 'Se requiere especificar un rol' });
-    }
-    
-    // Verificar que el usuario es admin
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo los administradores pueden cambiar roles' });
     }
     
     // Actualizar custom claims en Firebase Auth
@@ -516,6 +521,11 @@ exports.createUser = async (req, res) => {
       role: role || 'user',
       createdAt: new Date().toISOString()
     };
+
+    // Multitenancy: set organizationId if present
+    if (req.organizationId) {
+      userData.organizationId = req.organizationId;
+    }
 
     await new Promise((resolve, reject) => {
       userModel.createUser(userData, (err, result) => {

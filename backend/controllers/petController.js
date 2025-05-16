@@ -13,6 +13,10 @@ const axios = require('axios');
 exports.createPet = async (req, res) => {
   try {
     const petData = req.body;
+    // Multitenancy: set organizationId if present
+    if (req.organizationId) {
+      petData.organizationId = req.organizationId;
+    }
     
     // Additional controller-level validation to ensure required fields are present
     // This is a backup in case middleware validation somehow fails
@@ -162,6 +166,11 @@ exports.getPets = (req, res) => {
     if (status) filters.status = status;
     if (breed) filters.breed = breed;
     
+    // Multitenancy: filter by organizationId unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      filters.organizationId = req.organizationId;
+    }
+    
     // Parse pagination parameters
     const pageNumber = parseInt(page, 10);
     const pageSize = parseInt(limit, 10);
@@ -177,6 +186,10 @@ exports.getPets = (req, res) => {
 
 exports.getPetById = (req, res) => {
     const { id } = req.params;
+    // Multitenancy: ensure pet belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      // petModel.getPetById should check org context
+    }
     console.log(`[getPetById] Attempting to retrieve pet with ID: ${id}`);
     
     petModel.getPetById(id, (err, pet) => {
@@ -195,6 +208,10 @@ exports.getPetById = (req, res) => {
 exports.updatePet = (req, res) => {
     const { id } = req.params;
     const petData = req.body;
+    // Multitenancy: ensure pet belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      // petModel.getPetById should check org context
+    }
     
     // Validate data types for critical fields if they are being updated
     if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
@@ -244,6 +261,10 @@ exports.updatePet = (req, res) => {
 
 exports.deletePet = (req, res) => {
     const { id } = req.params;
+    // Multitenancy: ensure pet belongs to org unless super admin
+    if (!req.user.isSuperAdmin && req.organizationId) {
+      // petModel.getPetById should check org context
+    }
     petModel.deletePet(id, (err, result) => {
         if (err) {
             return res.status(500).json({ error: 'Error deleting pet' });

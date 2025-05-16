@@ -23,6 +23,7 @@ model User {
   blockedUsers  String[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  isSuperAdmin  Boolean        @default(false)
   
   // Relationships
   pets          Pet[]
@@ -33,29 +34,32 @@ model User {
 
 // Pet model
 model Pet {
-  id          String    @id @default(uuid())
-  name        String
-  species     String
-  breed       String?
-  age         Int?
-  gender      String?
-  size        String?
-  color       String?
-  status      String
-  description String?
-  images      String[]
-  location    Json?
-  ownerId     String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id              String    @id @default(uuid())
+  name            String
+  species         String
+  breed           String?
+  age             Int?
+  gender          String?
+  size            String?
+  color           String?
+  status          String
+  description     String?
+  images          String[]
+  location        Json?
+  ownerId         String?
+  organizationId  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   
   // Relationships
-  owner       User?     @relation(fields: [ownerId], references: [id])
+  owner           User?     @relation(fields: [ownerId], references: [id])
+  organization    Organization? @relation(fields: [organizationId], references: [id])
 
   // Indexes
   @@index([ownerId])
   @@index([species])
   @@index([status])
+  @@index([organizationId])
 }
 
 // Organization model
@@ -73,6 +77,9 @@ model Organization {
   
   // Relationships
   memberships  Membership[]
+  pets         Pet[]
+  conversations Conversation[]
+  messages     Message[]
 
   // Indexes
   @@index([status])
@@ -104,19 +111,22 @@ model Membership {
 
 // Conversation model
 model Conversation {
-  id            String      @id @default(uuid())
-  title         String?
-  status        String      @default("active")
-  createdAt     DateTime    @default(now())
-  lastMessageAt DateTime    @default(now())
+  id              String      @id @default(uuid())
+  title           String?
+  status          String      @default("active")
+  createdAt       DateTime    @default(now())
+  lastMessageAt   DateTime    @default(now())
+  organizationId  String?
   
   // Relationships
-  participants  User[]      @relation("UserConversations")
-  messages      Message[]
+  participants    User[]      @relation("UserConversations")
+  messages        Message[]
+  organization    Organization? @relation(fields: [organizationId], references: [id])
 
   // Indexes
   @@index([status])
   @@index([lastMessageAt])
+  @@index([organizationId])
 }
 
 // Message model
@@ -129,16 +139,19 @@ model Message {
   timestamp       DateTime     @default(now())
   attachments     Json?
   location        Json?
+  organizationId  String?
   
   // Relationships
   conversation    Conversation @relation(fields: [conversationId], references: [id])
   sender          User         @relation("SentMessages", fields: [senderId], references: [id])
+  organization    Organization? @relation(fields: [organizationId], references: [id])
 
   // Indexes
   @@index([conversationId])
   @@index([senderId])
   @@index([status])
   @@index([timestamp])
+  @@index([organizationId])
 }
 
 // Models will be defined based on our analysis of the current Firebase collections

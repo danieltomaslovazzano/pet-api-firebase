@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const organizationContext = require('./middlewares/organizationContext');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -27,6 +28,9 @@ app.use(cors({
 
 // Middleware for parsing JSON
 app.use(express.json());
+
+// Organization context middleware (after auth, before protected routes)
+app.use(organizationContext);
 
 // Mount routes
 app.use('/api/auth', authRoutes);
