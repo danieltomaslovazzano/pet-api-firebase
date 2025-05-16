@@ -127,8 +127,6 @@ exports.createPet = async (req, res) => {
       petData.userId = req.user.uid;
     }
 
-    console.log('Saving pet data to Firestore:', JSON.stringify(petData));
-
     // Create the pet record in Firestore
     petModel.createPet(petData, (err, newPet) => {
       if (err) {
