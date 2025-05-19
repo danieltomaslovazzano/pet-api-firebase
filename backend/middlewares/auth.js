@@ -8,19 +8,23 @@ const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.error('[auth] Token no proporcionado o mal formado:', authHeader);
     return res.status(401).json({ error: 'Token no proporcionado' });
   }
 
   const idToken = authHeader.split('Bearer ')[1];
+  console.log('[auth] Token recibido:', idToken);
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     req.user = decodedToken;
+    console.log('[auth] Token decodificado:', decodedToken);
     
     // Si necesitas información adicional del usuario
     try {
       const userRecord = await admin.auth().getUser(decodedToken.uid);
       req.userRecord = userRecord;
+      console.log('[auth] userRecord:', userRecord);
     } catch (userError) {
       console.warn('Error al obtener información adicional del usuario:', userError);
       // Continuamos aunque no podamos obtener la información adicional
@@ -28,8 +32,8 @@ const verifyToken = async (req, res, next) => {
     
     next();
   } catch (error) {
-    console.error('Error verifying Firebase token:', error);
-    return res.status(401).json({ error: 'Token inválido' });
+    console.error('[auth] Error verifying Firebase token:', error);
+    return res.status(401).json({ error: 'Token inválido', details: error.message });
   }
 };
 
@@ -43,8 +47,13 @@ const checkRoles = (allowedRoles) => {
 
     // Obtener el rol del usuario desde los claims personalizados
     try {
-      // Si tienes claims personalizados en Firebase
-      const userRole = req.user.role || 'user'; // Default a 'user' si no hay rol
+      const userRole = req.user.role || 'user';
+
+      // Permitir acceso total a superadmin
+      if (userRole === 'superadmin') {
+        // Superadmin tiene acceso a todo
+        return next();
+      }
 
       // Verificar si el usuario tiene alguno de los roles permitidos
       if (allowedRoles.includes(userRole)) {

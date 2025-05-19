@@ -43,37 +43,32 @@ const { logAuthDebug, logAuthError } = require('../utils/loggerUtil');
  * This middleware loads the pet data and attaches it to the request
  * for use by the authorization middleware and controllers.
  */
-exports.loadPetResource = (req, res, next) => {
+exports.loadPetResource = async (req, res, next) => {
   const { id } = req.params;
-  
-  logAuthDebug({
-    type: 'loading_resource',
-    resourceType: 'pet',
-    resourceId: id,
-    userId: req.user?.uid
-  });
-  
-  petModel.getPetById(id, (err, pet) => {
-    if (err) {
-      logAuthError('Error loading pet resource', { id, error: err.message });
-      
-      if (err.message === 'Pet not found') {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      return res.status(500).json({ error: 'Error retrieving pet' });
+  try {
+    logAuthDebug({
+      type: 'loading_resource',
+      resourceType: 'pet',
+      resourceId: id,
+      userId: req.user?.uid
+    });
+    const pet = await petModel.getPetById(id);
+    if (!pet) {
+      logAuthError('Pet resource not found', { id });
+      return res.status(404).json({ error: 'Pet not found' });
     }
-    
     logAuthDebug({
       type: 'resource_loaded',
       resourceType: 'pet',
       resourceId: id,
       resourceOwnerId: pet.userId
     });
-    
-    // Attach the pet data to the request
     req.resourceObj = pet;
     next();
-  });
+  } catch (err) {
+    logAuthError('Error loading pet resource', { id, error: err.message });
+    return res.status(500).json({ error: 'Error retrieving pet' });
+  }
 };
 
 /**
@@ -123,41 +118,35 @@ exports.loadUserResource = (req, res, next) => {
  * This middleware loads the organization data and attaches it to the request
  * for authorization checks and controllers.
  */
-exports.loadOrganizationResource = (req, res, next) => {
+exports.loadOrganizationResource = async (req, res, next) => {
   const id = req.params.id || req.params.orgId || req.params.organizationId;
-  
   if (!id) {
     return res.status(400).json({ error: 'Missing organization ID in request parameters' });
   }
-  
-  logAuthDebug({
-    type: 'loading_resource',
-    resourceType: 'organization',
-    resourceId: id,
-    userId: req.user?.uid
-  });
-  
-  organizationModel.getOrganizationById(id, (err, organization) => {
-    if (err) {
-      logAuthError('Error loading organization resource', { id, error: err.message });
-      
-      if (err.message === 'Organization not found') {
-        return res.status(404).json({ error: 'Organization not found' });
-      }
-      return res.status(500).json({ error: 'Error retrieving organization' });
+  try {
+    logAuthDebug({
+      type: 'loading_resource',
+      resourceType: 'organization',
+      resourceId: id,
+      userId: req.user?.uid
+    });
+    const organization = await organizationModel.getOrganizationById(id);
+    if (!organization) {
+      logAuthError('Organization resource not found', { id });
+      return res.status(404).json({ error: 'Organization not found' });
     }
-    
     logAuthDebug({
       type: 'resource_loaded',
       resourceType: 'organization',
       resourceId: id,
       ownerId: organization.ownerId || organization.createdBy
     });
-    
-    // Attach the organization data to the request
     req.resourceObj = organization;
     next();
-  });
+  } catch (err) {
+    logAuthError('Error loading organization resource', { id, error: err.message });
+    return res.status(500).json({ error: 'Error retrieving organization' });
+  }
 };
 
 /**
@@ -206,75 +195,60 @@ exports.loadMembershipResource = async (req, res, next) => {
 
 /**
  * Load a conversation resource by ID
- * This middleware loads the conversation data and attaches it to the request
- * for authorization checks and controllers.
+ * Refactor: ahora usa async/await en vez de callbacks
  */
-exports.loadConversationResource = (req, res, next) => {
+exports.loadConversationResource = async (req, res, next) => {
   const id = req.params.id || req.params.conversationId;
-  
   if (!id) {
     return res.status(400).json({ error: 'Missing conversation ID in request parameters' });
   }
-  
-  logAuthDebug({
-    type: 'loading_resource',
-    resourceType: 'conversation',
-    resourceId: id,
-    userId: req.user?.uid
-  });
-  
-  conversationModel.getConversationById(id, (err, conversation) => {
-    if (err) {
-      logAuthError('Error loading conversation resource', { id, error: err.message });
-      
-      if (err.message === 'Conversation not found') {
-        return res.status(404).json({ error: 'Conversation not found' });
-      }
-      return res.status(500).json({ error: 'Error retrieving conversation' });
+  try {
+    logAuthDebug({
+      type: 'loading_resource',
+      resourceType: 'conversation',
+      resourceId: id,
+      userId: req.user?.uid
+    });
+    const conversation = await conversationModel.getConversationById(id);
+    if (!conversation) {
+      logAuthError('Conversation resource not found', { id });
+      return res.status(404).json({ error: 'Conversation not found' });
     }
-    
     logAuthDebug({
       type: 'resource_loaded',
       resourceType: 'conversation',
       resourceId: id,
       participants: conversation.participants
     });
-    
-    // Attach the conversation data to the request
     req.resourceObj = conversation;
     next();
-  });
+  } catch (err) {
+    logAuthError('Error loading conversation resource', { id, error: err.message });
+    return res.status(500).json({ error: 'Error retrieving conversation' });
+  }
 };
 
 /**
  * Load a message resource by ID
- * This middleware loads the message data and attaches it to the request
- * for authorization checks and controllers.
+ * Refactor: ahora usa async/await en vez de callbacks
  */
-exports.loadMessageResource = (req, res, next) => {
+exports.loadMessageResource = async (req, res, next) => {
   const id = req.params.id || req.params.messageId;
-  
   if (!id) {
     return res.status(400).json({ error: 'Missing message ID in request parameters' });
   }
-  
-  logAuthDebug({
-    type: 'loading_resource',
-    resourceType: 'message',
-    resourceId: id,
-    userId: req.user?.uid
-  });
-  
-  messageModel.getMessageById(id, (err, message) => {
-    if (err) {
-      logAuthError('Error loading message resource', { id, error: err.message });
-      
-      if (err.message === 'Message not found') {
-        return res.status(404).json({ error: 'Message not found' });
-      }
-      return res.status(500).json({ error: 'Error retrieving message' });
+  try {
+    logAuthDebug({
+      type: 'loading_resource',
+      resourceType: 'message',
+      resourceId: id,
+      userId: req.user?.uid
+    });
+    const message = await messageModel.getMessageById(id);
+    if (!message) {
+      logAuthError('Message resource not found', { id });
+      return res.status(404).json({ error: 'Message not found' });
     }
-    
     logAuthDebug({
       type: 'resource_loaded',
       resourceType: 'message',
@@ -282,11 +256,12 @@ exports.loadMessageResource = (req, res, next) => {
       senderId: message.senderId,
       conversationId: message.conversationId
     });
-    
-    // Attach the message data to the request
     req.resourceObj = message;
     next();
-  });
+  } catch (err) {
+    logAuthError('Error loading message resource', { id, error: err.message });
+    return res.status(500).json({ error: 'Error retrieving message' });
+  }
 };
 
 /**
@@ -314,45 +289,39 @@ exports.loadMessageResource = (req, res, next) => {
  * ```
  */
 exports.createResourceLoader = (resourceType, loadFunction) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const id = req.params.id || req.params[`${resourceType}Id`];
-    
     if (!id) {
       return res.status(400).json({ 
         error: `Missing ${resourceType} ID in request parameters` 
       });
     }
-    
-    logAuthDebug({
-      type: 'loading_resource',
-      resourceType,
-      resourceId: id,
-      userId: req.user?.uid
-    });
-    
-    loadFunction(id, (err, resource) => {
-      if (err) {
-        logAuthError(`Error loading ${resourceType} resource`, { 
-          id, 
-          error: err.message 
-        });
-        
-        if (err.message === `${resourceType} not found`) {
-          return res.status(404).json({ error: `${resourceType} not found` });
-        }
-        return res.status(500).json({ error: `Error retrieving ${resourceType}` });
+    try {
+      logAuthDebug({
+        type: 'loading_resource',
+        resourceType,
+        resourceId: id,
+        userId: req.user?.uid
+      });
+      const resource = await loadFunction(id);
+      if (!resource) {
+        logAuthError(`${resourceType} resource not found`, { id });
+        return res.status(404).json({ error: `${resourceType} not found` });
       }
-      
       logAuthDebug({
         type: 'resource_loaded',
         resourceType,
         resourceId: id,
         resourceOwnerId: resource.userId
       });
-      
-      // Attach the resource data to the request
       req.resourceObj = resource;
       next();
-    });
+    } catch (err) {
+      logAuthError(`Error loading ${resourceType} resource`, { 
+        id, 
+        error: err.message 
+      });
+      return res.status(500).json({ error: `Error retrieving ${resourceType}` });
+    }
   };
 }; 
