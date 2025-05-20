@@ -31,4 +31,7 @@ router.post('/:id/unblock', userController.unblockUser);
 // GET /users/:id/organizations - Obtener organizaciones del usuario
 router.get('/:id/organizations', userController.getUserOrganizations);
 
+// GET /users/me - Obtener el perfil del usuario autenticado
+router.get('/me', userController.me);
+
 module.exports = router;

@@ -1,6 +1,7 @@
 // controllers/authController.js
 const admin = require('../config/firebase');
 const axios = require('axios');
+const { userModel } = require('../models/adapter');
 
 // Helper function for consistent logging
 const logAuthEvent = (event, data, isError = false) => {
@@ -49,6 +50,28 @@ const authController = {
       });
       
       const { idToken, refreshToken, expiresIn, localId } = response.data;
+      
+      // Crear usuario en PostgreSQL
+      try {
+        await userModel.createUser({
+          id: localId,
+          email,
+          name,
+          role: 'user',
+          status: 'active'
+        });
+        logAuthEvent('PostgreSQL User Created', { userId: localId });
+      } catch (dbError) {
+        logAuthEvent('PostgreSQL User Creation Failed', dbError, true);
+        // Si falla la creación en PostgreSQL, intentamos eliminar el usuario de Firebase
+        try {
+          await admin.auth().deleteUser(localId);
+          logAuthEvent('Firebase User Deleted After DB Failure', { userId: localId });
+        } catch (deleteError) {
+          logAuthEvent('Failed to Delete Firebase User After DB Failure', deleteError, true);
+        }
+        throw dbError;
+      }
       
       // Enviar email de verificación
       await admin.auth().generateEmailVerificationLink(email);
@@ -401,6 +424,31 @@ const authController = {
         error: 'Error al cerrar sesión', 
         details: error.message 
       });
+    }
+  },
+
+  // Refresh token
+  refreshToken: async (req, res) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(400).json({ error: 'Refresh token requerido' });
+      }
+      // Usando Firebase Admin SDK para verificar y refrescar el token
+      const admin = require('../config/firebase');
+      // Firebase no expone un método directo para refrescar tokens desde el backend,
+      // normalmente esto se hace desde el frontend usando el SDK de cliente.
+      // Como workaround, puedes verificar el refresh token y emitir un custom token:
+      // (En producción, deberías usar el flujo recomendado por Firebase)
+      const decoded = await admin.auth().verifySessionCookie(refreshToken, true).catch(() => null);
+      if (!decoded) {
+        return res.status(401).json({ error: 'Refresh token inválido o expirado' });
+      }
+      // Emitir un nuevo custom token
+      const customToken = await admin.auth().createCustomToken(decoded.uid);
+      res.json({ accessToken: customToken });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   }
 };

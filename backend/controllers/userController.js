@@ -379,3 +379,23 @@ exports.getAdminUserById = async (req, res) => {
     });
   }
 };
+
+exports.me = async (req, res) => {
+  try {
+    // req.user debe estar poblado por el middleware de autenticación
+    const userId = req.user.id || req.user.uid;
+    if (!userId) {
+      return res.status(401).json({ error: 'No autenticado' });
+    }
+    // Buscar el usuario en la base de datos por id/uid
+    const user = await userModel.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    // Puedes filtrar los campos que quieras exponer
+    const { id, email, name, role, status, createdAt, updatedAt } = user;
+    res.json({ id, email, name, role, status, createdAt, updatedAt });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -26,16 +26,16 @@ router.post('/force-logout/:id',
   authController.forceLogout
 );
 
-// GET /auth/user-info/:uid - Obtener información adicional de usuarios desde Firebase Auth
-router.get('/user-info/:uid', 
-  ...requireRole(['admin', 'moderator']), 
-  authController.getUserInfo
-);
+// GET /auth/user-info/:uid - Solo para admin, moderator, superadmin
+router.get('/user-info/:uid', requireAuth, requireRole(['admin', 'moderator', 'superadmin']), authController.getUserInfo);
 
 // PUT /auth/user-status/:id - Actualizar estado de la cuenta en Firebase Auth
 router.put('/user-status/:id', 
   ...requireRole('admin'), 
   authController.updateUserStatus
 );
+
+// POST /auth/refresh-token - Refrescar el access token usando un refresh token
+router.post('/refresh-token', authController.refreshToken);
 
 module.exports = router;
