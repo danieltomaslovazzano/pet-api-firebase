@@ -1,310 +1,133 @@
-------------------------------------------------------------
-Pet Reports API
-------------------------------------------------------------
+# Pet API
 
-A simple RESTful API built with Node.js and Express for managing pet reports. This API allows you to create, retrieve, update, and delete pet reports. It is designed to run in multiple environments (local, development, production).
+A RESTful API built with Node.js and Express for managing pet reports, organizations, and user interactions. The API supports multi-tenant architecture with organization-based access control.
 
-------------------------------------------------------------
-Table of Contents:
-------------------------------------------------------------
-- Introduction
-- Features
-- Technologies
-- Setup & Installation
-- Environment Variables
-- Authentication & Authorization
-  - Authentication Middleware
-  - Authorization Middleware
-  - Resource Loaders
-  - Middleware Composition
-  - Permission Rules
-  - Usage Examples
-- API Endpoints
-   - POST /pets
-   - GET /pets
-   - GET /pets/:id
-   - PUT /pets/:id
-   - DELETE /pets/:id
-- Testing with cURL
-- Future Enhancements
-- Testing Setup
+## Features
 
-------------------------------------------------------------
-Introduction:
-------------------------------------------------------------
-The Pet Reports API allows users to manage reports for lost, found, or adoptable pets. It provides endpoints for creating a new pet report, retrieving one or more reports, updating a report, and deleting a report.
+- 🔐 Firebase Authentication
+- 🏢 Multi-tenant organization support
+- 🐾 Pet report management
+- 👥 User management
+- 💬 Conversation and messaging
+- 📱 File upload support
+- 🔒 Role-based access control
 
-------------------------------------------------------------
-Features:
-------------------------------------------------------------
-- Create a pet report with details such as name, species, and status.
-- Retrieve a list of pet reports with optional filters.
-- Retrieve details of a specific pet report.
-- Update pet report information.
-- Delete a pet report.
+## Tech Stack
 
-------------------------------------------------------------
-Technologies:
-------------------------------------------------------------
-- Node.js – JavaScript runtime environment.
-- Express – Web framework for Node.js.
-- Firebase – Authentication and database services.
-- Firestore – NoSQL database for storing pet data.
-- UUID – For generating unique identifiers.
-- dotenv – For environment variable management.
+- **Backend**: Node.js, Express
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Firebase Auth
+- **File Storage**: Firebase Storage
+- **Testing**: Jest, Supertest
+- **Documentation**: Markdown, Postman
 
-------------------------------------------------------------
-Setup & Installation:
-------------------------------------------------------------
-1. Clone the Repository:
-   git clone https://github.com/your-username/pet-reports-api.git
-   cd pet-reports-api
+## Quick Start
 
-2. Install Dependencies:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/pet-api.git
+   cd pet-api
+   ```
+
+2. Install dependencies:
+   ```bash
    npm install
+   ```
 
-3. Configure Environment Variables:
-   Create a .env file in the project root with the following content:
-   
-   PORT=3000
-   DB_HOST=localhost
-   DB_USER=your_mysql_user
-   DB_PASSWORD=your_mysql_password
-   DB_NAME=pet_reports
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-4. Start the Server:
-   For production:
-     npm start
-   For development (with auto-reload using nodemon):
-     npm run dev
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-------------------------------------------------------------
-Environment Variables:
-------------------------------------------------------------
-The API uses the following environment variables (defined in the .env file):
-- PORT: The port on which the server will run.
-- DB_HOST: Hostname of your MySQL database.
-- DB_USER: MySQL user.
-- DB_PASSWORD: MySQL password.
-- DB_NAME: Name of the database (e.g., pet_reports).
+## Environment Variables
 
-------------------------------------------------------------
-Authentication & Authorization:
-------------------------------------------------------------
-The API uses a comprehensive authentication and authorization system to secure endpoints. This system follows a clean separation of concerns pattern, keeping identity verification (authentication) separate from permission checking (authorization).
+Required environment variables:
+- `PORT`: Server port (default: 3000)
+- `DATABASE_URL`: PostgreSQL connection string
+- `FIREBASE_PROJECT_ID`: Firebase project ID
+- `FIREBASE_PRIVATE_KEY`: Firebase private key
+- `FIREBASE_CLIENT_EMAIL`: Firebase client email
 
-Authentication:
-- Firebase Authentication is used for identity verification
-- JWT tokens are required for protected endpoints
-- Token verification happens in the `authentication.js` middleware
-- Various token error cases are handled (expired, invalid, revoked)
+## Project Structure
 
-Authorization:
-- Permission-based authorization system defined in `permissionRules.js`
-- Role-based access control (admin, org-admin, org-staff, user)
-- Resource ownership checking
-- Organization-based permissions
-
-Resource Loaders:
-- Dedicated middleware to load resources for permission checking
-- Support for pets, users, organizations, memberships, conversations, and messages
-- Clean separation between resource loading and permission checking
-
-Middleware Composition:
-- Utility functions to compose middleware for common patterns
-- `protectResource(resource, action)` - Protects a specific resource instance
-- `protectCollection(resource, action)` - Protects collection-level operations
-- `requireRole(role)` - Requires a specific role or roles
-- `requireAdmin()` - Convenience function for admin-only routes
-- `requireOrgAdmin()` - Organization admin access
-
-Permission Conditions:
-- `isOwner` - User owns the resource
-- `isSelf` - Resource is the user's own profile
-- `isSameOrganization` - User belongs to the same organization as the resource
-- `isOrgAdmin`, `isOrgStaff` - User has specific role in the organization
-- `isPublic` - The resource is marked as public
-
-Using Protected Endpoints:
-All protected endpoints require a valid Firebase Auth token in the Authorization header:
 ```
-Authorization: Bearer your-firebase-token
+├── config/         # Configuration files
+├── controllers/    # Route controllers
+├── docs/          # Documentation
+├── middlewares/   # Express middlewares
+├── models/        # Database models
+├── routes/        # API routes
+├── services/      # Business logic
+├── tests/         # Test files
+└── utils/         # Utility functions
 ```
 
-For detailed usage examples, see the `docs/auth-usage-examples.md` file.
+## Testing
 
-------------------------------------------------------------
-API Endpoints:
-------------------------------------------------------------
+1. Set up test environment:
+   ```bash
+   cp .env.test.example .env.test
+   ```
 
-POST /pets
------------
-Create a new pet report.
+2. Run tests:
+   ```bash
+   # Run all tests
+   npm test
 
-Request:
-   Method: POST
-   URL: http://localhost:3000/pets
-   Headers: Content-Type: application/json
-   Body Example:
-{
-  "name": "Fido",
-  "species": "Dog",
-  "breed": "Labrador",
-  "age": 5,
-  "gender": "Male",
-  "color": "Brown",
-  "size": "Large",
-  "status": "lost",
-  "description": "Friendly dog",
-  "location": {
-    "latitude": 37.7749,
-    "longitude": -122.4194,
-    "address": "San Francisco, CA"
-  },
-  "images": [
-    "http://example.com/image1.jpg"
-  ],
-  "owner": {
-    "name": "John Doe",
-    "contact": {
-      "phone": "123-456-7890",
-      "email": "john@example.com"
-    }
-  },
-  "report": {
-    "reportedAt": "2025-03-05T10:00:00Z",
-    "updatedAt": "2025-03-05T10:00:00Z"
-  }
-}
+   # Run tests in watch mode
+   npm run test:watch
 
-cURL Example:
-curl -X POST http://localhost:3000/pets -H "Content-Type: application/json" -d '{ "name": "Fido", "species": "Dog", "breed": "Labrador", "age": 5, "gender": "Male", "color": "Brown", "size": "Large", "status": "lost", "description": "Friendly dog", "location": { "latitude": 37.7749, "longitude": -122.4194, "address": "San Francisco, CA" }, "images": ["https://pettownsendvet.com/wp-content/uploads/2023/01/iStock-1052880600-2048x1365.jpg"], "owner": { "name": "John Doe", "contact": { "phone": "123-456-7890", "email": "john@example.com" } }, "report": { "reportedAt": "2025-03-05T10:00:00Z", "updatedAt": "2025-03-05T10:00:00Z" } }'
+   # Generate coverage report
+   npm run test:coverage
+   ```
 
-------------------------------------------------------------
+## API Documentation
 
-GET /pets
------------
-Retrieve a list of pet reports.
+For detailed API documentation, see:
+- [API Documentation](docs/api/API.md)
+- [Postman Collection](postman/PetApp_API_Collection.json)
 
-Request:
-   Method: GET
-   URL: http://localhost:3000/pets
+## Development
 
-cURL Example:
-curl http://localhost:3000/pets
+### Prerequisites
+- Node.js 18+
+- PostgreSQL 14+
+- Firebase project
 
-------------------------------------------------------------
+### Development Workflow
+1. Create a feature branch
+2. Make your changes
+3. Add/update tests
+4. Submit a pull request
 
-GET /pets/:id
----------------
-Retrieve details of a specific pet report.
+### Code Style
+- Follow ESLint configuration
+- Use Prettier for formatting
+- Write meaningful commit messages
 
-Request:
-   Method: GET
-   URL: http://localhost:3000/pets/{id}
-   (Replace {id} with the actual pet ID)
+## Contributing
 
-cURL Example:
-curl http://localhost:3000/pets/your-pet-id
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a pull request
 
-------------------------------------------------------------
+## License
 
-PUT /pets/:id
----------------
-Update an existing pet report.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Request:
-   Method: PUT
-   URL: http://localhost:3000/pets/{id}
-   (Replace {id} with the actual pet ID)
-   Headers: Content-Type: application/json
-   Body Example:
-{
-  "status": "adopted",
-  "adoptionInfo": {
-    "adoptedBy": "user123",
-    "adoptedAt": "2025-03-06T12:00:00Z",
-    "notes": "Happy family"
-  }
-}
+## Support
 
-cURL Example:
-curl -X PUT http://localhost:3000/pets/your-pet-id -H "Content-Type: application/json" -d '{ "status": "adopted", "adoptionInfo": { "adoptedBy": "user123", "adoptedAt": "2025-03-06T12:00:00Z", "notes": "Happy family" } }'
+For support, please open an issue in the GitHub repository.
 
-------------------------------------------------------------
-
-DELETE /pets/:id
-------------------
-Delete a pet report.
-
-Request:
-   Method: DELETE
-   URL: http://localhost:3000/pets/{id}
-   (Replace {id} with the actual pet ID)
-
-cURL Example:
-curl -X DELETE http://localhost:3000/pets/your-pet-id
-
-------------------------------------------------------------
-Testing with cURL:
-------------------------------------------------------------
-You can use the cURL examples provided above to test each endpoint. Replace "your-pet-id" with an actual pet identifier returned from the API.
-
-------------------------------------------------------------
-Future Enhancements:
-------------------------------------------------------------
-- Implement full database operations for retrieving, updating, and deleting pet records.
-- Add data validation and error handling.
-- Integrate authentication and authorization.
-- Write automated tests for the API.
-- Generate interactive API documentation (e.g., using Swagger).
-
-------------------------------------------------------------
-Testing Setup:
-------------------------------------------------------------
-
-1. Environment Setup:
-   - Copy `.env.test.example` to `.env.test`
-   - Update the values in `.env.test` with your test environment credentials
-   - Never commit `.env.test` to version control
-
-2. Database Setup:
-   - The test database runs in a Docker container
-   - Start the test database: `npm run test:setup`
-   - Stop the test database: `npm run test:teardown`
-
-3. Running Tests:
-   - Run all tests: `npm test`
-   - Run tests in watch mode: `npm run test:watch`
-   - Generate coverage report: `npm run test:coverage`
-   - Run tests in CI mode: `npm run test:ci`
-
-4. Test Configuration:
-   - Test configuration is in `config/test.config.js`
-   - Sensitive data should be loaded from environment variables
-   - Never commit real credentials to version control
-
-5. Best Practices:
-   - Use the test database for all tests
-   - Clean up test data after each test
-   - Mock external services (Firebase, etc.)
-   - Use environment variables for sensitive data
-
-------------------------------------------------------------
-
-## Carga automática de variables de entorno
-
-El backend carga automáticamente el archivo `.env` adecuado según el entorno (`NODE_ENV`):
-
-- `test`    → `.env.test`
-- `staging` → `.env.staging`
-- `production` → `.env.prod`
-- `development` → `.env.dev`
-- Si no se encuentra ninguno, usa `.env` por defecto.
-
-Esto se gestiona desde `config/loadEnv.js` y no requiere pasos manuales. Puedes definir tus variables en el archivo correspondiente y el entorno las cargará automáticamente.
-
-This is the complete content as plain text. Simply copy it into your text file, and you'll have all the documentation ready to use.
+*Last updated: May 14, 2024*
 
 
 
