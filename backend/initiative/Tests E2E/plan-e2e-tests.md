@@ -1,6 +1,6 @@
 # Plan de Tests E2E (End-to-End)
 
-Este documento detalla el roadmap de tests E2E a implementar, agrupados por fase y grupo de endpoints. Cada test debe ser ejecutado, su resultado documentado y, si es necesario, corregido antes de avanzar.
+Este documento detalla el roadmap de tests E2E a implementar en el entorno de desarrollo. Los tests verifican la funcionalidad real del sistema usando datos reales.
 
 ---
 
@@ -9,11 +9,11 @@ Este documento detalla el roadmap de tests E2E a implementar, agrupados por fase
 - **auth.e2e.js**
   - [x] Registro de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
   - [x] Login de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
-  - [ ] Login de superadmin
-  - [ ] Refresco de token (si aplica)
-  - [ ] Recuperación de contraseña
-  - [ ] Acceso a perfil propio
-  - [ ] Acceso denegado sin token
+  - [x] Login de superadmin _(usando credenciales reales)_
+  - [x] Refresco de token
+  - [x] Recuperación de contraseña
+  - [x] Acceso a perfil propio
+  - [x] Acceso denegado sin token
 
 - **users.e2e.js**
   - [ ] Crear usuario (admin/superadmin)
@@ -58,7 +58,7 @@ Este documento detalla el roadmap de tests E2E a implementar, agrupados por fase
   - [ ] Validar acceso multitenant (solo miembros de la org pueden ver/editar)
   - [ ] Validar superadmin ve todas
 
-> **Nota:** La generación de reportes E2E en markdown está automatizada para cada ejecución de test.
+> **Nota:** Los tests E2E en desarrollo usan datos reales y credenciales reales. Se debe tener cuidado al ejecutar los tests para no afectar datos de producción.
 
 ---
 
@@ -80,6 +80,25 @@ Este documento detalla el roadmap de tests E2E a implementar, agrupados por fase
 
 ---
 
+## **Configuración del Entorno de Desarrollo**
+
+Para ejecutar los tests E2E en desarrollo:
+
+1. Configurar variables de entorno:
+   ```bash
+   # Credenciales de admin para tests
+   ADMIN_EMAIL=admin@example.com
+   ADMIN_PASSWORD=your_admin_password
+   
+   # URL de la API
+   API_URL=http://localhost:3000/api
+   ```
+
+2. Ejecutar los tests:
+   ```bash
+   npm run test:e2e
+   ```
+
 ## **Seguimiento y Resultados**
 
 - Cada test debe marcarse como:
@@ -87,4 +106,5 @@ Este documento detalla el roadmap de tests E2E a implementar, agrupados por fase
   - [x] Implementado
   - [OK] Probado y funcionando
   - [ERR] Probado y requiere corrección (añadir comentario)
-- Documentar resultados y problemas detectados tras cada ejecución. 
+- Documentar resultados y problemas detectados tras cada ejecución.
+- Los tests deben limpiar los datos que crean para no afectar el entorno de desarrollo. 
