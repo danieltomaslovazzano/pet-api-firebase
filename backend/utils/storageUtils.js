@@ -1,65 +1,52 @@
 // utils/storageUtils.js
-const admin = require('../config/firebase');
+const { Storage } = require('@google-cloud/storage');
+const path = require('path');
+
+const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
+const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+console.log('[StorageUtils] Inicializando Google Cloud Storage con:', credentialsPath, 'Bucket:', bucketName);
+
+const storage = new Storage({
+  keyFilename: credentialsPath ? path.resolve(credentialsPath) : undefined,
+});
+const bucket = storage.bucket(bucketName);
 
 /**
- * Uploads an image buffer to Firebase Storage
- * @param {Buffer} fileBuffer - The processed image buffer to upload
- * @param {string} destinationFileName - The filename to use in Firebase Storage
- * @returns {Promise<string>} - A promise that resolves with the public URL of the uploaded image
+ * Sube un buffer de imagen al bucket y retorna la URL pública
  */
-async function uploadImageToStorage(fileBuffer, destinationFileName) {
+async function uploadImageToStorage(filename, buffer, mimetype) {
+  console.log('[DEBUG] uploadImageToStorage params:', {
+    filename,
+    mimetype,
+    bufferType: typeof buffer,
+    bufferLength: buffer?.length
+  });
   try {
-    console.log(`Starting upload to Firebase Storage: ${destinationFileName}`);
-    
-    // Ensure we have a valid file buffer
-    if (!fileBuffer || !Buffer.isBuffer(fileBuffer) || fileBuffer.length === 0) {
-      throw new Error('Invalid file buffer provided for upload');
-    }
-    
-    // Validate destination filename
-    if (!destinationFileName || typeof destinationFileName !== 'string') {
-      destinationFileName = `fallback_${Date.now()}.jpg`;
-      console.warn(`Invalid destination filename, using fallback: ${destinationFileName}`);
-    }
-
-    // Get the default bucket (configured in Firebase Admin initialization)
-    const bucket = admin.storage().bucket();
-    if (!bucket) {
-      throw new Error('Firebase Storage bucket not initialized');
-    }
-    
-    // Create reference to the destination file
-    const file = bucket.file(`pets/${destinationFileName}`);
-    console.log(`Created reference to file: pets/${destinationFileName}`);
-
-    // Upload the file buffer with metadata
-    const uploadOptions = {
-      metadata: {
-        contentType: destinationFileName.endsWith('.png') ? 'image/png' : 
-                     destinationFileName.endsWith('.gif') ? 'image/gif' :
-                     destinationFileName.endsWith('.webp') ? 'image/webp' : 'image/jpeg',
-      },
+    const file = bucket.file(filename);
+    // Normalizar mimetype: image/jpg -> image/jpeg
+    let safeMimetype = (typeof mimetype === 'string' && mimetype.startsWith('image/')) ? mimetype : 'image/jpeg';
+    if (safeMimetype === 'image/jpg') safeMimetype = 'image/jpeg';
+    await file.save(buffer, {
+      metadata: { contentType: safeMimetype },
       resumable: false,
-    };
-    
-    console.log(`Uploading file with content type: ${uploadOptions.metadata.contentType}`);
-    
-    // Perform the upload
-    await file.save(fileBuffer, uploadOptions);
-    console.log('File uploaded successfully');
-
-    // Make the file public
+      public: true,
+    });
     await file.makePublic();
-    console.log('File made public');
-
-    // Return the public URL
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-    console.log(`Generated public URL: ${publicUrl}`);
+    const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
     return publicUrl;
   } catch (error) {
-    console.error('Storage upload error:', error);
+    console.error('[DEBUG] Storage upload error:', {
+      filename,
+      mimetype,
+      bufferType: typeof buffer,
+      bufferLength: buffer?.length,
+      error
+    });
     throw new Error('Error uploading image: ' + error.message);
   }
 }
 
-module.exports = { uploadImageToStorage };
+module.exports = {
+  uploadImageToStorage,
+};

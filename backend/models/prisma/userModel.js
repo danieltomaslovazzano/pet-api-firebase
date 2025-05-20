@@ -356,9 +356,9 @@ const userModel = {
    * Block a user
    * @param {string} userId - User ID doing the blocking
    * @param {string} blockedUserId - User ID to block
-   * @param {Function} callback - Callback function (error, result)
+   * @returns {Promise<Object>} - Blocking result
    */
-  blockUser: async (userId, blockedUserId, callback) => {
+  blockUser: async (userId, blockedUserId) => {
     try {
       // Check if both users exist
       const [user, blockedUser] = await Promise.all([
@@ -367,11 +367,11 @@ const userModel = {
       ]);
 
       if (!user) {
-        return callback(new Error('User not found'));
+        throw new Error('User not found');
       }
 
       if (!blockedUser) {
-        return callback(new Error('User to block not found'));
+        throw new Error('User to block not found');
       }
 
       // Add blockedUserId to the blockedUsers array if not already there
@@ -389,10 +389,10 @@ const userModel = {
         }
       });
 
-      callback(null, { message: `User ${blockedUserId} blocked by ${userId}` });
+      return { message: `User ${blockedUserId} blocked by ${userId}` };
     } catch (error) {
       console.error('Error blocking user in PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 
@@ -400,9 +400,9 @@ const userModel = {
    * Unblock a user
    * @param {string} userId - User ID doing the unblocking
    * @param {string} blockedUserId - User ID to unblock
-   * @param {Function} callback - Callback function (error, result)
+   * @returns {Promise<Object>} - Unblocking result
    */
-  unblockUser: async (userId, blockedUserId, callback) => {
+  unblockUser: async (userId, blockedUserId) => {
     try {
       // Check if both users exist
       const [user, blockedUser] = await Promise.all([
@@ -411,11 +411,11 @@ const userModel = {
       ]);
 
       if (!user) {
-        return callback(new Error('User not found'));
+        throw new Error('User not found');
       }
 
       if (!blockedUser) {
-        return callback(new Error('User to unblock not found'));
+        throw new Error('User to unblock not found');
       }
 
       // Remove blockedUserId from the blockedUsers array
@@ -430,19 +430,19 @@ const userModel = {
         }
       });
 
-      callback(null, { message: `User ${blockedUserId} unblocked by ${userId}` });
+      return { message: `User ${blockedUserId} unblocked by ${userId}` };
     } catch (error) {
       console.error('Error unblocking user in PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 
   /**
    * Get organizations for a user
    * @param {string} userId - User ID
-   * @param {Function} callback - Callback function (error, organizations)
+   * @returns {Promise<Array>} - Array of organizations
    */
-  getUserOrganizations: async (userId, callback) => {
+  getUserOrganizations: async (userId) => {
     try {
       // Get memberships for the user
       const memberships = await prisma.membership.findMany({
@@ -459,10 +459,10 @@ const userModel = {
         membershipId: membership.id
       }));
 
-      callback(null, organizations);
+      return organizations;
     } catch (error) {
       console.error('Error getting user organizations from PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 
@@ -470,9 +470,9 @@ const userModel = {
    * Update multiple users
    * @param {string[]} userIds - Array of user IDs to update
    * @param {Object} updateData - Data to update for all users
-   * @param {Function} callback - Callback function (error, result)
+   * @returns {Promise<Object>} - Update result
    */
-  updateMultipleUsers: async (userIds, updateData, callback) => {
+  updateMultipleUsers: async (userIds, updateData) => {
     try {
       // Using Prisma transaction to ensure all updates succeed or fail together
       const updatePromises = userIds.map(userId => 
@@ -488,19 +488,19 @@ const userModel = {
       // Execute all updates in a transaction
       await prisma.$transaction(updatePromises);
 
-      callback(null, { message: `${userIds.length} users updated successfully` });
+      return { message: `${userIds.length} users updated successfully` };
     } catch (error) {
       console.error('Error updating multiple users in PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 
   /**
    * Delete multiple users
    * @param {string[]} userIds - Array of user IDs to delete
-   * @param {Function} callback - Callback function (error, result)
+   * @returns {Promise<Object>} - Deletion result
    */
-  deleteMultipleUsers: async (userIds, callback) => {
+  deleteMultipleUsers: async (userIds) => {
     try {
       // Using Prisma transaction to ensure all deletions succeed or fail together
       const deletePromises = userIds.map(userId => 
@@ -512,19 +512,19 @@ const userModel = {
       // Execute all deletions in a transaction
       await prisma.$transaction(deletePromises);
 
-      callback(null, { message: `${userIds.length} users deleted successfully` });
+      return { message: `${userIds.length} users deleted successfully` };
     } catch (error) {
       console.error('Error deleting multiple users from PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 
   /**
    * Get a user's blocked users list
    * @param {string} userId - User ID
-   * @param {Function} callback - Callback function (error, blockedUsers)
+   * @returns {Promise<Array>} - Array of blocked users
    */
-  getBlockedUsers: async (userId, callback) => {
+  getBlockedUsers: async (userId) => {
     try {
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -532,7 +532,7 @@ const userModel = {
       });
 
       if (!user) {
-        return callback(new Error('User not found'));
+        throw new Error('User not found');
       }
 
       // Get details for each blocked user
@@ -550,10 +550,10 @@ const userModel = {
         }
       });
 
-      callback(null, blockedUserDetails);
+      return blockedUserDetails;
     } catch (error) {
       console.error('Error getting blocked users from PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   },
 

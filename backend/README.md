@@ -292,6 +292,18 @@ Testing Setup:
 
 ------------------------------------------------------------
 
+## Carga automática de variables de entorno
+
+El backend carga automáticamente el archivo `.env` adecuado según el entorno (`NODE_ENV`):
+
+- `test`    → `.env.test`
+- `staging` → `.env.staging`
+- `production` → `.env.prod`
+- `development` → `.env.dev`
+- Si no se encuentra ninguno, usa `.env` por defecto.
+
+Esto se gestiona desde `config/loadEnv.js` y no requiere pasos manuales. Puedes definir tus variables en el archivo correspondiente y el entorno las cargará automáticamente.
+
 This is the complete content as plain text. Simply copy it into your text file, and you'll have all the documentation ready to use.
 
 

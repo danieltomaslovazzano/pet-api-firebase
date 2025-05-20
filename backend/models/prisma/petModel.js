@@ -3,6 +3,7 @@
  * 
  * This model handles pet-related database operations using Prisma ORM
  * while maintaining the same API contract as the Firebase implementation.
+ * Now with multitenancy support through organizationId filtering.
  */
 
 const { prisma } = require('../../config/prisma');
@@ -61,15 +62,15 @@ const validatePetData = (petData) => {
 
 /**
  * Create a new pet
- * @param {Object} petData - Pet data to create
- * @param {Function} callback - Callback function (error, pet)
+ * @param {Object} petData - Pet data
+ * @returns {Promise<Object>} - Created pet
  */
-exports.createPet = async (petData, callback) => {
+exports.createPet = async (petData) => {
   try {
     // Validate pet data
     const validationError = validatePetData(petData);
     if (validationError) {
-      return callback(validationError);
+      throw validationError;
     }
 
     // Generate a UUID for the pet
@@ -93,84 +94,64 @@ exports.createPet = async (petData, callback) => {
         description: petData.description || null,
         images: petData.images,
         location,
+        // Multitenancy: Store owner and organization references
         ownerId: petData.userId || petData.ownerId || null,
+        // Multitenancy: Include organization context
+        organizationId: petData.organizationId || null,
         createdAt: new Date(),
         updatedAt: new Date()
       }
     });
     
-    callback(null, newPet);
+    return newPet;
   } catch (error) {
     console.error('Error creating pet in PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get all pets, with optional pagination
  * @deprecated Use getPetsWithFilters instead
- * @param {Function} callback - Callback function (error, pets)
+ * @returns {Promise<Array>} - Array of pets
  */
-exports.getPets = async (callback) => {
+exports.getPets = async () => {
   try {
     const pets = await prisma.pet.findMany();
-    callback(null, pets);
+    return pets;
   } catch (error) {
     console.error('Error getting pets from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get pets with filtering, pagination, and sorting
- * @param {Object} filters - Filter criteria (species, status, breed, etc.)
+ * @param {Object} filters - Filter criteria (species, status, breed, organizationId, etc.)
  * @param {Number} page - Page number (1-based)
  * @param {Number} limit - Results per page
  * @param {String} sortField - Field to sort by
- * @param {Function} callback - Callback function (error, pets)
+ * @returns {Promise<Array>} - Array of pets
  */
-exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = 'createdAt', callback) => {
+exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = 'createdAt') => {
   try {
-    // Build where clause for Prisma query
     const where = {};
-    
     if (filters) {
-      if (filters.species) {
-        where.species = { equals: filters.species, mode: 'insensitive' };
-      }
-      
-      if (filters.status) {
-        where.status = { equals: filters.status, mode: 'insensitive' };
-      }
-      
-      if (filters.breed) {
-        where.breed = { equals: filters.breed, mode: 'insensitive' };
-      }
+      if (filters.species) where.species = { equals: filters.species, mode: 'insensitive' };
+      if (filters.status) where.status = { equals: filters.status, mode: 'insensitive' };
+      if (filters.breed) where.breed = { equals: filters.breed, mode: 'insensitive' };
+      if (filters.organizationId) where.organizationId = filters.organizationId;
     }
-    
-    // Determine sort order
     const sortDirection = sortField.startsWith('-') ? 'desc' : 'asc';
     const actualField = sortField.startsWith('-') ? sortField.substring(1) : sortField;
-    
-    // Build orderBy object for Prisma
     const orderBy = { [actualField]: sortDirection };
-    
-    // Apply pagination
     const skip = (page - 1) * limit;
-    const take = Math.min(limit, 100); // Cap at 100 for performance
-    
-    // Fetch pets with the constructed query
-    const pets = await prisma.pet.findMany({
-      where,
-      orderBy,
-      skip,
-      take
-    });
-    
-    callback(null, pets);
+    const take = Math.min(limit, 100);
+    const pets = await prisma.pet.findMany({ where, orderBy, skip, take });
+    return pets;
   } catch (error) {
     console.error('Error getting pets with filters from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
@@ -180,251 +161,171 @@ exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = '
  * @param {Number} page - Page number (1-based)
  * @param {Number} limit - Results per page
  * @param {String} sortField - Field to sort by
- * @param {Function} callback - Callback function (error, pets)
+ * @returns {Promise<Array>} - Array of pets
  */
-exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'name', callback) => {
+exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'name') => {
   try {
-    // Build where clause for Prisma query using OR conditions
     const where = {};
-    
-    // Apply search criteria
+    const orConditions = [];
     if (searchCriteria) {
-      const conditions = [];
-      
       for (const [field, value] of Object.entries(searchCriteria)) {
-        // For string fields, use contains for case-insensitive search
-        if (field === 'name' || field === 'species' || field === 'breed' || field === 'color' || field === 'description') {
-          conditions.push({
-            [field]: { contains: String(value), mode: 'insensitive' }
-          });
-        } 
-        // For status, use equals for exact matching
-        else if (field === 'status') {
-          conditions.push({
-            status: { equals: String(value), mode: 'insensitive' }
-          });
+        if (field === 'organizationId') {
+          where.organizationId = value;
+          continue;
         }
-        // For numerical fields, use equals
-        else if (field === 'age') {
-          conditions.push({
-            age: parseInt(value, 10)
-          });
+        if (['name', 'species', 'breed', 'color', 'description'].includes(field)) {
+          orConditions.push({ [field]: { contains: String(value), mode: 'insensitive' } });
+        } else if (field === 'status') {
+          orConditions.push({ status: { equals: value, mode: 'insensitive' } });
+        } else if (field === 'age') {
+          const age = Number(value);
+          if (!isNaN(age)) {
+            orConditions.push({ age: { equals: age } });
+          }
         }
-        // For other fields, try direct matching
-        else {
-          conditions.push({
-            [field]: String(value)
-          });
-        }
-      }
-      
-      // Add OR conditions to where clause
-      if (conditions.length > 0) {
-        where.OR = conditions;
       }
     }
-    
-    // Determine sort order
+    if (orConditions.length > 0) where.OR = orConditions;
+    const skip = (page - 1) * limit;
+    const take = Math.min(limit, 100);
     const sortDirection = sortField.startsWith('-') ? 'desc' : 'asc';
     const actualField = sortField.startsWith('-') ? sortField.substring(1) : sortField;
-    
-    // Build orderBy object for Prisma
-    const orderBy = { [actualField]: sortDirection };
-    
-    // Apply pagination
-    const skip = (page - 1) * limit;
-    const take = Math.min(limit, 100); // Cap at 100 for performance
-    
-    // Fetch pets with the constructed query
-    const pets = await prisma.pet.findMany({
-      where,
-      orderBy,
-      skip,
-      take
-    });
-    
-    callback(null, pets);
+    const pets = await prisma.pet.findMany({ where, orderBy: { [actualField]: sortDirection }, skip, take });
+    return pets;
   } catch (error) {
     console.error('Error searching pets in PostgreSQL:', error);
-    callback(error);
-  }
-};
-
-/**
- * Get a pet by ID
- * @param {String} id - Pet ID
- * @returns {Promise<Object>} - Pet object
- */
-exports.getPetById = async (id) => {
-  try {
-    const pet = await prisma.pet.findUnique({
-      where: { id }
-    });
-    
-    if (!pet) {
-      throw new Error('Pet not found');
-    }
-    
-    return pet;
-  } catch (error) {
-    console.error('Error getting pet from PostgreSQL:', error);
     throw error;
   }
 };
 
 /**
- * Update a pet
- * @param {string} id - Pet ID
- * @param {Object} petData - Pet data to update
- * @param {Function} callback - Callback function (error, pet)
+ * Get pet by ID
+ * @param {String} id - Pet ID
+ * @returns {Promise<Object>} - Pet object
  */
-exports.updatePet = async (id, petData, callback) => {
+exports.getPetById = async (id) => {
   try {
-    // Validate if the pet exists before updating
-    const existingPet = await prisma.pet.findUnique({
-      where: { id }
-    });
-    
-    if (!existingPet) {
-      return callback(new Error('Pet not found'));
+    const pet = await prisma.pet.findUnique({ where: { id } });
+    if (!pet) throw new Error('Pet not found');
+    return pet;
+  } catch (error) {
+    console.error('Error getting pet by ID from PostgreSQL:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get pet by ID with organization context validation
+ * @param {String} id - Pet ID
+ * @param {String} organizationId - Organization ID for access control
+ * @returns {Promise<Object>} - Pet object
+ */
+exports.getPetByIdWithOrgContext = async (id, organizationId) => {
+  try {
+    const pet = await prisma.pet.findUnique({ where: { id } });
+    if (!pet) throw new Error('Pet not found');
+    if (organizationId && pet.organizationId !== organizationId) {
+      throw new Error('Pet does not belong to the specified organization');
     }
-    
-    // Create merged data for validation
+    return pet;
+  } catch (error) {
+    console.error('Error getting pet by ID from PostgreSQL:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update a pet by ID
+ * @param {String} id - Pet ID
+ * @param {Object} petData - Updated pet data
+ * @returns {Promise<Object>} - Updated pet object
+ */
+exports.updatePet = async (id, petData) => {
+  try {
+    const existingPet = await prisma.pet.findUnique({ where: { id } });
+    if (!existingPet) throw new Error('Pet not found');
+    if (petData.organizationId && existingPet.organizationId !== petData.organizationId) {
+      throw new Error('Cannot change pet organization');
+    }
     const mergedData = { ...existingPet, ...petData };
-    
-    // Validate pet data
     const validationError = validatePetData(mergedData);
-    if (validationError) {
-      return callback(validationError);
-    }
-    
-    // Format location data for PostgreSQL JSON field if it's being updated
-    const location = petData.location ? petData.location : undefined;
-    if (location !== undefined) {
-      petData.location = location;
-    }
-    
-    // Update the pet in PostgreSQL using Prisma
+    if (validationError) throw validationError;
+    let location = petData.location || existingPet.location;
     const updatedPet = await prisma.pet.update({
       where: { id },
-      data: {
-        ...petData,
-        updatedAt: new Date()
-      }
+      data: { ...petData, location, updatedAt: new Date() }
     });
-    
-    callback(null, updatedPet);
+    return updatedPet;
   } catch (error) {
     console.error('Error updating pet in PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Delete a pet
  * @param {string} id - Pet ID
- * @param {Function} callback - Callback function (error, result)
+ * @returns {Promise<Object>} - Deletion result
  */
-exports.deletePet = async (id, callback) => {
+exports.deletePet = async (id) => {
   try {
-    // Validate if the pet exists before deleting
-    const existingPet = await prisma.pet.findUnique({
-      where: { id }
-    });
-    
-    if (!existingPet) {
-      return callback(new Error('Pet not found'));
-    }
-    
-    // Delete the pet from PostgreSQL using Prisma
-    await prisma.pet.delete({
-      where: { id }
-    });
-    
-    callback(null, { message: 'Pet deleted successfully' });
+    const existingPet = await prisma.pet.findUnique({ where: { id } });
+    if (!existingPet) throw new Error('Pet not found');
+    await prisma.pet.delete({ where: { id } });
+    return { message: 'Pet deleted successfully' };
   } catch (error) {
     console.error('Error deleting pet from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get pets by owner ID
  * @param {string} ownerId - Owner/User ID
- * @param {Function} callback - Callback function (error, pets)
+ * @returns {Promise<Array>} - Array of pets
  */
-exports.getPetsByOwner = async (ownerId, callback) => {
+exports.getPetsByOwner = async (ownerId) => {
   try {
-    const pets = await prisma.pet.findMany({
-      where: { ownerId }
-    });
-    
-    callback(null, pets);
+    const pets = await prisma.pet.findMany({ where: { ownerId } });
+    return pets;
   } catch (error) {
     console.error('Error getting pets by owner from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get pet statistics
- * @param {Function} callback - Callback function (error, stats)
+ * @returns {Promise<Object>} - Pet statistics
  */
-exports.getPetStats = async (callback) => {
+exports.getPetStats = async () => {
   try {
-    // Get count of pets by status
-    const statusStats = await prisma.pet.groupBy({
-      by: ['status'],
-      _count: true
-    });
-    
-    // Get count of pets by species
-    const speciesStats = await prisma.pet.groupBy({
-      by: ['species'],
-      _count: true
-    });
-    
-    // Convert to the expected format
+    const statusStats = await prisma.pet.groupBy({ by: ['status'], _count: true });
+    const speciesStats = await prisma.pet.groupBy({ by: ['species'], _count: true });
     const stats = {
       total: await prisma.pet.count(),
-      byStatus: statusStats.reduce((acc, curr) => {
-        acc[curr.status] = curr._count;
-        return acc;
-      }, {}),
-      bySpecies: speciesStats.reduce((acc, curr) => {
-        acc[curr.species] = curr._count;
-        return acc;
-      }, {})
+      byStatus: statusStats.reduce((acc, curr) => { acc[curr.status] = curr._count; return acc; }, {}),
+      bySpecies: speciesStats.reduce((acc, curr) => { acc[curr.species] = curr._count; return acc; }, {})
     };
-    
-    callback(null, stats);
+    return stats;
   } catch (error) {
     console.error('Error getting pet statistics from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get a pet with its owner information
  * @param {string} id - Pet ID
- * @param {Function} callback - Callback function (error, pet)
+ * @returns {Promise<Object>} - Pet with owner
  */
-exports.getPetWithOwner = async (id, callback) => {
+exports.getPetWithOwner = async (id) => {
   try {
-    const pet = await prisma.pet.findUnique({
-      where: { id },
-      include: {
-        owner: true
-      }
-    });
-
-    if (!pet) {
-      return callback(new Error('Pet not found'));
-    }
-
-    callback(null, pet);
+    const pet = await prisma.pet.findUnique({ where: { id }, include: { owner: true } });
+    if (!pet) throw new Error('Pet not found');
+    return pet;
   } catch (error) {
     console.error('Error getting pet with owner from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 }; 

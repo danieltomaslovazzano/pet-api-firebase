@@ -163,103 +163,55 @@ const authController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-      
       if (!email || !password) {
-        const response = { error: 'Se requieren email y contraseña' };
-        logAuthEvent('Login Validation Failed', response);
-        return res.status(400).json(response);
+        return res.status(400).json({ error: 'Se requieren email y contraseña' });
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        const response = { error: 'Formato de email inválido' };
-        logAuthEvent('Login Validation Failed', response);
-        return res.status(400).json(response);
-      }
-
-      // Verificar si el usuario existe en Firestore
-      const userSnapshot = await admin.firestore()
-        .collection('users')
-        .where('email', '==', email)
-        .limit(1)
-        .get();
-
-      if (userSnapshot.empty) {
-        const response = { 
-          error: 'Error de autenticación', 
-          details: 'USER_NOT_FOUND' 
-        };
-        logAuthEvent('Login Error', response);
-        return res.status(400).json(response);
-      }
-
-      const userDoc = userSnapshot.docs[0];
-      const userData = userDoc.data();
-
-      // Verificar si la cuenta está deshabilitada
-      if (userData.disabled) {
-        const response = { 
-          error: 'Cuenta deshabilitada', 
-          details: 'USER_DISABLED' 
-        };
-        logAuthEvent('Login Error', response);
-        return res.status(403).json(response);
+        return res.status(400).json({ error: 'Formato de email inválido' });
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
       
-      // Intentar login con Firebase Auth
-      const response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
-        email,
-        password,
-        returnSecureToken: true
-      });
+      // Login con Firebase Auth REST API
+      const response = await axios.post(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
+        { email, password, returnSecureToken: true }
+      );
       
       const { idToken, refreshToken, expiresIn, localId } = response.data;
       
-      const successResponse = {
-        user: {
+      // Buscar usuario en la base de datos (opcional, si quieres más datos)
+      const { prisma } = require('../config/prisma');
+      const userDb = await prisma.user.findUnique({ where: { email } });
+
+      const userData = {
           id: localId,
           email,
-          name: userData.name,
-          role: userData.role,
-          emailVerified: userData.emailVerified,
-          createdAt: userData.createdAt
-        },
-        tokens: {
-          idToken,
-          refreshToken,
-          expiresIn
-        }
+        role: userDb?.role || 'user',
+        isSuperAdmin: userDb?.isSuperAdmin || false,
+        // ...otros campos que quieras exponer
       };
-      
-      logAuthEvent('Login Success', { email, userId: localId });
-      res.status(200).json(successResponse);
+
+      res.status(200).json({
+        user: userData,
+        tokens: { idToken, refreshToken, expiresIn }
+      });
     } catch (error) {
-      logAuthEvent('Login Error', error, true);
-      
       if (error.response?.data?.error) {
         const firebaseError = error.response.data.error;
-        
-        switch(firebaseError.message) {
+        switch (firebaseError.message) {
           case 'INVALID_PASSWORD':
-            return res.status(400).json({ 
-              error: 'Error de autenticación', 
-              details: 'INVALID_PASSWORD' 
-            });
+            return res.status(400).json({ error: 'Error de autenticación', details: 'INVALID_PASSWORD' });
+          case 'EMAIL_NOT_FOUND':
+            return res.status(400).json({ error: 'Usuario no encontrado', details: 'EMAIL_NOT_FOUND' });
           default:
-            return res.status(400).json({ 
-              error: 'Error de autenticación', 
-              details: firebaseError.message 
-            });
+            return res.status(400).json({ error: 'Error de autenticación', details: firebaseError.message });
         }
       }
-      
-      res.status(500).json({ 
-        error: 'Error en el proceso de login', 
-        details: error.message 
-      });
+      res.status(500).json({ error: 'Error en el proceso de login', details: error.message });
     }
   },
 

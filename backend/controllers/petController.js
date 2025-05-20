@@ -13,6 +13,7 @@ const axios = require('axios');
 exports.createPet = async (req, res) => {
   try {
     const petData = req.body;
+    console.log('[createPet] Datos recibidos:', petData);
     // Multitenancy: set organizationId if present
     if (req.organizationId) {
       petData.organizationId = req.organizationId;
@@ -68,7 +69,7 @@ exports.createPet = async (req, res) => {
         // Download the image from the external URL
         const response = await axios.get(url, { 
           responseType: 'arraybuffer',
-          timeout: 10000 // 10 second timeout
+          timeout: 5000 // 5 second timeout para forzar fallo rápido
         });
         
         // Check if we received a valid image
@@ -78,6 +79,7 @@ exports.createPet = async (req, res) => {
         }
         
         const imageBuffer = Buffer.from(response.data, 'binary');
+        console.log('[DEBUG] Buffer.isBuffer(imageBuffer):', Buffer.isBuffer(imageBuffer), 'length:', imageBuffer.length);
         if (!imageBuffer || imageBuffer.length === 0) {
           throw new Error(`Empty image data received from URL: ${url}`);
         }
@@ -100,13 +102,29 @@ exports.createPet = async (req, res) => {
         // Compress the image using format-specific settings
         const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70, format);
 
+        // Validar que el buffer es realmente un Buffer
+        console.log('[DEBUG] Buffer.isBuffer(compressedBuffer):', Buffer.isBuffer(compressedBuffer));
+        console.log('[DEBUG] compressedBuffer length:', compressedBuffer?.length);
+
         // Generate a unique filename (using timestamp and a random string)
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExtension}`;
-        console.log(`Generated filename: ${fileName}`);
+        console.log(`[DEBUG] Subida de imagen: filename=${fileName}, mimetype=${contentType}, bufferLength=${compressedBuffer?.length}`);
 
         // Upload the compressed image to Firebase Storage and get its public URL
-        const newUrl = await uploadImageToStorage(compressedBuffer, fileName);
-        console.log(`Image uploaded successfully: ${newUrl}`);
+        let newUrl;
+        try {
+          newUrl = await uploadImageToStorage(fileName, compressedBuffer, contentType);
+          console.log(`[DEBUG] Imagen subida correctamente: ${newUrl}`);
+        } catch (err) {
+          console.error('[DEBUG] Error en uploadImageToStorage:', {
+            fileName,
+            mimetype: contentType,
+            bufferType: typeof compressedBuffer,
+            bufferLength: compressedBuffer?.length,
+            error: err
+          });
+          throw err;
+        }
 
         processedUrls.push(newUrl);
       } catch (imageError) {
@@ -126,20 +144,21 @@ exports.createPet = async (req, res) => {
     if (req.user && req.user.uid) {
       petData.userId = req.user.uid;
     }
-
+    console.log('[createPet] Datos finales a guardar:', petData);
     // Create the pet record in Firestore
-    petModel.createPet(petData, (err, newPet) => {
-      if (err) {
-        console.error('Error creating pet record:', err);
-        return res.status(500).json({ 
+    try {
+      const newPet = await petModel.createPet(petData);
+      console.log('[createPet] Mascota creada:', newPet);
+      res.status(201).json(newPet);
+    } catch (err) {
+      console.error('[createPet] Error creando mascota:', err);
+      res.status(500).json({ 
           error: 'Error creating pet record', 
           details: err.message || 'Unknown error occurred'
         });
       }
-      res.status(201).json(newPet);
-    });
   } catch (error) {
-    console.error('Error in createPet:', error);
+    console.error('[createPet] Error general:', error);
     res.status(500).json({ error: 'Failed to create pet', details: error.message });
   }
 };
@@ -149,7 +168,7 @@ exports.createPet = async (req, res) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.getPets = (req, res) => {
+exports.getPets = async (req, res) => {
     // Extract filter and pagination parameters
     const { 
       species, status, breed, 
@@ -174,15 +193,16 @@ exports.getPets = (req, res) => {
     const pageSize = parseInt(limit, 10);
     
     // Call the model with filter, pagination and sorting options
-    petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort, (err, pets) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error retrieving pets', details: err.message });
+    try {
+      const pets = await petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort);
+      res.status(200).json(pets);
+    } catch (err) {
+      console.error('Error retrieving pets:', err);
+      res.status(500).json({ error: 'Error retrieving pets', details: err.message });
         }
-        res.status(200).json(pets);
-    });
 };
 
-exports.getPetById = (req, res) => {
+exports.getPetById = async (req, res) => {
     const { id } = req.params;
     // Multitenancy: ensure pet belongs to org unless super admin
     if (!req.user.isSuperAdmin && req.organizationId) {
@@ -190,20 +210,20 @@ exports.getPetById = (req, res) => {
     }
     console.log(`[getPetById] Attempting to retrieve pet with ID: ${id}`);
     
-    petModel.getPetById(id, (err, pet) => {
-        if (err) {
+    try {
+      const pet = await petModel.getPetById(id);
+      console.log(`[getPetById] Successfully retrieved pet ID ${id}`);
+      res.status(200).json(pet);
+    } catch (err) {
             console.error(`[getPetById] Error retrieving pet ID ${id}:`, err);
             if (err.message === 'Pet not found') {
                 return res.status(404).json({ error: 'Pet not found' });
             }
-            return res.status(500).json({ error: 'Error retrieving pet', details: err.message });
+      res.status(500).json({ error: 'Error retrieving pet', details: err.message });
         }
-        console.log(`[getPetById] Successfully retrieved pet ID ${id}`);
-        res.status(200).json(pet);
-    });
 };
 
-exports.updatePet = (req, res) => {
+exports.updatePet = async (req, res) => {
     const { id } = req.params;
     const petData = req.body;
     // Multitenancy: ensure pet belongs to org unless super admin
@@ -249,26 +269,28 @@ exports.updatePet = (req, res) => {
       }
     }
     
-    petModel.updatePet(id, petData, (err, updatedPet) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error updating pet' });
+    try {
+      const updatedPet = await petModel.updatePet(id, petData);
+      res.status(200).json(updatedPet);
+    } catch (err) {
+      console.error('Error updating pet:', err);
+      res.status(500).json({ error: 'Error updating pet' });
         }
-        res.status(200).json(updatedPet);
-    });
 };
 
-exports.deletePet = (req, res) => {
+exports.deletePet = async (req, res) => {
     const { id } = req.params;
     // Multitenancy: ensure pet belongs to org unless super admin
     if (!req.user.isSuperAdmin && req.organizationId) {
       // petModel.getPetById should check org context
     }
-    petModel.deletePet(id, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error deleting pet' });
-        }
+    try {
+      await petModel.deletePet(id);
         res.status(200).json({ message: `Pet ${id} deleted` });
-    });
+    } catch (err) {
+      console.error('Error deleting pet:', err);
+      res.status(500).json({ error: 'Error deleting pet' });
+    }
 };
 
 /**
@@ -276,7 +298,7 @@ exports.deletePet = (req, res) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.searchPets = (req, res) => {
+exports.searchPets = async (req, res) => {
     // Extract search parameters
     const { 
         name, species, status, breed,
@@ -297,14 +319,8 @@ exports.searchPets = (req, res) => {
     const pageSize = parseInt(limit, 10);
     
     // Call the model with search criteria
-    petModel.searchPets(searchCriteria, pageNumber, pageSize, sort, (err, pets) => {
-        if (err) {
-            return res.status(500).json({ 
-                error: 'Error searching pets', 
-                details: err.message 
-            });
-        }
-        
+    try {
+      const pets = await petModel.searchPets(searchCriteria, pageNumber, pageSize, sort);
         res.status(200).json({
             results: pets,
             pagination: {
@@ -314,7 +330,13 @@ exports.searchPets = (req, res) => {
                 hasMore: pets.length === pageSize // Simple check if there might be more results
             }
         });
+    } catch (err) {
+      console.error('Error searching pets:', err);
+      res.status(500).json({ 
+        error: 'Error searching pets', 
+        details: err.message 
     });
+    }
 };
 
 exports.updatePetImage = async (req, res) => {
@@ -334,19 +356,20 @@ exports.updatePetImage = async (req, res) => {
     const fileName = `${petId}_${Date.now()}.jpg`;
     
     // Upload the compressed image to Firebase Storage
-    const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
+    const imageUrl = await uploadImageToStorage(fileName, compressedBuffer, req.file.mimetype);
     
     // Update the pet record by merging this new image URL with existing ones
-    petModel.updatePetImages(petId, [imageUrl], (err, updatedPet) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error updating pet record', details: err.message });
-      }
+    try {
+      const updatedPet = await petModel.updatePetImages(petId, [imageUrl]);
       res.status(200).json({
         message: 'Image uploaded and pet record updated successfully',
         pet: updatedPet,
         imageUrl: imageUrl
       });
-    });
+    } catch (err) {
+      console.error('Error updating pet record:', err);
+      res.status(500).json({ error: 'Error updating pet record', details: err.message });
+    }
   } catch (error) {
     console.error('Error in updatePetImage:', error);
     res.status(500).json({ error: 'Failed to process image upload', details: error.message });
@@ -368,33 +391,39 @@ exports.updatePetMultipleImages = async (req, res) => {
     for (const file of req.files) {
       const compressedBuffer = await compressImage(file.buffer, 800, 800, 70);
       const fileName = `${petId}_${Date.now()}_${Math.random().toString(36).substring(2,8)}.jpg`;
-      const imageUrl = await uploadImageToStorage(compressedBuffer, fileName);
+      const imageUrl = await uploadImageToStorage(fileName, compressedBuffer, file.mimetype);
       uploadedUrls.push(imageUrl);
     }
     
     // Merge new image URLs with the existing images in the pet record
-    petModel.updatePetImages(petId, uploadedUrls, (err, updatedPet) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error updating pet images', details: err.message });
-      }
+    try {
+      const updatedPet = await petModel.updatePetImages(petId, uploadedUrls);
       res.status(200).json({
         message: 'Images uploaded and pet record updated successfully',
         pet: updatedPet,
         imageUrls: uploadedUrls
       });
-    });
+    } catch (err) {
+      console.error('Error updating pet images:', err);
+      res.status(500).json({ error: 'Error updating pet images', details: err.message });
+    }
   } catch (error) {
     console.error('Error in updatePetMultipleImages:', error);
     res.status(500).json({ error: 'Failed to process multiple image upload', details: error.message });
   }
 };
 
-exports.removePetImage = (req, res) => {
+exports.removePetImage = async (req, res) => {
   const petId = req.params.id;
   const { imageUrl } = req.body;
   
-  petModel.removePetImage(petId, imageUrl, (err, updatedPet) => {
-    if (err) {
+  try {
+    const updatedPet = await petModel.removePetImage(petId, imageUrl);
+    res.status(200).json({
+      message: 'Image removed successfully',
+      pet: updatedPet
+    });
+  } catch (err) {
       if (err.message.includes('A pet record must have at least one image')) {
         return res.status(400).json({ 
           error: 'Cannot remove the last image', 
@@ -406,11 +435,6 @@ exports.removePetImage = (req, res) => {
         details: err.message 
       });
     }
-    res.status(200).json({
-      message: 'Image removed successfully',
-      pet: updatedPet
-    });
-  });
 };
 
 exports.createPetFromUrls = async (req, res) => {
@@ -427,17 +451,19 @@ exports.createPetFromUrls = async (req, res) => {
     // Process each external image URL
     for (const url of petData.images) {
       // Download the image
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
+      const response = await axios.get(url, { responseType: 'arraybuffer', timeout: 5000 });
       const imageBuffer = Buffer.from(response.data, 'binary');
+      console.log('[DEBUG] Buffer.isBuffer(imageBuffer):', Buffer.isBuffer(imageBuffer), 'length:', imageBuffer.length);
       
       // Compress the image using Sharp (via our utility function)
       const compressedBuffer = await compressImage(imageBuffer, 800, 800, 70);
+      console.log('[DEBUG] Buffer.isBuffer(compressedBuffer):', Buffer.isBuffer(compressedBuffer), 'length:', compressedBuffer.length);
       
       // Generate a unique filename (using a timestamp and random string)
       const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.jpg`;
       
       // Upload the compressed image to Firebase Storage
-      const newUrl = await uploadImageToStorage(compressedBuffer, fileName);
+      const newUrl = await uploadImageToStorage(fileName, compressedBuffer, response.headers['content-type']);
       
       processedUrls.push(newUrl);
     }
@@ -446,12 +472,13 @@ exports.createPetFromUrls = async (req, res) => {
     petData.images = processedUrls;
     
     // Create the pet record in Firestore
-    petModel.createPet(petData, (err, newPet) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error creating pet record', details: err.message });
-      }
+    try {
+      const newPet = await petModel.createPet(petData);
       res.status(201).json(newPet);
-    });
+    } catch (err) {
+      console.error('Error creating pet record:', err);
+      res.status(500).json({ error: 'Error creating pet record', details: err.message });
+    }
   } catch (error) {
     console.error('Error in createPetFromUrls:', error);
     res.status(500).json({ error: 'Failed to create pet from URLs', details: error.message });

@@ -1,8 +1,10 @@
 // app.js
+require('./config/loadEnv');
 require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const { verifyToken } = require('./middlewares/auth');
 const organizationContext = require('./middlewares/organizationContext');
 
 // Import routes
@@ -29,11 +31,14 @@ app.use(cors({
 // Middleware for parsing JSON
 app.use(express.json());
 
-// Organization context middleware (after auth, before protected routes)
+// Rutas públicas
+app.use('/api/auth', authRoutes);
+
+// Middlewares de autenticación y organización para rutas protegidas
+app.use(verifyToken);
 app.use(organizationContext);
 
-// Mount routes
-app.use('/api/auth', authRoutes);
+// Rutas protegidas
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);

@@ -3,374 +3,412 @@
  * 
  * This model handles conversation-related database operations using Prisma ORM
  * while maintaining the same API contract as the Firebase implementation.
+ * Now with multitenancy support through organizationId filtering.
  */
 
-const { prisma } = require('../../config/prisma');
+const { PrismaClient } = require('@prisma/client');
 const { v4: uuidv4 } = require('uuid');
+
+// Create Prisma client instance
+const prisma = new PrismaClient();
 
 /**
  * Create a new conversation
- * @param {Object} conversationData - Conversation data to create
- * @param {Function} callback - Callback function (error, conversation)
+ * @param {Object} data - Conversation data
+ * @returns {Promise<Object>} - Created conversation
  */
-exports.createConversation = async (conversationData, callback) => {
+exports.createConversation = async (data) => {
   try {
+    // Validate required fields
+    if (!data.participants || !Array.isArray(data.participants) || data.participants.length < 2) {
+      throw new Error('At least two participants are required');
+    }
+
+    // Generate a unique ID
     const id = uuidv4();
-    const now = new Date();
-    
-    // Create conversation in PostgreSQL using Prisma
-    const newConversation = await prisma.conversation.create({
+
+    // Create the conversation in Prisma
+    const conversation = await prisma.conversation.create({
       data: {
         id,
-        title: conversationData.title || null,
-        status: conversationData.status || 'active',
-        createdAt: now,
-        lastMessageAt: now,
-        // Connect participants through the many-to-many relationship
-        participants: {
-          connect: conversationData.participants.map(userId => ({ id: userId }))
-        },
-        // Store additional arrays as metadata in the JSON field
-        metadata: {
-          deletedBy: [],  // IDs of users who have soft-deleted the conversation
-          hiddenBy: [],   // IDs of users who have hidden the conversation
-          blockedBy: []   // IDs of users who have blocked the conversation
-        }
+        // Multitenancy: Include organization context
+        organizationId: data.organizationId || null,
+        participants: data.participants,
+        title: data.title || 'New Conversation',
+        type: data.type || 'direct',
+        lastMessage: data.lastMessage || null,
+        lastMessageAt: data.lastMessageAt || new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     });
-    
-    // We need to get the participants to match the Firebase return format
-    const conversationWithParticipants = await prisma.conversation.findUnique({
-      where: { id },
-      include: {
-        participants: true
-      }
-    });
-    
-    // Format to match Firebase response
-    const result = {
-      ...conversationWithParticipants,
-      participants: conversationWithParticipants.participants.map(p => p.id),
-      deletedBy: [],
-      hiddenBy: [],
-      blockedBy: []
-    };
-    
-    callback(null, result);
+
+    return conversation;
   } catch (error) {
-    console.error('Error creating conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error creating conversation:', error);
+    throw error;
   }
 };
 
 /**
  * Get a conversation by ID
- * @param {string} id - Conversation ID
- * @param {Function} callback - Callback function (error, conversation)
+ * @param {String} id - Conversation ID
+ * @returns {Promise<Object>} - Found conversation
  */
-exports.getConversationById = async (id, callback) => {
+exports.getConversationById = async (id) => {
   try {
     const conversation = await prisma.conversation.findUnique({
       where: { id },
       include: {
-        participants: true
-      }
-    });
-    
-    if (!conversation) {
-      return callback(new Error('Conversation not found'));
-    }
-    
-    // Format to match Firebase response
-    const result = {
-      ...conversation,
-      participants: conversation.participants.map(p => p.id),
-      deletedBy: conversation.metadata?.deletedBy || [],
-      hiddenBy: conversation.metadata?.hiddenBy || [],
-      blockedBy: conversation.metadata?.blockedBy || []
-    };
-    
-    callback(null, result);
-  } catch (error) {
-    console.error('Error getting conversation from PostgreSQL:', error);
-    callback(error);
-  }
-};
-
-/**
- * Get all conversations for a user (excluding those they've deleted)
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, conversations)
- */
-exports.getConversationsForUser = async (userId, callback) => {
-  try {
-    // Find conversations where the user is a participant
-    const conversations = await prisma.conversation.findMany({
-      where: {
-        participants: {
-          some: {
-            id: userId
-          }
+        messages: {
+          orderBy: { createdAt: 'asc' }
         }
-      },
+      }
+    });
+
+    if (!conversation) {
+      throw new Error('Conversation not found');
+    }
+
+    return conversation;
+  } catch (error) {
+    console.error('Error getting conversation by ID:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get conversations for a specific user
+ * @param {String} userId - User ID
+ * @param {String|null} organizationId - Optional organization ID filter
+ * @returns {Promise<Array>} - Found conversations
+ */
+exports.getConversationsForUser = async (userId, organizationId) => {
+  try {
+    const whereClause = {
+      participants: {
+        has: userId
+      }
+    };
+
+    // Multitenancy: Add organization filter if provided
+    if (organizationId) {
+      whereClause.organizationId = organizationId;
+    }
+
+    const conversations = await prisma.conversation.findMany({
+      where: whereClause,
+      orderBy: { lastMessageAt: 'desc' },
       include: {
-        participants: true
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1 // Include just the last message
+        }
       }
     });
-    
-    // Filter out conversations the user has deleted
-    const filteredConversations = conversations
-      .filter(conv => !(conv.metadata?.deletedBy || []).includes(userId))
-      .map(conv => ({
-        ...conv,
-        participants: conv.participants.map(p => p.id),
-        deletedBy: conv.metadata?.deletedBy || [],
-        hiddenBy: conv.metadata?.hiddenBy || [],
-        blockedBy: conv.metadata?.blockedBy || []
-      }));
-    
-    callback(null, filteredConversations);
+
+    return conversations;
   } catch (error) {
-    console.error('Error getting conversations for user from PostgreSQL:', error);
-    callback(error);
+    console.error('Error getting conversations for user:', error);
+    throw error;
   }
 };
 
 /**
- * Soft delete a conversation for a user (adds userId to deletedBy)
- * @param {string} conversationId - Conversation ID
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, result)
+ * Get conversations with filters
+ * @param {Object} filters - Filter criteria
+ * @returns {Promise<Array>} - Found conversations
  */
-exports.softDeleteConversation = async (conversationId, userId, callback) => {
+exports.getConversations = async (filters) => {
   try {
-    // Get current conversation to access metadata
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId }
+    const whereClause = {};
+
+    // Apply filters
+    if (filters) {
+      if (filters.userId) {
+        whereClause.participants = { has: filters.userId };
+      }
+
+      if (filters.status) {
+        whereClause.status = filters.status;
+      }
+
+      // Date range filtering
+      if (filters.startDate) {
+        whereClause.createdAt = {
+          ...(whereClause.createdAt || {}),
+          gte: new Date(filters.startDate)
+        };
+      }
+
+      if (filters.endDate) {
+        whereClause.createdAt = {
+          ...(whereClause.createdAt || {}),
+          lte: new Date(filters.endDate)
+        };
+      }
+
+      // Multitenancy: Add organization filter if provided
+      if (filters.organizationId) {
+        whereClause.organizationId = filters.organizationId;
+      }
+    }
+
+    const conversations = await prisma.conversation.findMany({
+      where: whereClause,
+      orderBy: { lastMessageAt: 'desc' },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1
+        }
+      }
     });
-    
+
+    return conversations;
+  } catch (error) {
+    console.error('Error getting conversations with filters:', error);
+    throw error;
+  }
+};
+
+/**
+ * Soft delete a conversation for a specific user
+ * @param {String} id - Conversation ID
+ * @param {String} userId - User ID
+ * @returns {Promise<Object>} - Result of the operation
+ */
+exports.softDeleteConversation = async (id, userId) => {
+  try {
+    // Get the current conversation
+    const conversation = await prisma.conversation.findUnique({
+      where: { id }
+    });
+
     if (!conversation) {
-      return callback(new Error('Conversation not found'));
+      throw new Error('Conversation not found');
     }
-    
-    // Update deletedBy array
-    const metadata = conversation.metadata || {};
-    const deletedBy = metadata.deletedBy || [];
-    
-    if (!deletedBy.includes(userId)) {
-      deletedBy.push(userId);
+
+    // Check if user is a participant
+    if (!conversation.participants.includes(userId)) {
+      throw new Error('User is not a participant in this conversation');
     }
-    
+
+    // Add user to deletedFor array
+    let deletedFor = conversation.deletedFor || [];
+    if (!deletedFor.includes(userId)) {
+      deletedFor.push(userId);
+    }
+
     // Update the conversation
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { id },
       data: {
-        metadata: {
-          ...metadata,
-          deletedBy
-        },
+        deletedFor,
         updatedAt: new Date()
       }
     });
-    
-    callback(null, { message: 'Conversation soft-deleted for user', conversationId, userId });
+
+    return { success: true, message: 'Conversation soft deleted' };
   } catch (error) {
-    console.error('Error soft-deleting conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error soft deleting conversation:', error);
+    throw error;
   }
 };
 
 /**
- * Permanently delete a conversation (for admin)
- * @param {string} conversationId - Conversation ID
- * @param {Function} callback - Callback function (error, result)
+ * Permanently delete a conversation
+ * @param {String} id - Conversation ID
+ * @returns {Promise<Object>} - Result of the operation
  */
-exports.permanentDeleteConversation = async (conversationId, callback) => {
+exports.permanentDeleteConversation = async (id) => {
   try {
-    // Using a transaction to ensure both the messages and conversation are deleted
-    await prisma.$transaction([
-      // Delete all messages in the conversation
-      prisma.message.deleteMany({
-        where: { conversationId }
-      }),
-      // Delete the conversation
-      prisma.conversation.delete({
-        where: { id: conversationId }
-      })
-    ]);
-    
-    callback(null, { message: 'Conversation permanently deleted', conversationId });
-  } catch (error) {
-    console.error('Error permanently deleting conversation from PostgreSQL:', error);
-    callback(error);
-  }
-};
-
-/**
- * Hide conversation for a user (adds userId to hiddenBy)
- * @param {string} conversationId - Conversation ID
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, result)
- */
-exports.hideConversation = async (conversationId, userId, callback) => {
-  try {
-    // Get current conversation to access metadata
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId }
+    // First, delete all messages in the conversation
+    await prisma.message.deleteMany({
+      where: { conversationId: id }
     });
-    
+
+    // Then delete the conversation itself
+    await prisma.conversation.delete({
+      where: { id }
+    });
+
+    return { success: true, message: 'Conversation permanently deleted' };
+  } catch (error) {
+    console.error('Error permanently deleting conversation:', error);
+    throw error;
+  }
+};
+
+/**
+ * Hide a conversation for a specific user
+ * @param {String} id - Conversation ID
+ * @param {String} userId - User ID
+ * @returns {Promise<Object>} - Result of the operation
+ */
+exports.hideConversation = async (id, userId) => {
+  try {
+    // Get the current conversation
+    const conversation = await prisma.conversation.findUnique({
+      where: { id }
+    });
+
     if (!conversation) {
-      return callback(new Error('Conversation not found'));
+      throw new Error('Conversation not found');
     }
-    
-    // Update hiddenBy array
-    const metadata = conversation.metadata || {};
-    const hiddenBy = metadata.hiddenBy || [];
-    
-    if (!hiddenBy.includes(userId)) {
-      hiddenBy.push(userId);
+
+    // Check if user is a participant
+    if (!conversation.participants.includes(userId)) {
+      throw new Error('User is not a participant in this conversation');
     }
-    
+
+    // Add user to hiddenFor array
+    let hiddenFor = conversation.hiddenFor || [];
+    if (!hiddenFor.includes(userId)) {
+      hiddenFor.push(userId);
+    }
+
     // Update the conversation
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { id },
       data: {
-        metadata: {
-          ...metadata,
-          hiddenBy
-        },
+        hiddenFor,
         updatedAt: new Date()
       }
     });
-    
-    callback(null, { message: 'Conversation hidden for user', conversationId, userId });
+
+    return { success: true, message: 'Conversation hidden' };
   } catch (error) {
-    console.error('Error hiding conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error hiding conversation:', error);
+    throw error;
   }
 };
 
 /**
- * Unhide conversation for a user (removes userId from hiddenBy)
- * @param {string} conversationId - Conversation ID
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, result)
+ * Unhide a conversation for a specific user
+ * @param {String} id - Conversation ID
+ * @param {String} userId - User ID
+ * @returns {Promise<Object>} - Result of the operation
  */
-exports.unhideConversation = async (conversationId, userId, callback) => {
+exports.unhideConversation = async (id, userId) => {
   try {
-    // Get current conversation to access metadata
+    // Get the current conversation
     const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId }
+      where: { id }
     });
-    
+
     if (!conversation) {
-      return callback(new Error('Conversation not found'));
+      throw new Error('Conversation not found');
     }
-    
-    // Update hiddenBy array
-    const metadata = conversation.metadata || {};
-    const hiddenBy = (metadata.hiddenBy || []).filter(id => id !== userId);
-    
+
+    // Check if user is a participant
+    if (!conversation.participants.includes(userId)) {
+      throw new Error('User is not a participant in this conversation');
+    }
+
+    // Remove user from hiddenFor array
+    let hiddenFor = conversation.hiddenFor || [];
+    hiddenFor = hiddenFor.filter(uid => uid !== userId);
+
     // Update the conversation
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { id },
       data: {
-        metadata: {
-          ...metadata,
-          hiddenBy
-        },
+        hiddenFor,
         updatedAt: new Date()
       }
     });
-    
-    callback(null, { message: 'Conversation unhidden for user', conversationId, userId });
+
+    return { success: true, message: 'Conversation unhidden' };
   } catch (error) {
-    console.error('Error unhiding conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error unhiding conversation:', error);
+    throw error;
   }
 };
 
 /**
- * Block conversation for a user (adds userId to blockedBy)
- * @param {string} conversationId - Conversation ID
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, result)
+ * Block a conversation for a specific user
+ * @param {String} id - Conversation ID
+ * @param {String} userId - User ID
+ * @returns {Promise<Object>} - Result of the operation
  */
-exports.blockConversation = async (conversationId, userId, callback) => {
+exports.blockConversation = async (id, userId) => {
   try {
-    // Get current conversation to access metadata
+    // Get the current conversation
     const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId }
+      where: { id }
     });
-    
+
     if (!conversation) {
-      return callback(new Error('Conversation not found'));
+      throw new Error('Conversation not found');
     }
-    
-    // Update blockedBy array
-    const metadata = conversation.metadata || {};
-    const blockedBy = metadata.blockedBy || [];
-    
+
+    // Check if user is a participant
+    if (!conversation.participants.includes(userId)) {
+      throw new Error('User is not a participant in this conversation');
+    }
+
+    // Add user to blockedBy array
+    let blockedBy = conversation.blockedBy || [];
     if (!blockedBy.includes(userId)) {
       blockedBy.push(userId);
     }
-    
+
     // Update the conversation
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { id },
       data: {
-        metadata: {
-          ...metadata,
-          blockedBy
-        },
+        blockedBy,
         updatedAt: new Date()
       }
     });
-    
-    callback(null, { message: 'Conversation blocked for user', conversationId, userId });
+
+    return { success: true, message: 'Conversation blocked' };
   } catch (error) {
-    console.error('Error blocking conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error blocking conversation:', error);
+    throw error;
   }
 };
 
 /**
- * Unblock conversation for a user (removes userId from blockedBy)
- * @param {string} conversationId - Conversation ID
- * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, result)
+ * Unblock a conversation for a specific user
+ * @param {String} id - Conversation ID
+ * @param {String} userId - User ID
+ * @returns {Promise<Object>} - Result of the operation
  */
-exports.unblockConversation = async (conversationId, userId, callback) => {
+exports.unblockConversation = async (id, userId) => {
   try {
-    // Get current conversation to access metadata
+    // Get the current conversation
     const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId }
+      where: { id }
     });
-    
+
     if (!conversation) {
-      return callback(new Error('Conversation not found'));
+      throw new Error('Conversation not found');
     }
-    
-    // Update blockedBy array
-    const metadata = conversation.metadata || {};
-    const blockedBy = (metadata.blockedBy || []).filter(id => id !== userId);
-    
+
+    // Check if user is a participant
+    if (!conversation.participants.includes(userId)) {
+      throw new Error('User is not a participant in this conversation');
+    }
+
+    // Remove user from blockedBy array
+    let blockedBy = conversation.blockedBy || [];
+    blockedBy = blockedBy.filter(uid => uid !== userId);
+
     // Update the conversation
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { id },
       data: {
-        metadata: {
-          ...metadata,
-          blockedBy
-        },
+        blockedBy,
         updatedAt: new Date()
       }
     });
-    
-    callback(null, { message: 'Conversation unblocked for user', conversationId, userId });
+
+    return { success: true, message: 'Conversation unblocked' };
   } catch (error) {
-    console.error('Error unblocking conversation in PostgreSQL:', error);
-    callback(error);
+    console.error('Error unblocking conversation:', error);
+    throw error;
   }
 };
 

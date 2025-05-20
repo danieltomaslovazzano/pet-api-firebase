@@ -4,7 +4,7 @@ const { userModel, membershipModel } = require('../models/adapter');
 
 // Firestore eliminado: solo se usa Firebase para Auth y Storage.
 
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
   const userData = req.body;
   
   // Multitenancy: set organization context if present
@@ -12,35 +12,29 @@ exports.createUser = (req, res) => {
     userData.defaultOrganizationId = req.organizationId;
   }
   
-  userModel.createUser(userData, (err, newUser) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error creating user', details: err.message });
-    }
+  try {
+    const newUser = await userModel.createUser(userData);
     
     // If organization context is present, create membership
     if (req.organizationId) {
-      membershipModel.createMembership({
+      await membershipModel.createMembership({
         userId: newUser.id,
         organizationId: req.organizationId,
         role: userData.orgRole || 'member' // Default to member if no specific role
-      }, (membershipErr) => {
-        if (membershipErr) {
-          console.error('Error creating membership for new user:', membershipErr);
-          // Continue anyway as user was created successfully
-        }
-        res.status(201).json(newUser);
       });
-    } else {
-      res.status(201).json(newUser);
     }
-  });
+    
+    res.status(201).json(newUser);
+  } catch (err) {
+    res.status(500).json({ error: 'Error creating user', details: err.message });
+  }
 };
 
-exports.getUserById = (req, res) => {
+exports.getUserById = async (req, res) => {
   const { id } = req.params;
   
   // Multitenancy: Check if requesting user has access to target user
-  const checkAccess = () => {
+  const checkAccess = async () => {
     // Super admin can access any user
     if (req.user.isSuperAdmin) {
       return fetchUser();
@@ -53,14 +47,13 @@ exports.getUserById = (req, res) => {
     
     // If organization context exists, check if both users belong to the same org
     if (req.organizationId) {
-      membershipModel.checkUserRole(id, req.organizationId, null, (err, targetUserIsMember) => {
-        if (err || !targetUserIsMember) {
-          return res.status(403).json({ 
-            error: 'Forbidden: Cannot access user outside your organization context'
-          });
-        }
-        fetchUser();
-      });
+      const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
+      if (!targetUserIsMember) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Cannot access user outside your organization context'
+        });
+      }
+      fetchUser();
     } else {
       // Without organization context, only allow admin users or self-access
       if (req.user.role === 'admin' || req.user.role === 'moderator') {
@@ -73,28 +66,27 @@ exports.getUserById = (req, res) => {
     }
   };
   
-  const fetchUser = () => {
-    userModel.getUserById(id)
-      .then(user => {
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-        }
-        res.status(200).json(user);
-      })
-      .catch(err => {
-        res.status(500).json({ error: 'Error retrieving user', details: err.message });
-      });
+  const fetchUser = async () => {
+    try {
+      const user = await userModel.getUserById(id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(500).json({ error: 'Error retrieving user', details: err.message });
+    }
   };
   
-  checkAccess();
+  await checkAccess();
 };
 
-exports.updateUser = (req, res) => {
+exports.updateUser = async (req, res) => {
   const { id } = req.params;
   const userData = req.body;
   
   // Multitenancy: Check access rules
-  const checkAccess = () => {
+  const checkAccess = async () => {
     // Super admin can update any user
     if (req.user.isSuperAdmin) {
       return performUpdate();
@@ -108,23 +100,21 @@ exports.updateUser = (req, res) => {
     // With organization context, admins can update users in their org
     if (req.organizationId) {
       // Check if target user belongs to this org
-      membershipModel.checkUserRole(id, req.organizationId, null, (err, targetUserIsMember) => {
-        if (err || !targetUserIsMember) {
-          return res.status(403).json({ 
-            error: 'Forbidden: Cannot update user outside your organization'
-          });
-        }
-        
-        // Check if current user is admin in this org
-        membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin', (err, isAdmin) => {
-          if (err || !isAdmin) {
-            return res.status(403).json({ 
-              error: 'Forbidden: Only organization admins can update other users'
-            });
-          }
-          performUpdate();
+      const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
+      if (!targetUserIsMember) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Cannot update user outside your organization'
         });
-      });
+      }
+      
+      // Check if current user is admin in this org
+      const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
+      if (!isAdmin) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Only organization admins can update other users'
+        });
+      }
+      performUpdate();
     } else {
       // Without organization context, only allow admin or moderator role users
       if (req.user.role === 'admin' || req.user.role === 'moderator') {
@@ -137,23 +127,23 @@ exports.updateUser = (req, res) => {
     }
   };
   
-  const performUpdate = () => {
-    userModel.updateUser(id, userData, (err, updatedUser) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error updating user', details: err.message });
-      }
+  const performUpdate = async () => {
+    try {
+      const updatedUser = await userModel.updateUser(id, userData);
       res.status(200).json(updatedUser);
-    });
+    } catch (err) {
+      res.status(500).json({ error: 'Error updating user', details: err.message });
+    }
   };
   
-  checkAccess();
+  await checkAccess();
 };
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   
   // Multitenancy: Check access rules for delete
-  const checkAccess = () => {
+  const checkAccess = async () => {
     // Super admin can delete any user
     if (req.user.isSuperAdmin) {
       return performDelete();
@@ -162,23 +152,21 @@ exports.deleteUser = (req, res) => {
     // With organization context, org admins can remove users from their org
     if (req.organizationId) {
       // Check if target user belongs to this org
-      membershipModel.checkUserRole(id, req.organizationId, null, (err, targetUserIsMember) => {
-        if (err || !targetUserIsMember) {
-          return res.status(403).json({ 
-            error: 'Forbidden: Cannot delete user outside your organization'
-          });
-        }
-        
-        // Check if current user is admin in this org
-        membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin', (err, isAdmin) => {
-          if (err || !isAdmin) {
-            return res.status(403).json({ 
-              error: 'Forbidden: Only organization admins can delete users'
-            });
-          }
-          performDelete();
+      const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
+      if (!targetUserIsMember) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Cannot delete user outside your organization'
         });
-      });
+      }
+      
+      // Check if current user is admin in this org
+      const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
+      if (!isAdmin) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Only organization admins can delete users'
+        });
+      }
+      performDelete();
     } else {
       // Without organization context, only allow admin role
       if (req.user.role === 'admin') {
@@ -191,19 +179,19 @@ exports.deleteUser = (req, res) => {
     }
   };
   
-  const performDelete = () => {
-    userModel.deleteUser(id, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error deleting user', details: err.message });
-      }
+  const performDelete = async () => {
+    try {
+      const result = await userModel.deleteUser(id);
       res.status(200).json(result);
-    });
+    } catch (err) {
+      res.status(500).json({ error: 'Error deleting user', details: err.message });
+    }
   };
   
-  checkAccess();
+  await checkAccess();
 };
 
-exports.getUsers = (req, res) => {
+exports.getUsers = async (req, res) => {
   // Extraer filtros de la query string
   // Ejemplo: GET /users?name=John&email=john@example.com&role=reporter
   const filters = {
@@ -221,117 +209,99 @@ exports.getUsers = (req, res) => {
   // Multitenancy: Apply organization context if present
   if (req.organizationId && !req.user.isSuperAdmin) {
     // Get users who are members of this organization
-    membershipModel.getOrganizationMembers(req.organizationId, (err, members) => {
-      if (err) {
-        return res.status(500).json({ 
-          error: 'Error retrieving organization members', 
-          details: err.message 
-        });
-      }
-      
-      // Extract user IDs from memberships
-      const userIds = members.map(member => member.userId);
-      filters.ids = userIds; // Add to filter criteria
-      
-      // Get users with filters applied
-      userModel.getUsers(filters, (err, users) => {
-        if (err) {
-          return res.status(500).json({ error: 'Error retrieving users', details: err.message });
-        }
-        res.status(200).json(users);
-      });
-    });
+    const members = await membershipModel.getOrganizationMembers(req.organizationId);
+    
+    // Extract user IDs from memberships
+    const userIds = members.map(member => member.userId);
+    filters.ids = userIds; // Add to filter criteria
+    
+    // Get users with filters applied
+    const users = await userModel.getUsers(filters);
+    res.status(200).json(users);
   } else {
     // Super admin or no org context, get all users with filters
-    userModel.getUsers(filters, (err, users) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error retrieving users', details: err.message });
-      }
-      res.status(200).json(users);
-    });
+    const users = await userModel.getUsers(filters);
+    res.status(200).json(users);
   }
 };
 
 /* controllers/userController.js - Bloquear Usuario */
-exports.blockUser = (req, res) => {
+exports.blockUser = async (req, res) => {
   const { id } = req.params;  // ID del usuario que realiza la acción
   const { blockedUserId } = req.body;
   
   // Multitenancy: Ensure user can only block users within their organization
   if (req.organizationId && !req.user.isSuperAdmin) {
     // Check if target user is in the same organization
-    membershipModel.checkUserRole(blockedUserId, req.organizationId, null, (err, targetUserIsMember) => {
-      if (err || !targetUserIsMember) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot block user outside your organization'
-        });
-      }
-      
-      // Proceed with block
-      performBlock();
-    });
+    const targetUserIsMember = await membershipModel.checkUserRole(blockedUserId, req.organizationId, null);
+    if (!targetUserIsMember) {
+      return res.status(403).json({ 
+        error: 'Forbidden: Cannot block user outside your organization'
+      });
+    }
+    
+    // Proceed with block
+    await performBlock();
   } else {
-    performBlock();
+    await performBlock();
   }
   
-  function performBlock() {
-    userModel.blockUser(id, blockedUserId, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error blocking user', details: err.message });
-      }
+  async function performBlock() {
+    try {
+      const result = await userModel.blockUser(id, blockedUserId);
       res.status(200).json(result);
-    });
+    } catch (err) {
+      res.status(500).json({ error: 'Error blocking user', details: err.message });
+    }
   }
 };
 
 // controllers/userController.js
-exports.unblockUser = (req, res) => {
+exports.unblockUser = async (req, res) => {
   const { id } = req.params;  // ID del usuario que realiza la acción
   const { blockedUserId } = req.body;
   
   // Multitenancy: Ensure user can only unblock users within their organization
   if (req.organizationId && !req.user.isSuperAdmin) {
     // Check if target user is in the same organization
-    membershipModel.checkUserRole(blockedUserId, req.organizationId, null, (err, targetUserIsMember) => {
-      if (err || !targetUserIsMember) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot unblock user outside your organization'
-        });
-      }
-      
-      // Proceed with unblock
-      performUnblock();
-    });
+    const targetUserIsMember = await membershipModel.checkUserRole(blockedUserId, req.organizationId, null);
+    if (!targetUserIsMember) {
+      return res.status(403).json({ 
+        error: 'Forbidden: Cannot unblock user outside your organization'
+      });
+    }
+    
+    // Proceed with unblock
+    await performUnblock();
   } else {
-    performUnblock();
+    await performUnblock();
   }
   
-  function performUnblock() {
-    userModel.unblockUser(id, blockedUserId, (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error unblocking user', details: err.message });
-      }
+  async function performUnblock() {
+    try {
+      const result = await userModel.unblockUser(id, blockedUserId);
       res.status(200).json(result);
-    });
+    } catch (err) {
+      res.status(500).json({ error: 'Error unblocking user', details: err.message });
+    }
   }
 };
 
 // Añadir nuevo método para obtener organizaciones del usuario
-exports.getUserOrganizations = (req, res) => {
+exports.getUserOrganizations = async (req, res) => {
   const { id } = req.params;
   
   // Multitenancy: Super admin can view any user's orgs, others only their own
   if (req.user.uid !== id && !req.user.isSuperAdmin) {
     // If in org context, check if requesting user is admin in this org
     if (req.organizationId) {
-      membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin', (err, isAdmin) => {
-        if (err || !isAdmin) {
-          return res.status(403).json({ 
-            error: 'Forbidden: Only organization admins can view other users\' organizations'
-          });
-        }
-        fetchOrganizations();
-      });
+      const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
+      if (!isAdmin) {
+        return res.status(403).json({ 
+          error: 'Forbidden: Only organization admins can view other users\' organizations'
+        });
+      }
+      fetchOrganizations();
     } else {
       return res.status(403).json({ 
         error: 'Forbidden: You can only view your own organizations'
@@ -341,13 +311,13 @@ exports.getUserOrganizations = (req, res) => {
     fetchOrganizations();
   }
   
-  function fetchOrganizations() {
-    userModel.getUserOrganizations(id, (err, organizations) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error retrieving user organizations', details: err.message });
-      }
+  async function fetchOrganizations() {
+    try {
+      const organizations = await userModel.getUserOrganizations(id);
       res.status(200).json(organizations);
-    });
+    } catch (err) {
+      res.status(500).json({ error: 'Error retrieving user organizations', details: err.message });
+    }
   }
 };
 
@@ -358,11 +328,7 @@ exports.getAdminUserById = async (req, res) => {
     // Multitenancy: Only super admin or org admin can access admin details
     if (!req.user.isSuperAdmin) {
       if (req.organizationId) {
-        const isOrgAdmin = await new Promise((resolve) => {
-          membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin', (err, isAdmin) => {
-            resolve(!err && isAdmin);
-          });
-        });
+        const isOrgAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
         
         if (!isOrgAdmin) {
           return res.status(403).json({ 
@@ -371,11 +337,7 @@ exports.getAdminUserById = async (req, res) => {
         }
         
         // Check if target user belongs to this org
-        const targetUserIsMember = await new Promise((resolve) => {
-          membershipModel.checkUserRole(id, req.organizationId, null, (err, isMember) => {
-            resolve(!err && isMember);
-          });
-        });
+        const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
         
         if (!targetUserIsMember) {
           return res.status(403).json({ 
@@ -398,27 +360,22 @@ exports.getAdminUserById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found in database' });
     }
-    
+
     // Combine data from both sources
     const userData = {
       ...user,
-      uid: userRecord.uid,
-      email: userRecord.email,
       emailVerified: userRecord.emailVerified,
       disabled: userRecord.disabled,
-      metadata: {
-        creationTime: userRecord.metadata.creationTime,
-        lastSignInTime: userRecord.metadata.lastSignInTime
-      },
-      customClaims: userRecord.customClaims || {}
+      lastLoginAt: userRecord.metadata.lastSignInTime,
+      creationTime: userRecord.metadata.creationTime
     };
-    
+
     res.status(200).json(userData);
-  } catch (error) {
-    console.error('Error getting admin user details:', error);
-    if (error.code === 'auth/user-not-found') {
-      return res.status(404).json({ error: 'User not found in Firebase Auth' });
-    }
-    res.status(500).json({ error: 'Error getting user details', details: error.message });
+  } catch (err) {
+    console.error('Error in getAdminUserById:', err);
+    res.status(500).json({ 
+      error: 'Error retrieving user details', 
+      details: err.message 
+    });
   }
 };

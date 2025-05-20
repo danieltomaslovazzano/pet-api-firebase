@@ -1,4 +1,4 @@
-// controllers/adminController.js - Añadir estas funciones al final del archivo
+console.log('=== ADMIN CONTROLLER CARGADO ===');
 const admin = require('../config/firebase');
 const { userModel, petModel } = require('../models/adapter');
 
@@ -142,6 +142,7 @@ exports.inviteUser = async (req, res) => {
 
 // Modificar la función getAllUsers existente para mejorar el filtrado
 exports.getAllUsers = async (req, res) => {
+  console.log('[DEBUG] Entró a adminController.getAllUsers');
   try {
     const filters = {
       name: req.query.name ? req.query.name.toString() : undefined,
@@ -159,8 +160,12 @@ exports.getAllUsers = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       filters.organizationId = req.organizationId;
     }
-    userModel.getUsers(filters, async (err, users) => {
-      if (err) {
+    console.log('[DEBUG] Antes de llamar a userModel.getUsers', filters);
+    let users;
+    try {
+      users = await userModel.getUsers(filters);
+      console.log('[DEBUG] userModel.getUsers respondió', { usersCount: users ? users.length : null });
+    } catch (err) {
         console.error('Error al recuperar usuarios:', err);
         return res.status(500).json({ 
           error: 'Error al recuperar usuarios', 
@@ -169,33 +174,39 @@ exports.getAllUsers = async (req, res) => {
       }
 
       // Si hay usuarios, obtener información adicional desde Firebase Auth
+    /*
       if (users.length > 0) {
         try {
-          // Obtener información de autenticación en lote para todos los usuarios
           const userIds = users.map(user => user.id).filter(id => id); // Filtrar IDs nulos o indefinidos
-          
+        console.log('[DEBUG] UIDs a consultar en Firebase Auth:', userIds);
           if (userIds.length > 0) {
-            const authUsers = await admin.auth().getUsers(userIds.map(uid => ({ uid })));
-            
+          // Timeout de 2 segundos para la llamada a getUsers
+          const getUsersPromise = admin.auth().getUsers(userIds.map(uid => ({ uid })));
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout Firebase Auth getUsers')), 2000));
+          let authUsers;
+          try {
+            authUsers = await Promise.race([getUsersPromise, timeoutPromise]);
+            console.log('[DEBUG] Respuesta de Firebase Auth:', authUsers);
+          } catch (firebaseError) {
+            console.warn('[WARN] Error o timeout en getUsers de Firebase Auth:', firebaseError);
+            // Devolver usuarios sin enriquecer
+            return res.status(200).json(users);
+          }
             // Crear un mapa para búsqueda rápida
             const authUserMap = new Map();
             authUsers.users.forEach(user => {
               authUserMap.set(user.uid, user);
             });
-            
             // Enriquecer datos de usuarios con información de auth
             users = users.map(user => {
               const authUser = user.id ? authUserMap.get(user.id) : null;
-              
               return {
                 ...user,
-                // Añadir información de Firebase Auth si está disponible
                 status: authUser ? (authUser.disabled ? 'disabled' : 'active') : user.status || 'active',
                 emailVerified: authUser ? authUser.emailVerified : false,
                 lastLoginAt: authUser ? authUser.metadata.lastSignInTime : null,
                 creationTime: authUser ? authUser.metadata.creationTime : user.createdAt,
                 providerData: authUser ? authUser.providerData : [],
-                // Determinar origen del registro basado en providerData
                 origin: authUser && authUser.providerData.length > 0 ? 
                   authUser.providerData[0].providerId : 'email'
               };
@@ -203,9 +214,10 @@ exports.getAllUsers = async (req, res) => {
           }
         } catch (authError) {
           console.error('Error al obtener información de autenticación:', authError);
-          // No fallamos la solicitud completa, simplemente continuamos con los datos de Firestore
-        }
+        // No fallamos la solicitud completa, simplemente continuamos con los datos de base
       }
+    }
+    */
 
       // Aplicar filtros adicionales que no se pueden hacer en la consulta de Firestore
       
@@ -261,7 +273,6 @@ exports.getAllUsers = async (req, res) => {
       }));
 
       res.status(200).json(sanitizedUsers);
-    });
   } catch (err) {
     console.error('Error inesperado en getAllUsers:', err);
     res.status(500).json({ 
@@ -282,20 +293,23 @@ exports.getAllPets = async (req, res) => {
       startDate: req.query.startDate ? req.query.startDate.toString() : undefined,
       endDate: req.query.endDate ? req.query.endDate.toString() : undefined,
     };
-
-    // Eliminar filtros no definidos
     Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
-
-    // Llamar al petModel (asumo que existe y funciona de manera similar a userModel)
-    petModel.getPets(filters, (err, pets) => {
-      if (err) {
+    // Refactor: usar async/await en vez de callback
+    let pets;
+    try {
+      pets = await new Promise((resolve, reject) => {
+        petModel.getPets((err, pets) => {
+          if (err) reject(err);
+          else resolve(pets);
+        });
+      });
+    } catch (err) {
         console.error('Error al recuperar mascotas:', err);
         return res.status(500).json({ 
           error: 'Error al recuperar mascotas', 
           details: err.message 
         });
       }
-
       // Sanitizar datos y enviar respuesta
       const sanitizedPets = pets.map(pet => ({
         id: pet.id,
@@ -308,9 +322,7 @@ exports.getAllPets = async (req, res) => {
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt,
       }));
-
       res.status(200).json(sanitizedPets);
-    });
   } catch (err) {
     console.error('Error inesperado en getAllPets:', err);
     res.status(500).json({ 
@@ -325,24 +337,27 @@ exports.updatePet = async (req, res) => {
   try {
     const { id } = req.params;
     const petData = req.body;
-    
     // Verificar que el usuario tiene permisos
     if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
       return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
     }
-    
-    // Actualizar en petModel (asumo que existe)
-    petModel.updatePet(id, petData, (err, updatedPet) => {
-      if (err) {
+    // Refactor: usar async/await en vez de callback
+    let updatedPet;
+    try {
+      updatedPet = await new Promise((resolve, reject) => {
+        petModel.updatePet(id, petData, (err, pet) => {
+          if (err) reject(err);
+          else resolve(pet);
+        });
+      });
+    } catch (err) {
         console.error('Error al actualizar mascota:', err);
         return res.status(500).json({ 
           error: 'Error al actualizar mascota', 
           details: err.message 
         });
       }
-      
       res.status(200).json(updatedPet);
-    });
   } catch (err) {
     console.error('Error inesperado en updatePet:', err);
     res.status(500).json({ 
@@ -362,14 +377,12 @@ exports.updateUser = async (req, res) => {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
         return res.status(403).json({ error: 'No permission to update user in this organization' });
-      }
     }
-    
+    }
     // Si se está cambiando el rol, verificar que sea admin
     if (updates.role && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Solo los administradores pueden cambiar roles' });
     }
-    
     // Actualizar en Firebase Auth si es necesario
     if (updates.disabled !== undefined) {
       try {
@@ -379,19 +392,18 @@ exports.updateUser = async (req, res) => {
         // No fallamos la solicitud completa, continuamos con la actualización en Firestore
       }
     }
-    
-    // Actualizar en userModel
-    userModel.updateUser(id, updates, (err, updatedUser) => {
-      if (err) {
+    // Refactor: usar async/await en vez de callback
+    let updatedUser;
+    try {
+      updatedUser = await userModel.updateUser(id, updates);
+    } catch (err) {
         console.error('Error al actualizar usuario:', err);
         return res.status(500).json({ 
           error: 'Error al actualizar usuario', 
           details: err.message 
         });
       }
-      
       res.status(200).json(updatedUser);
-    });
   } catch (err) {
     console.error('Error inesperado en updateUser:', err);
     res.status(500).json({ 
@@ -410,9 +422,8 @@ exports.deleteUser = async (req, res) => {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
         return res.status(403).json({ error: 'No permission to delete user in this organization' });
-      }
     }
-    
+    }
     // Eliminar de Firebase Auth
     try {
       await admin.auth().deleteUser(id);
@@ -420,19 +431,18 @@ exports.deleteUser = async (req, res) => {
       console.error('Error al eliminar usuario de Firebase Auth:', authError);
       // No fallamos la solicitud completa, continuamos con la eliminación en Firestore
     }
-    
-    // Eliminar de userModel
-    userModel.deleteUser(id, (err, result) => {
-      if (err) {
+    // Refactor: usar async/await en vez de callback
+    let result;
+    try {
+      result = await userModel.deleteUser(id);
+    } catch (err) {
         console.error('Error al eliminar usuario:', err);
         return res.status(500).json({ 
           error: 'Error al eliminar usuario', 
           details: err.message 
         });
       }
-      
       res.status(200).json(result);
-    });
   } catch (err) {
     console.error('Error inesperado en deleteUser:', err);
     res.status(500).json({ 
@@ -454,11 +464,9 @@ exports.updateUserRole = async (req, res) => {
         return res.status(403).json({ error: 'No permission to update user role in this organization' });
       }
     }
-    
     if (!role) {
       return res.status(400).json({ error: 'Se requiere especificar un rol' });
     }
-    
     // Actualizar custom claims en Firebase Auth
     try {
       await admin.auth().setCustomUserClaims(id, { role });
@@ -469,21 +477,20 @@ exports.updateUserRole = async (req, res) => {
         details: authError.message 
       });
     }
-    
-    // Actualizar en userModel
-    userModel.updateUser(id, { role }, (err, updatedUser) => {
-      if (err) {
+    // Refactor: usar async/await en vez de callback
+    let updatedUser;
+    try {
+      updatedUser = await userModel.updateUser(id, { role });
+    } catch (err) {
         console.error('Error al actualizar rol en base de datos:', err);
         return res.status(500).json({ 
           error: 'Error al actualizar rol en base de datos', 
           details: err.message 
         });
       }
-      
       res.status(200).json({
         message: `Rol actualizado correctamente a "${role}" para el usuario ${id}`,
         user: updatedUser
-      });
     });
   } catch (err) {
     console.error('Error inesperado en updateUserRole:', err);
@@ -498,21 +505,17 @@ exports.updateUserRole = async (req, res) => {
 exports.createUser = async (req, res) => {
   try {
     const { email, password, role, name } = req.body;
-    
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
-
     // Create user in Firebase Auth
     const userRecord = await admin.auth().createUser({
       email,
       password,
       displayName: name
     });
-
     // Set custom claims for role
     await admin.auth().setCustomUserClaims(userRecord.uid, { role: role || 'user' });
-
     // Create user in Firestore
     const userData = {
       id: userRecord.uid,
@@ -521,19 +524,20 @@ exports.createUser = async (req, res) => {
       role: role || 'user',
       createdAt: new Date().toISOString()
     };
-
     // Multitenancy: set organizationId if present
     if (req.organizationId) {
       userData.organizationId = req.organizationId;
     }
-
-    await new Promise((resolve, reject) => {
-      userModel.createUser(userData, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
+    // Refactor: usar async/await en vez de callback
+    try {
+      await userModel.createUser(userData);
+    } catch (err) {
+      console.error('Error al crear usuario en base de datos:', err);
+      return res.status(500).json({
+        error: 'Error al crear usuario en base de datos',
+        details: err.message
       });
-    });
-
+    }
     res.status(201).json({
       message: 'User created successfully',
       user: userData

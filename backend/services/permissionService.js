@@ -40,6 +40,11 @@ class ResourceNotFoundError extends Error {
  * @throws {PermissionConfigError} If the permission configuration is invalid
  */
 async function hasPermission(user, resource, action, context = {}) {
+  // Permitir acceso universal a superadmin
+  if (user && user.role === 'superadmin') {
+    // Superadmin tiene acceso a todo
+    return true;
+  }
   try {
     // If permissions aren't defined for this resource or action, deny by default
     if (!permissionRules[resource]) {
@@ -371,7 +376,7 @@ async function checkSameOrganization(user, resource) {
  */
 async function checkIsOrgAdmin(userId, orgId) {
   // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
-  return false;
+    return false;
 }
 
 /**
@@ -383,7 +388,7 @@ async function checkIsOrgAdmin(userId, orgId) {
  */
 async function checkIsOrgStaff(userId, orgId) {
   // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
-  return false;
+    return false;
 }
 
 /**
@@ -395,7 +400,7 @@ async function checkIsOrgStaff(userId, orgId) {
  */
 async function checkIsOrgMember(userId, orgId) {
   // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
-  return false;
+    return false;
 }
 
 /**
@@ -407,7 +412,7 @@ async function checkIsOrgMember(userId, orgId) {
  */
 async function checkIsOrgOwner(userId, orgId) {
   // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
-  return false;
+      return false;
 }
 
 /**
@@ -418,7 +423,7 @@ async function checkIsOrgOwner(userId, orgId) {
  */
 async function getUserOrganizations(userId) {
   // [Firestore logic removed: All Firestore database operations have been removed as part of the migration to Prisma/Postgres. Firebase Auth logic is preserved.]
-  return [];
+      return [];
 }
 
 module.exports = {

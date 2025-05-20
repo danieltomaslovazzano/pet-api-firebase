@@ -9,11 +9,11 @@ const { prisma } = require('../../config/prisma');
 const { v4: uuidv4 } = require('uuid');
 
 /**
- * Create a membership (invite a user)
- * @param {Object} membershipData - Membership data to create
- * @param {Function} callback - Callback function (error, membership)
+ * Create a new membership
+ * @param {Object} membershipData - Membership data
+ * @returns {Promise<Object>} - Created membership
  */
-exports.createMembership = async (membershipData, callback) => {
+exports.createMembership = async (membershipData) => {
   try {
     // Check if a membership already exists for this user and organization
     const existingMembership = await prisma.membership.findFirst({
@@ -24,7 +24,7 @@ exports.createMembership = async (membershipData, callback) => {
     });
     
     if (existingMembership) {
-      return callback(new Error('User is already a member of this organization'));
+      throw new Error('User is already a member of this organization');
     }
     
     // Create the membership
@@ -43,10 +43,10 @@ exports.createMembership = async (membershipData, callback) => {
       }
     });
     
-    callback(null, newMembership);
+    return newMembership;
   } catch (error) {
     console.error('Error creating membership in PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
@@ -76,9 +76,9 @@ exports.getMembershipById = async (id) => {
  * Update role or permissions
  * @param {string} id - Membership ID
  * @param {Object} membershipData - Membership data to update
- * @param {Function} callback - Callback function (error, membership)
+ * @returns {Promise<Object>} - Updated membership
  */
-exports.updateMembership = async (id, membershipData, callback) => {
+exports.updateMembership = async (id, membershipData) => {
   try {
     const updatedMembership = await prisma.membership.update({
       where: { id },
@@ -88,28 +88,28 @@ exports.updateMembership = async (id, membershipData, callback) => {
       }
     });
     
-    callback(null, updatedMembership);
+    return updatedMembership;
   } catch (error) {
     console.error('Error updating membership in PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Delete membership (remove member)
  * @param {string} id - Membership ID
- * @param {Function} callback - Callback function (error, result)
+ * @returns {Promise<Object>} - Result of the operation
  */
-exports.deleteMembership = async (id, callback) => {
+exports.deleteMembership = async (id) => {
   try {
     await prisma.membership.delete({
       where: { id }
     });
     
-    callback(null, { message: 'Membership successfully deleted' });
+    return { message: 'Membership successfully deleted' };
   } catch (error) {
     console.error('Error deleting membership from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
@@ -118,9 +118,9 @@ exports.deleteMembership = async (id, callback) => {
  * @param {string} userId - User ID
  * @param {string} organizationId - Organization ID
  * @param {string|null} role - Role to check (or null to just check membership)
- * @param {Function} callback - Callback function (error, boolean)
+ * @returns {Promise<boolean>} - True if the user has the role, false otherwise
  */
-exports.checkUserRole = async (userId, organizationId, role, callback) => {
+exports.checkUserRole = async (userId, organizationId, role) => {
   try {
     const membership = await prisma.membership.findFirst({
       where: {
@@ -130,19 +130,19 @@ exports.checkUserRole = async (userId, organizationId, role, callback) => {
     });
     
     if (!membership) {
-      return callback(null, false);
+      return false;
     }
     
     // If role is null, just check if the user is a member
     if (role === null) {
-      return callback(null, true);
+      return true;
     }
     
     const hasRole = membership.role === role;
-    callback(null, hasRole);
+    return hasRole;
   } catch (error) {
     console.error('Error checking user role in PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
@@ -150,9 +150,9 @@ exports.checkUserRole = async (userId, organizationId, role, callback) => {
  * Get a specific membership by user and organization
  * @param {string} userId - User ID
  * @param {string} organizationId - Organization ID
- * @param {Function} callback - Callback function (error, membership)
+ * @returns {Promise<Object>} - Membership object
  */
-exports.getMembershipByUserAndOrg = async (userId, organizationId, callback) => {
+exports.getMembershipByUserAndOrg = async (userId, organizationId) => {
   try {
     const membership = await prisma.membership.findFirst({
       where: {
@@ -162,49 +162,49 @@ exports.getMembershipByUserAndOrg = async (userId, organizationId, callback) => 
     });
     
     if (!membership) {
-      return callback(null, null);
+      return null;
     }
     
-    callback(null, membership);
+    return membership;
   } catch (error) {
     console.error('Error getting membership by user and organization from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get all memberships for a user
  * @param {string} userId - User ID
- * @param {Function} callback - Callback function (error, memberships)
+ * @returns {Promise<Array>} - Array of memberships
  */
-exports.getMembershipsByUser = async (userId, callback) => {
+exports.getMembershipsByUser = async (userId) => {
   try {
     const memberships = await prisma.membership.findMany({
       where: { userId }
     });
     
-    callback(null, memberships);
+    return memberships;
   } catch (error) {
     console.error('Error getting memberships by user from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 
 /**
  * Get all memberships for an organization
  * @param {string} organizationId - Organization ID
- * @param {Function} callback - Callback function (error, memberships)
+ * @returns {Promise<Array>} - Array of memberships
  */
-exports.getMembershipsByOrganization = async (organizationId, callback) => {
+exports.getMembershipsByOrganization = async (organizationId) => {
   try {
     const memberships = await prisma.membership.findMany({
       where: { organizationId }
     });
     
-    callback(null, memberships);
+    return memberships;
   } catch (error) {
     console.error('Error getting memberships by organization from PostgreSQL:', error);
-    callback(error);
+    throw error;
   }
 };
 

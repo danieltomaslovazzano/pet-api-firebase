@@ -1,6 +1,8 @@
 /**
  * Jest configuration for the backend tests
  */
+// require('dotenv').config({ path: '.env.test' });
+
 module.exports = {
   // Set the test environment
   testEnvironment: 'node',
@@ -9,7 +11,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
   
   // Setup and teardown files
-  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
+  // setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
   
   // Coverage configuration
   collectCoverage: true,

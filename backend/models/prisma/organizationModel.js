@@ -265,29 +265,18 @@ class OrganizationModel {
   /**
    * Get organization members
    * @param {string} orgId - Organization ID
-   * @param {Function} callback - Callback function (error, members)
+   * @returns {Promise<Array>} - Array of members
    */
-  async getOrganizationMembers(orgId, callback) {
+  async getOrganizationMembers(orgId) {
     try {
-      // Get memberships for the organization
-      const memberships = await this.prisma.membership.findMany({
+      const members = await this.prisma.membership.findMany({
         where: { organizationId: orgId },
-        include: {
-          user: true
-        }
+        include: { user: true }
       });
-      
-      // Format the result to match the expected output
-      const members = memberships.map(membership => ({
-        ...membership.user,
-        role: membership.role,
-        membershipId: membership.id
-      }));
-      
-      callback(null, members);
+      return members;
     } catch (error) {
       console.error('Error getting organization members from PostgreSQL:', error);
-      callback(error);
+      throw error;
     }
   }
 }
