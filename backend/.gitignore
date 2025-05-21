@@ -18,4 +18,4 @@ tests/admin/reports/
 tests/membership/reports/
 tests/organization/reports/
 tests/conversation/reports/
-tests/message/reports/
+tests/message/reports/tests/e2e/reports/

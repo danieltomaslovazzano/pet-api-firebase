@@ -383,7 +383,7 @@ exports.getAdminUserById = async (req, res) => {
 exports.me = async (req, res) => {
   try {
     // req.user debe estar poblado por el middleware de autenticación
-    const userId = req.user.id || req.user.uid;
+    const userId = req.user.sub || req.user.uid; // Firebase uses 'sub' for user ID in JWT
     if (!userId) {
       return res.status(401).json({ error: 'No autenticado' });
     }

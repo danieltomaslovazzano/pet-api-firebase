@@ -17,12 +17,17 @@ const verifyToken = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    req.user = decodedToken;
-    console.log('[auth] Token decodificado:', decodedToken);
+    // Asegurar que el ID del usuario esté disponible tanto en uid como en sub
+    req.user = {
+      ...decodedToken,
+      uid: decodedToken.sub || decodedToken.uid, // Firebase usa 'sub' para el ID en JWT
+      id: decodedToken.sub || decodedToken.uid   // Mantener compatibilidad con id
+    };
+    console.log('[auth] Token decodificado:', req.user);
     
     // Si necesitas información adicional del usuario
     try {
-      const userRecord = await admin.auth().getUser(decodedToken.uid);
+      const userRecord = await admin.auth().getUser(req.user.uid);
       req.userRecord = userRecord;
       console.log('[auth] userRecord:', userRecord);
     } catch (userError) {
