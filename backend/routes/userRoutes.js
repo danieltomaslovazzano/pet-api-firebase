@@ -13,6 +13,9 @@ router.get('/', userController.getUsers);
 // POST /users - Crear un nuevo usuario
 router.post('/', userController.createUser);
 
+// GET /users/me - Obtener el perfil del usuario autenticado
+router.get('/me', userController.me);
+
 // GET /users/:id - Obtener un usuario específico
 router.get('/:id', userController.getUserById);
 
@@ -30,8 +33,5 @@ router.post('/:id/unblock', userController.unblockUser);
 
 // GET /users/:id/organizations - Obtener organizaciones del usuario
 router.get('/:id/organizations', userController.getUserOrganizations);
-
-// GET /users/me - Obtener el perfil del usuario autenticado
-router.get('/me', userController.me);
 
 module.exports = router;
