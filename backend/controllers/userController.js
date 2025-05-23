@@ -13,18 +13,70 @@ exports.createUser = async (req, res) => {
   }
   
   try {
-    const newUser = await userModel.createUser(userData);
-    
-    // If organization context is present, create membership
-    if (req.organizationId) {
-      await membershipModel.createMembership({
-        userId: newUser.id,
-        organizationId: req.organizationId,
-        role: userData.orgRole || 'member' // Default to member if no specific role
-      });
+    // 1. Create user in Firebase Auth
+    if (!userData.email || !userData.password) {
+      return res.status(400).json({ error: 'Email and password are required' });
     }
-    
-    res.status(201).json(newUser);
+    let userRecord;
+    try {
+      userRecord = await admin.auth().createUser({
+        email: userData.email,
+        password: userData.password,
+        displayName: userData.name
+      });
+    } catch (firebaseError) {
+      return res.status(500).json({ error: 'Error creating user in Firebase', details: firebaseError.message });
+    }
+
+    // 2. Set custom claims for role
+    try {
+      await admin.auth().setCustomUserClaims(userRecord.uid, { role: userData.role || 'user' });
+    } catch (claimsError) {
+      // If setting claims fails, delete the Firebase user to avoid orphaned records
+      await admin.auth().deleteUser(userRecord.uid);
+      return res.status(500).json({ error: 'Error setting user role in Firebase', details: claimsError.message });
+    }
+
+    // 3. Create user in DB with Firebase UID as id
+    const dbUserData = {
+      id: userRecord.uid,
+      email: userData.email,
+      name: userData.name,
+      role: userData.role || 'user',
+      status: userData.status || 'active',
+      profileImage: userData.profileImage,
+      phone: userData.phone,
+      address: userData.address,
+      blockedUsers: userData.blockedUsers || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    try {
+      await userModel.createUser(dbUserData);
+    } catch (dbError) {
+      // If DB creation fails, delete the Firebase user to avoid orphaned records
+      await admin.auth().deleteUser(userRecord.uid);
+      return res.status(500).json({ error: 'Error creating user in database', details: dbError.message });
+    }
+
+    // 4. If organization context is present, create membership
+    if (req.organizationId) {
+      try {
+        await membershipModel.createMembership({
+          userId: userRecord.uid,
+          organizationId: req.organizationId,
+          role: userData.orgRole || 'member' // Default to member if no specific role
+        });
+      } catch (membershipError) {
+        // Membership creation failed, but user is created; log and continue
+        console.error('Error creating membership:', membershipError);
+      }
+    }
+
+    // 5. Return created user (without password)
+    const responseUser = { ...dbUserData };
+    delete responseUser.password;
+    res.status(201).json(responseUser);
   } catch (err) {
     res.status(500).json({ error: 'Error creating user', details: err.message });
   }
