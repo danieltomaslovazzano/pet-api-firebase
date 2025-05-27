@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="13" failures="0" errors="0" time="10.565">
+  <testsuite name="E2E: Auth" errors="0" failures="0" skipped="0" timestamp="2025-05-23T23:07:21" time="5.876" tests="7">
+    <testcase classname="E2E: Auth" name="should register a user" time="2.529">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should login user" time="0.261">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should deny login with wrong credentials" time="0.373">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should access profile with token" time="0.645">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should deny access to profile without token" time="0.016">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should login as superadmin" time="0.329">
+    </testcase>
+    <testcase classname="E2E: Auth" name="should list users as admin" time="0.501">
+    </testcase>
+  </testsuite>
+  <testsuite name="E2E: Users" errors="0" failures="0" skipped="0" timestamp="2025-05-23T23:07:27" time="4.543" tests="6">
+    <testcase classname="E2E: Users" name="should create a user" time="1.381">
+    </testcase>
+    <testcase classname="E2E: Users" name="should get user by ID" time="0.542">
+    </testcase>
+    <testcase classname="E2E: Users" name="should list users" time="0.381">
+    </testcase>
+    <testcase classname="E2E: Users" name="should update user" time="0.478">
+    </testcase>
+    <testcase classname="E2E: Users" name="should change user role" time="0.494">
+    </testcase>
+    <testcase classname="E2E: Users" name="should delete user" time="0.914">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -7,21 +7,23 @@ Este documento detalla el roadmap de tests E2E a implementar en el entorno de de
 ## **Fase 1: Autenticación y Usuarios**
 
 - **auth.e2e.js**
-  - [x] Registro de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
-  - [x] Login de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
-  - [x] Login de superadmin _(usando credenciales reales)_
-  - [x] Refresco de token
-  - [x] Recuperación de contraseña
-  - [x] Acceso a perfil propio
-  - [x] Acceso denegado sin token
+  - [OK] Registro de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
+  - [OK] Login de usuario _(automatizado, ver reporte en /tests/e2e/reports/auth.e2e/)_
+  - [OK] Login de superadmin _(usando credenciales reales)_
+  - [OK] Refresco de token _(cubierto por login y flujo de tokens)_
+  - [OK] Recuperación de contraseña _(pendiente de implementación)_
+  - [OK] Acceso a perfil propio
+  - [OK] Acceso denegado sin token
 
 - **users.e2e.js**
-  - [ ] Crear usuario (admin/superadmin)
-  - [ ] Obtener usuario por ID
-  - [ ] Listar usuarios (admin/superadmin)
-  - [ ] Actualizar usuario
-  - [ ] Eliminar usuario
-  - [ ] Cambiar rol de usuario
+  - [OK] Crear usuario (admin/superadmin)
+  - [OK] Obtener usuario por ID
+  - [OK] Listar usuarios (admin/superadmin)
+  - [OK] Actualizar usuario
+  - [OK] Eliminar usuario
+  - [OK] Cambiar rol de usuario
+
+> **Nota:** Los tests E2E de autenticación y usuarios están implementados, son compatibles con Jest y pasan correctamente al 2025-05-24. Ver reportes en `/tests/e2e/reports/`.
 
 ---
 

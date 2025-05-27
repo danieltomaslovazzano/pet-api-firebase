@@ -24,7 +24,7 @@ const config = {
   testTimeout: process.env.TEST_TIMEOUT || 30000, // 30 seconds default timeout
   testFiles: process.argv.slice(2).length > 0 
     ? process.argv.slice(2) 
-    : ['tests/e2e/auth.e2e.js'] // Default to auth tests if no files specified
+    : ['tests/e2e/auth.e2e.js', 'tests/e2e/users.e2e.js'] // Run both auth and users tests by default
 };
 
 // Validate required environment variables
