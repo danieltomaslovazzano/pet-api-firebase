@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="20" failures="0" errors="0" time="62.541">
-  <testsuite name="Memberships E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-05-27T21:21:35" time="62.421" tests="20">
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Admin should invite user to organization successfully" time="0.683">
+<testsuites name="jest tests" tests="19" failures="0" errors="0" time="35.755">
+  <testsuite name="Pets E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-05-27T21:39:44" time="35.643" tests="19">
+    <testcase classname="Pets E2E Tests Pet Creation" name="Admin should create a pet successfully" time="1.902">
     </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should fail to invite same user twice" time="0.625">
+    <testcase classname="Pets E2E Tests Pet Creation" name="Regular user should create a pet successfully" time="1.201">
     </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.727">
+    <testcase classname="Pets E2E Tests Pet Creation" name="Should fail without required fields" time="0.584">
     </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should invite user with different roles" time="7.763">
+    <testcase classname="Pets E2E Tests Pet Creation" name="Should fail without organization context" time="1.031">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by organization" time="0.757">
+    <testcase classname="Pets E2E Tests Pet Retrieval" name="Should get pet by ID" time="0.38">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by user" time="0.496">
+    <testcase classname="Pets E2E Tests Pet Retrieval" name="Should list pets for organization" time="0.432">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="User should get their own memberships" time="0.455">
+    <testcase classname="Pets E2E Tests Pet Retrieval" name="Should filter pets by species" time="0.377">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Should fail without userId or organizationId" time="0.418">
+    <testcase classname="Pets E2E Tests Pet Retrieval" name="Should filter pets by status" time="0.433">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Regular user should fail to get other user memberships" time="0.411">
+    <testcase classname="Pets E2E Tests Pet Retrieval" name="Should fail with invalid pet ID" time="0.325">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Admin should get membership by ID" time="0.527">
+    <testcase classname="Pets E2E Tests Pet Updates" name="Admin should update pet successfully" time="0.733">
     </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Should fail with invalid membership ID" time="0.447">
+    <testcase classname="Pets E2E Tests Pet Updates" name="Regular user should update pet successfully" time="0.573">
     </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Admin should update member role successfully" time="0.636">
+    <testcase classname="Pets E2E Tests Pet Updates" name="Should fail with invalid pet ID" time="0.257">
     </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Should fail with invalid role" time="0.434">
+    <testcase classname="Pets E2E Tests Pet Deletion" name="Admin should delete pet successfully" time="2.305">
     </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Regular user should fail to update role without permissions" time="0.53">
+    <testcase classname="Pets E2E Tests Pet Deletion" name="Should fail with invalid pet ID" time="1.485">
     </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Admin should remove member successfully" time="1.065">
+    <testcase classname="Pets E2E Tests Multitenancy &amp; Permissions" name="User should only see pets from their organization" time="0.357">
     </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Regular user should fail to remove member without permissions" time="2.31">
+    <testcase classname="Pets E2E Tests Multitenancy &amp; Permissions" name="User should not access pets from other organizations" time="0.437">
     </testcase>
-    <testcase classname="Memberships E2E Tests Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.118">
+    <testcase classname="Pets E2E Tests Multitenancy &amp; Permissions" name="User should not update pets from other organizations" time="0.522">
     </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.483">
+    <testcase classname="Pets E2E Tests Multitenancy &amp; Permissions" name="User should not delete pets from other organizations" time="0.604">
     </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="1.411">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.054">
+    <testcase classname="Pets E2E Tests Multitenancy &amp; Permissions" name="Super admin should access pets from any organization" time="0.596">
     </testcase>
   </testsuite>
 </testsuites>
