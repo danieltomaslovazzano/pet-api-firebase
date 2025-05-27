@@ -1,57 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="26" failures="0" errors="0" time="52.755">
-  <testsuite name="Conversations E2E Tests - Comprehensive Test Suite (25 tests)" errors="0" failures="0" skipped="0" timestamp="2025-05-27T23:31:01" time="52.631" tests="26">
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create a conversation with valid participants" time="2.371">
+<testsuites name="jest tests" tests="27" failures="0" errors="0" time="53.499">
+  <testsuite name="Messages E2E Tests - Comprehensive Test Suite (28 tests)" errors="0" failures="0" skipped="0" timestamp="2025-05-27T23:54:06" time="53.358" tests="27">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should create a message with valid content" time="1.543">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation with insufficient participants" time="0.612">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should create a message with attachments" time="0.788">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation without participants array" time="0.59">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message without conversation ID" time="0.629">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create group conversation with multiple participants" time="1.253">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message without content or attachments" time="0.771">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation by ID for participant" time="0.881">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message in non-existent conversation" time="0.661">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversation by ID for non-participant" time="1.748">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message as non-participant" time="1.616">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversations for user" time="1.251">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get messages by conversation ID" time="0.905">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversations for other user without permission" time="10.01">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get message by ID" time="0.712">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation with invalid ID format" time="0.656">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get message by invalid ID format" time="0.602">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should soft delete conversation for user" time="0.933">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get non-existent message" time="0.59">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should hide conversation for user" time="1.379">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get messages from conversation as non-participant" time="1.801">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unhide conversation for user" time="0.812">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get messages with filters (admin)" time="0.69">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should block conversation (moderator)" time="0.887">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should allow message sender to view their message" time="0.577">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unblock conversation (moderator)" time="0.855">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should allow conversation participant to view message" time="0.588">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should fail to block conversation as regular user" time="0.578">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should fail to view message as non-participant" time="2.429">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should permanently delete conversation (admin)" time="1.829">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should allow message sender to delete their own message" time="1.809">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to permanently delete conversation as regular user" time="0.465">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should allow admin to delete any message" time="1.642">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should get all conversations (admin)" time="1.125">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should fail to delete message as non-sender non-admin" time="1.458">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to get all conversations as regular user" time="0.474">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should fail to delete non-existent message" time="0.651">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should create conversation in specific organization" time="0.991">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should create message in specific organization" time="2.408">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should not access conversation from different organization" time="1.799">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should not access messages from different organization" time="0.668">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should filter conversations by organization" time="0.961">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should filter messages by organization" time="0.716">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Super admin should access conversations across organizations" time="1.013">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Super admin should access messages across organizations" time="0.565">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle non-existent conversation ID" time="0.662">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.014">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.01">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle malformed message data" time="0.582">
     </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle malformed request data" time="0.603">
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle invalid message ID format in deletion" time="0.61">
+    </testcase>
+    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle message creation with location data" time="0.84">
     </testcase>
   </testsuite>
 </testsuites>

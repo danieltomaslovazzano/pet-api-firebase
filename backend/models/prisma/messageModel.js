@@ -28,26 +28,26 @@ exports.createMessage = async (messageData) => {
       throw new Error('Conversation ID is required');
     }
     
-    if (!messageData.content && !messageData.media) {
-      throw new Error('Message must have content or media');
+    if (!messageData.content && !messageData.attachments) {
+      throw new Error('Message must have content or attachments');
     }
     
     // Generate a unique ID
     const id = uuidv4();
     
-    // Create the message in Prisma
+    // Create the message in Prisma (using schema field names)
     const message = await prisma.message.create({
       data: {
         id,
         senderId: messageData.senderId,
         conversationId: messageData.conversationId,
-        content: messageData.content || null,
-        media: messageData.media || null,
-        read: messageData.read || false,
+        content: messageData.content || '',
+        status: messageData.status || 'sent',
+        attachments: messageData.attachments || null,
+        location: messageData.location || null,
         // Multitenancy: Include organization context
         organizationId: messageData.organizationId || null,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        timestamp: new Date()
       }
     });
     
@@ -55,8 +55,7 @@ exports.createMessage = async (messageData) => {
     await prisma.conversation.update({
       where: { id: messageData.conversationId },
       data: {
-        lastMessageAt: new Date(),
-        updatedAt: new Date()
+        lastMessageAt: new Date()
       }
     });
     
@@ -76,7 +75,7 @@ exports.getMessagesByConversation = async (conversationId) => {
   try {
     const messages = await prisma.message.findMany({
       where: { conversationId },
-      orderBy: { createdAt: 'asc' }
+      orderBy: { timestamp: 'asc' }
     });
     
     return messages;
@@ -89,7 +88,7 @@ exports.getMessagesByConversation = async (conversationId) => {
 /**
  * Get message by ID
  * @param {String} id - Message ID
- * @returns {Promise<Object>} - Message with the specified ID
+ * @returns {Promise<Object|null>} - Message with the specified ID or null if not found
  */
 exports.getMessageById = async (id) => {
   try {
@@ -97,11 +96,7 @@ exports.getMessageById = async (id) => {
       where: { id }
     });
     
-    if (!message) {
-      throw new Error('Message not found');
-    }
-    
-    return message;
+    return message; // Return null if not found instead of throwing
   } catch (error) {
     console.error('Error getting message by ID:', error);
     throw error;
@@ -127,17 +122,21 @@ exports.getMessages = async (filters) => {
         whereClause.senderId = filters.userId;
       }
       
-      // Date range filtering
+      if (filters.status) {
+        whereClause.status = filters.status;
+      }
+      
+      // Date range filtering (using timestamp field from schema)
       if (filters.startDate) {
-        whereClause.createdAt = {
-          ...(whereClause.createdAt || {}),
+        whereClause.timestamp = {
+          ...(whereClause.timestamp || {}),
           gte: new Date(filters.startDate)
         };
       }
       
       if (filters.endDate) {
-        whereClause.createdAt = {
-          ...(whereClause.createdAt || {}),
+        whereClause.timestamp = {
+          ...(whereClause.timestamp || {}),
           lte: new Date(filters.endDate)
         };
       }
@@ -150,7 +149,7 @@ exports.getMessages = async (filters) => {
     
     const messages = await prisma.message.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { timestamp: 'desc' },
       take: 100 // Limit results for performance
     });
     
@@ -164,7 +163,7 @@ exports.getMessages = async (filters) => {
 /**
  * Delete a message by ID
  * @param {String} id - Message ID
- * @returns {Promise<Object>} - Result of the operation
+ * @returns {Promise<Object|null>} - Result of the operation or null if not found
  */
 exports.deleteMessage = async (id) => {
   try {
@@ -173,7 +172,7 @@ exports.deleteMessage = async (id) => {
     });
     
     if (!message) {
-      throw new Error('Message not found');
+      return null; // Return null instead of throwing
     }
     
     await prisma.message.delete({

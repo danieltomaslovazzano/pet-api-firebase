@@ -52,6 +52,7 @@
     "test:e2e:users": "node scripts/run-e2e-dev.js tests/e2e/users.e2e.js",
     "test:e2e:orgs": "node scripts/run-e2e-dev.js tests/e2e/organizations.e2e.js",
     "test:e2e:pets": "node scripts/run-e2e-dev.js tests/e2e/pets.e2e.js",
+    "test:e2e:messages": "node scripts/run-e2e-dev.js messages",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio"
