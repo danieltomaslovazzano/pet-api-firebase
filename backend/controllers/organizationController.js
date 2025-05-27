@@ -22,6 +22,12 @@ exports.createOrganization = async (req, res) => {
 exports.getOrganizationById = async (req, res) => {
   const { id } = req.params;
 
+  // Validar formato UUID antes de consultar
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    return res.status(404).json({ error: 'Organization not found', details: 'Invalid organization ID format' });
+  }
+
   // Multitenancy: ensure only members can view organization details unless super admin
   if (!req.user.isSuperAdmin && req.organizationId && id !== req.organizationId) {
     try {
@@ -41,6 +47,9 @@ exports.getOrganizationById = async (req, res) => {
   async function fetchOrganization() {
     try {
       const organization = await organizationModel.getOrganizationById(id);
+      if (!organization) {
+        return res.status(404).json({ error: 'Organization not found' });
+      }
       res.status(200).json(organization);
     } catch (err) {
       return res.status(404).json({ error: 'Organization not found', details: err.message });
@@ -72,6 +81,9 @@ exports.updateOrganization = async (req, res) => {
       const updatedOrg = await organizationModel.updateOrganization(id, orgData);
       res.status(200).json(updatedOrg);
     } catch (err) {
+      if (err.message && err.message.includes('not found')) {
+        return res.status(404).json({ error: 'Organization not found', details: err.message });
+      }
       return res.status(500).json({ error: 'Error updating organization', details: err.message });
     }
   }
@@ -98,7 +110,7 @@ exports.deleteOrganization = async (req, res) => {
   async function performDelete() {
     try {
       const result = await organizationModel.deleteOrganization(id);
-      res.status(200).json(result);
+      res.status(200).json({ message: 'Organization deleted successfully' });
     } catch (err) {
       return res.status(500).json({ error: 'Error deleting organization', details: err.message });
     }

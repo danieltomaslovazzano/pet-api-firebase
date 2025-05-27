@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const membershipController = require('../controllers/membershipController');
-const { requireAuth, protectResource, loadMembershipResource } = require('../middlewares');
+const { requireAuth, loadMembershipResource } = require('../middlewares');
 
 // Apply authentication middleware to all routes
 router.use(requireAuth);
@@ -19,8 +19,9 @@ router.get('/', membershipController.getMemberships);
 /**
  * GET /memberships/:id
  * Get a specific membership by its ID
+ * Note: Membership loading and error handling is done in the controller
  */
-router.get('/:id', loadMembershipResource, membershipController.getMembershipById);
+router.get('/:id', membershipController.getMembershipById);
 
 /**
  * POST /memberships
@@ -31,21 +32,17 @@ router.post('/', membershipController.inviteUser);
 /**
  * PUT /memberships/:id
  * Update a membership (usually to change the member's role)
+ * Note: Authorization is handled within the controller since it needs to check
+ * organization permissions based on the membership's organizationId
  */
-router.put('/:id', 
-  loadMembershipResource,
-  protectResource('organizations', 'updateMember'),
-  membershipController.updateMemberRole
-);
+router.put('/:id', membershipController.updateMemberRole);
 
 /**
  * DELETE /memberships/:id
  * Remove a membership (remove a member from an organization)
+ * Note: Authorization is handled within the controller since it needs to check
+ * organization permissions based on the membership's organizationId
  */
-router.delete('/:id', 
-  loadMembershipResource,
-  protectResource('organizations', 'removeMember'),
-  membershipController.removeMember
-);
+router.delete('/:id', membershipController.removeMember);
 
 module.exports = router; 

@@ -40,14 +40,27 @@ exports.getMemberships = async (req, res) => {
   } 
   // If requesting by userId, check if it's the current user or admin
   else if (userId) {
-    // Multitenancy: Allow super admin, or same user, or organization admin 
+    // Define the fetchUserMemberships function first
+    async function fetchUserMemberships() {
+      // Apply organization filter for non-super admin with org context
+      const orgFilter = (!isSuperAdmin && req.organizationId) ? req.organizationId : null;
+      
+      try {
+        const memberships = await membershipModel.getMembershipsByUser(userId, orgFilter);
+        return res.status(200).json(memberships);
+      } catch (error) {
+        return res.status(500).json({ error: 'Error retrieving memberships', details: error.message });
+      }
+    }
+
+    // Multitenancy: Allow super admin (highest priority)
     if (isSuperAdmin) {
-      await fetchUserMemberships();
+      return await fetchUserMemberships();
     }
     
     // Check if this is the authenticated user (always allowed to see own memberships)
     if (req.user.uid === userId) {
-      await fetchUserMemberships();
+      return await fetchUserMemberships();
     }
     
     // If organization context is set, verify admin role in that organization
@@ -69,34 +82,40 @@ exports.getMemberships = async (req, res) => {
         });
       }
       
-      await fetchUserMemberships();
-    } else if (req.user.role === 'admin') { 
-      // Global admin without org context
-      await fetchUserMemberships();
-    } else {
+      return await fetchUserMemberships();
+    } 
+    // Global admin without org context
+    else if (req.user.role === 'admin') { 
+      return await fetchUserMemberships();
+    } 
+    // No permission
+    else {
       return res.status(403).json({ 
         error: 'You can only view your own memberships' 
       });
-    }
-  }
-  
-  async function fetchUserMemberships() {
-    // Apply organization filter for non-super admin with org context
-    const orgFilter = (!isSuperAdmin && req.organizationId) ? req.organizationId : null;
-    
-    try {
-      const memberships = await membershipModel.getMembershipsByUser(userId, orgFilter);
-      res.status(200).json(memberships);
-    } catch (error) {
-      res.status(500).json({ error: 'Error retrieving memberships', details: error.message });
     }
   }
 };
 
 exports.getMembershipById = async (req, res) => {
   try {
-    // The membership is already loaded in req.resourceObj by the loadMembershipResource middleware
-    const membership = req.resourceObj;
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'Missing membership ID in request parameters' });
+    }
+    
+    // Load the membership directly
+    let membership;
+    try {
+      membership = await membershipModel.getMembershipById(id);
+    } catch (error) {
+      // If membership not found, return 404
+      if (error.message === 'Membership not found') {
+        return res.status(404).json({ error: 'Membership not found' });
+      }
+      throw error; // Re-throw other errors
+    }
     
     // Multitenancy: Super admin can access any membership
     if (req.user.isSuperAdmin) {
@@ -137,11 +156,25 @@ exports.inviteUser = async (req, res) => {
       error: 'Forbidden: Cannot invite users to organizations outside your context'
     });
   }
+
+  async function createMembership() {
+    const membershipData = {
+      organizationId,
+      userId,
+      role
+    };
+    
+    try {
+      const membership = await membershipModel.createMembership(membershipData);
+      return res.status(201).json(membership);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error inviting user', details: error.message });
+    }
+  }
   
   // Super admin can invite anyone
   if (req.user.isSuperAdmin) {
-    await createMembership();
-    return;
+    return await createMembership();
   }
   
   // Verificar si el invitador tiene permiso para añadir miembros
@@ -151,22 +184,7 @@ exports.inviteUser = async (req, res) => {
     return res.status(403).json({ error: 'Unauthorized. Only admins can invite users.' });
   }
   
-  async function createMembership() {
-    const membershipData = {
-      organizationId,
-      userId,
-      role,
-      permissions: getPermissionsForRole(role),
-      invitedBy: req.user.uid
-    };
-    
-    try {
-      const membership = await membershipModel.createMembership(membershipData);
-      res.status(201).json(membership);
-    } catch (error) {
-      res.status(500).json({ error: 'Error inviting user', details: error.message });
-    }
-  }
+  return await createMembership();
 };
 
 exports.updateMemberRole = async (req, res) => {
@@ -186,11 +204,23 @@ exports.updateMemberRole = async (req, res) => {
       error: 'Forbidden: Cannot modify membership outside your organization context'
     });
   }
+
+  async function updateMembershipRole() {
+    const updateData = {
+      role
+    };
+    
+    try {
+      const updatedMembership = await membershipModel.updateMembership(id, updateData);
+      return res.status(200).json(updatedMembership);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error updating membership', details: error.message });
+    }
+  }
   
   // Super admin can update any membership
   if (req.user.isSuperAdmin) {
-    await updateMembershipRole();
-    return;
+    return await updateMembershipRole();
   }
   
   // Verificar si el modificador tiene permisos de admin en esta organización
@@ -200,19 +230,7 @@ exports.updateMemberRole = async (req, res) => {
     return res.status(403).json({ error: 'Unauthorized. Only admins can modify roles.' });
   }
   
-  async function updateMembershipRole() {
-    const updateData = {
-      role,
-      permissions: getPermissionsForRole(role)
-    };
-    
-    try {
-      const updatedMembership = await membershipModel.updateMembership(id, updateData);
-      res.status(200).json(updatedMembership);
-    } catch (error) {
-      res.status(500).json({ error: 'Error updating membership', details: error.message });
-    }
-  }
+  return await updateMembershipRole();
 };
 
 exports.removeMember = async (req, res) => {
@@ -226,17 +244,25 @@ exports.removeMember = async (req, res) => {
       error: 'Forbidden: Cannot remove membership outside your organization context'
     });
   }
+
+  async function removeMembership(message = 'Membership removed successfully') {
+    try {
+      await membershipModel.deleteMembership(id);
+      return res.status(200).json({ message });
+    } catch (error) {
+      return res.status(500).json({ error: 'Error removing membership', details: error.message });
+    }
+  }
   
   // Super admin can remove any membership
   if (req.user.isSuperAdmin) {
-    await removeMembership();
-    return;
+    return await removeMembership();
   }
   
   // Verificar si el modificador tiene permisos de admin o si es el propio usuario abandonando
   if (req.user.uid === membership.userId) {
     // Usuario abandonando
-    await removeMembership('You have left the organization successfully');
+    return await removeMembership('You have left the organization successfully');
   } else {
     // Admin removiendo a alguien
     const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
@@ -245,33 +271,6 @@ exports.removeMember = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized. Only admins can remove members.' });
     }
     
-    await removeMembership('Member removed successfully');
-  }
-  
-  async function removeMembership(message = 'Membership removed successfully') {
-    try {
-      await membershipModel.deleteMembership(id);
-      res.status(200).json({ message });
-    } catch (error) {
-      res.status(500).json({ error: 'Error removing membership', details: error.message });
-    }
+    return await removeMembership('Member removed successfully');
   }
 };
-
-// Función de utilidad para asignar permisos según el rol
-function getPermissionsForRole(role) {
-  switch (role) {
-    case 'admin':
-      return ['all'];
-    case 'manager':
-      return ['create_pet', 'edit_pet', 'delete_pet', 'invite_member'];
-    case 'moderator':
-      return ['create_pet', 'edit_pet', 'approve_pet'];
-    case 'volunteer':
-      return ['create_pet', 'edit_own_pet'];
-    case 'observer':
-      return ['view'];
-    default:
-      return ['view'];
-  }
-}

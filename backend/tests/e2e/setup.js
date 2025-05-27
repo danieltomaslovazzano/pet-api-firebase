@@ -1,8 +1,8 @@
 const dotenv = require('dotenv');
 const path = require('path');
 
-// Load test environment variables
-dotenv.config({ path: path.join(__dirname, '.env.test') });
+// Load development environment variables for E2E tests
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env.dev') });
 
 // Global test timeout
 jest.setTimeout(process.env.TEST_TIMEOUT || 30000);
@@ -11,6 +11,8 @@ jest.setTimeout(process.env.TEST_TIMEOUT || 30000);
 beforeAll(async () => {
   // Add any global setup here
   console.log('\n🔧 Setting up test environment...');
+  console.log(`📡 Using API: ${process.env.API_URL}`);
+  console.log(`🗄️ Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
 });
 
 // Global afterAll

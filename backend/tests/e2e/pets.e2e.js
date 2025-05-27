@@ -1,4 +1,4 @@
-const axios = require('axios');
+const axios = require('./helpers/request');
 const { login } = require('./helpers/tokens');
 const { getFirstNOrgs, createOrg, deleteOrgByName } = require('./helpers/db');
 const { writeReport } = require('./helpers/report');

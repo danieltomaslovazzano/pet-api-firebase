@@ -30,19 +30,21 @@ Este documento detalla el roadmap de tests E2E a implementar en el entorno de de
 ## **Fase 2: Organizaciones y Multitenancy**
 
 - **organizations.e2e.js**
-  - [ ] Crear organización
-  - [ ] Obtener organización por ID
-  - [ ] Listar organizaciones
-  - [ ] Actualizar organización
-  - [ ] Eliminar organización
-  - [ ] Validar acceso multitenant (solo miembros pueden ver/editar)
+  - [x] Crear organización _(implementado)_
+  - [x] Obtener organización por ID _(implementado)_
+  - [x] Listar organizaciones _(implementado)_
+  - [x] Actualizar organización _(implementado)_
+  - [x] Eliminar organización _(implementado)_
+  - [x] Validar acceso multitenant (solo miembros pueden ver/editar) _(implementado)_
 
 - **memberships.e2e.js**
-  - [ ] Invitar usuario a organización
-  - [ ] Aceptar invitación
-  - [ ] Cambiar rol en organización
-  - [ ] Expulsar usuario de organización
-  - [ ] Validar acceso cruzado prohibido
+  - [x] Invitar usuario a organización _(implementado)_
+  - [x] Aceptar invitación _(cubierto por creación de membership)_
+  - [x] Cambiar rol en organización _(implementado)_
+  - [x] Expulsar usuario de organización _(implementado)_
+  - [x] Validar acceso cruzado prohibido _(implementado)_
+
+> **Nota:** Los tests E2E de organizaciones y memberships han sido implementados y están listos para ejecución. Incluyen validaciones de multitenancy y control de acceso.
 
 ---
 
@@ -99,6 +101,19 @@ Para ejecutar los tests E2E en desarrollo:
 2. Ejecutar los tests:
    ```bash
    npm run test:e2e
+   
+   # O ejecutar fases específicas:
+   npm run test:e2e:auth           # Fase 1: Auth y Users
+   npm run test:e2e:organizations  # Fase 2a: Organizations (independiente)
+   npm run test:e2e:memberships    # Fase 2b: Memberships (independiente)
+   npm run test:e2e:pets           # Fase 3: Pets
+   
+   # O usar el script de desarrollo:
+   node scripts/run-e2e-dev.js auth           # Auth + Users
+   node scripts/run-e2e-dev.js organizations  # Solo Organizations
+   node scripts/run-e2e-dev.js memberships    # Solo Memberships
+   node scripts/run-e2e-dev.js orgs           # Alias para organizations
+   node scripts/run-e2e-dev.js all            # Todos los tests
    ```
 
 ## **Seguimiento y Resultados**

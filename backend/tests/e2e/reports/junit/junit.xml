@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="13" failures="0" errors="0" time="10.565">
-  <testsuite name="E2E: Auth" errors="0" failures="0" skipped="0" timestamp="2025-05-23T23:07:21" time="5.876" tests="7">
-    <testcase classname="E2E: Auth" name="should register a user" time="2.529">
+<testsuites name="jest tests" tests="20" failures="0" errors="0" time="62.541">
+  <testsuite name="Memberships E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-05-27T21:21:35" time="62.421" tests="20">
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Admin should invite user to organization successfully" time="0.683">
     </testcase>
-    <testcase classname="E2E: Auth" name="should login user" time="0.261">
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should fail to invite same user twice" time="0.625">
     </testcase>
-    <testcase classname="E2E: Auth" name="should deny login with wrong credentials" time="0.373">
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.727">
     </testcase>
-    <testcase classname="E2E: Auth" name="should access profile with token" time="0.645">
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should invite user with different roles" time="7.763">
     </testcase>
-    <testcase classname="E2E: Auth" name="should deny access to profile without token" time="0.016">
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by organization" time="0.757">
     </testcase>
-    <testcase classname="E2E: Auth" name="should login as superadmin" time="0.329">
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by user" time="0.496">
     </testcase>
-    <testcase classname="E2E: Auth" name="should list users as admin" time="0.501">
+    <testcase classname="Memberships E2E Tests Get Memberships" name="User should get their own memberships" time="0.455">
     </testcase>
-  </testsuite>
-  <testsuite name="E2E: Users" errors="0" failures="0" skipped="0" timestamp="2025-05-23T23:07:27" time="4.543" tests="6">
-    <testcase classname="E2E: Users" name="should create a user" time="1.381">
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Should fail without userId or organizationId" time="0.418">
     </testcase>
-    <testcase classname="E2E: Users" name="should get user by ID" time="0.542">
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Regular user should fail to get other user memberships" time="0.411">
     </testcase>
-    <testcase classname="E2E: Users" name="should list users" time="0.381">
+    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Admin should get membership by ID" time="0.527">
     </testcase>
-    <testcase classname="E2E: Users" name="should update user" time="0.478">
+    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Should fail with invalid membership ID" time="0.447">
     </testcase>
-    <testcase classname="E2E: Users" name="should change user role" time="0.494">
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Admin should update member role successfully" time="0.636">
     </testcase>
-    <testcase classname="E2E: Users" name="should delete user" time="0.914">
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Should fail with invalid role" time="0.434">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Regular user should fail to update role without permissions" time="0.53">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Remove Member" name="Admin should remove member successfully" time="1.065">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Remove Member" name="Regular user should fail to remove member without permissions" time="2.31">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.118">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.483">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="1.411">
+    </testcase>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.054">
     </testcase>
   </testsuite>
 </testsuites>

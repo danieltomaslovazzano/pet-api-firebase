@@ -72,6 +72,7 @@ model Organization {
   phone        String?
   email        String?
   status       String        @default("active")
+  createdBy    String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   
@@ -83,6 +84,7 @@ model Organization {
 
   // Indexes
   @@index([status])
+  @@index([createdBy])
 }
 
 // Membership model (junction table between Users and Organizations)

@@ -142,7 +142,7 @@ class OrganizationModel {
       const organization = await this.prisma.organization.findUnique({
         where: { id: organizationId },
         include: {
-          members: {
+          memberships: {
             include: {
               user: true
             }
@@ -219,7 +219,7 @@ class OrganizationModel {
       
       return updatedOrg;
     } catch (error) {
-      console.error('Error updating organization in PostgreSQL:', error);
+      console.error('Error updating organization in PostgreSQL:', error, { id, orgData });
       throw error;
     }
   }
@@ -276,6 +276,35 @@ class OrganizationModel {
       return members;
     } catch (error) {
       console.error('Error getting organization members from PostgreSQL:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get organizations with optional filters
+   * @param {Object} filters - Filtros para la consulta
+   * @returns {Promise<Array>} - Lista de organizaciones
+   */
+  async getOrganizations(filters = {}) {
+    try {
+      const where = {};
+      if (filters.name) where.name = { contains: filters.name, mode: 'insensitive' };
+      if (filters.status) where.status = filters.status;
+      if (filters.createdBy) where.createdBy = filters.createdBy;
+      if (filters.id) where.id = Array.isArray(filters.id) ? { in: filters.id } : filters.id;
+      // Ignorar filters.type porque no existe en el modelo
+
+      const organizations = await this.prisma.organization.findMany({
+        where,
+        include: {
+          memberships: {
+            include: { user: true }
+          }
+        }
+      });
+      return organizations;
+    } catch (error) {
+      console.error('Error getting organizations from PostgreSQL:', error);
       throw error;
     }
   }
