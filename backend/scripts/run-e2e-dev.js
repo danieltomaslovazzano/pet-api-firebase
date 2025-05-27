@@ -9,6 +9,7 @@
  *   node scripts/run-e2e-dev.js organizations      # Run organizations tests only
  *   node scripts/run-e2e-dev.js memberships        # Run memberships tests only
  *   node scripts/run-e2e-dev.js pets               # Run pets tests only
+ *   node scripts/run-e2e-dev.js conversations      # Run conversations tests only
  */
 
 const { spawn } = require('child_process');
@@ -25,7 +26,8 @@ const TEST_SUITES = {
   organizations: ['organizations.e2e.js'],
   memberships: ['memberships.e2e.js'],
   pets: ['pets.e2e.js'],
-  all: ['auth.e2e.js', 'users.e2e.js', 'organizations.e2e.js', 'memberships.e2e.js', 'pets.e2e.js']
+  conversations: ['conversations.e2e.js'],
+  all: ['auth.e2e.js', 'users.e2e.js', 'organizations.e2e.js', 'memberships.e2e.js', 'pets.e2e.js', 'conversations.e2e.js']
 };
 
 const COLORS = {

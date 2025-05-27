@@ -117,6 +117,7 @@ model Membership {
 model Conversation {
   id              String      @id @default(uuid())
   title           String?
+  type            String      @default("direct")
   status          String      @default("active")
   createdAt       DateTime    @default(now())
   lastMessageAt   DateTime    @default(now())
@@ -129,6 +130,7 @@ model Conversation {
 
   // Indexes
   @@index([status])
+  @@index([type])
   @@index([lastMessageAt])
   @@index([organizationId])
 }
