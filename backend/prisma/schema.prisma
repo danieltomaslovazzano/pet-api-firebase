@@ -43,6 +43,7 @@ model Pet {
   size            String?
   color           String?
   status          String
+  visibility      String    @default("visible")
   description     String?
   images          String[]
   location        Json?
@@ -59,6 +60,7 @@ model Pet {
   @@index([ownerId])
   @@index([species])
   @@index([status])
+  @@index([visibility])
   @@index([organizationId])
 }
 

@@ -72,4 +72,23 @@ router.delete('/:id/images',
   petController.removePetImage
 );
 
+// Visibility management endpoints
+router.post('/:id/hide', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  petController.hidePet
+);
+
+router.post('/:id/show', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  petController.showPet
+);
+
+router.post('/:id/feature', 
+  validatePetId, 
+  ownerOrAdmin('pets'),
+  petController.featurePet
+);
+
 module.exports = router;

@@ -36,6 +36,12 @@ exports.validateCreatePet = [
     .optional()
     .isString().withMessage('Medical history must be a string'),
   
+  // Optional visibility field
+  body('visibility')
+    .optional()
+    .isString().withMessage('Visibility must be a string')
+    .isIn(['visible', 'hidden', 'featured']).withMessage('Visibility must be one of: visible, hidden, featured'),
+  
   // Required array of images
   body('images')
     .notEmpty().withMessage('At least one image URL is required')
@@ -95,6 +101,12 @@ exports.validateUpdatePet = [
   body('medicalHistory')
     .optional()
     .isString().withMessage('Medical history must be a string'),
+  
+  // Optional visibility field
+  body('visibility')
+    .optional()
+    .isString().withMessage('Visibility must be a string')
+    .isIn(['visible', 'hidden', 'featured']).withMessage('Visibility must be one of: visible, hidden, featured'),
   
   // Images validation - if provided, must be an array with at least one image
   body('images')

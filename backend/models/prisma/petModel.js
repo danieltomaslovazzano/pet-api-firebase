@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require('uuid');
 // Validation constants
 const VALID_SPECIES = ['dog', 'cat', 'bird', 'fish', 'reptile', 'other'];
 const VALID_STATUSES = ['available', 'adopted', 'lost', 'found'];
+const VALID_VISIBILITY = ['visible', 'hidden', 'featured'];
 
 /**
  * Validate pet data
@@ -35,6 +36,11 @@ const validatePetData = (petData) => {
   // Validate status
   if (!VALID_STATUSES.includes(petData.status)) {
     return new Error('Invalid status value');
+  }
+
+  // Validate visibility (optional field)
+  if (petData.visibility && !VALID_VISIBILITY.includes(petData.visibility)) {
+    return new Error('Invalid visibility value. Must be one of: visible, hidden, featured');
   }
 
   // Validate images
@@ -91,6 +97,7 @@ exports.createPet = async (petData) => {
         size: petData.size || null,
         color: petData.color || null,
         status: petData.status,
+        visibility: petData.visibility || 'visible',
         description: petData.description || null,
         images: petData.images,
         location,
@@ -127,13 +134,14 @@ exports.getPets = async () => {
 
 /**
  * Get pets with filtering, pagination, and sorting
- * @param {Object} filters - Filter criteria (species, status, breed, organizationId, etc.)
+ * @param {Object} filters - Filter criteria (species, status, breed, organizationId, visibility, etc.)
  * @param {Number} page - Page number (1-based)
  * @param {Number} limit - Results per page
  * @param {String} sortField - Field to sort by
+ * @param {Boolean} includeHidden - Whether to include hidden pets (for admin views)
  * @returns {Promise<Array>} - Array of pets
  */
-exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = 'createdAt') => {
+exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = 'createdAt', includeHidden = false) => {
   try {
     const where = {};
     if (filters) {
@@ -141,7 +149,14 @@ exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = '
       if (filters.status) where.status = { equals: filters.status, mode: 'insensitive' };
       if (filters.breed) where.breed = { equals: filters.breed, mode: 'insensitive' };
       if (filters.organizationId) where.organizationId = filters.organizationId;
+      if (filters.visibility) where.visibility = { equals: filters.visibility, mode: 'insensitive' };
     }
+    
+    // Default to only showing visible pets unless explicitly including hidden ones
+    if (!includeHidden && !filters?.visibility) {
+      where.visibility = { not: 'hidden' };
+    }
+    
     const sortDirection = sortField.startsWith('-') ? 'desc' : 'asc';
     const actualField = sortField.startsWith('-') ? sortField.substring(1) : sortField;
     const orderBy = { [actualField]: sortDirection };
@@ -161,31 +176,51 @@ exports.getPetsWithFilters = async (filters, page = 1, limit = 10, sortField = '
  * @param {Number} page - Page number (1-based)
  * @param {Number} limit - Results per page
  * @param {String} sortField - Field to sort by
+ * @param {Boolean} includeHidden - Whether to include hidden pets (for admin views)
  * @returns {Promise<Array>} - Array of pets
  */
-exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'name') => {
+exports.searchPets = async (searchCriteria, page = 1, limit = 10, sortField = 'name', includeHidden = false) => {
   try {
     const where = {};
     const orConditions = [];
+    
     if (searchCriteria) {
       for (const [field, value] of Object.entries(searchCriteria)) {
         if (field === 'organizationId') {
           where.organizationId = value;
           continue;
         }
-        if (['name', 'species', 'breed', 'color', 'description'].includes(field)) {
-          orConditions.push({ [field]: { contains: String(value), mode: 'insensitive' } });
+        
+        // Exact match fields (use AND logic)
+        if (field === 'species') {
+          where.species = { equals: value, mode: 'insensitive' };
         } else if (field === 'status') {
-          orConditions.push({ status: { equals: value, mode: 'insensitive' } });
+          where.status = { equals: value, mode: 'insensitive' };
+        } else if (field === 'visibility') {
+          where.visibility = { equals: value, mode: 'insensitive' };
         } else if (field === 'age') {
           const age = Number(value);
           if (!isNaN(age)) {
-            orConditions.push({ age: { equals: age } });
+            where.age = { equals: age };
           }
+        }
+        // Text search fields (use OR logic for partial matches)
+        else if (['name', 'breed', 'color', 'description'].includes(field)) {
+          orConditions.push({ [field]: { contains: String(value), mode: 'insensitive' } });
         }
       }
     }
-    if (orConditions.length > 0) where.OR = orConditions;
+    
+    // Add OR conditions only if we have text search criteria
+    if (orConditions.length > 0) {
+      where.OR = orConditions;
+    }
+    
+    // Default to only showing visible pets unless explicitly including hidden ones
+    if (!includeHidden && !searchCriteria?.visibility) {
+      where.visibility = { not: 'hidden' };
+    }
+    
     const skip = (page - 1) * limit;
     const take = Math.min(limit, 100);
     const sortDirection = sortField.startsWith('-') ? 'desc' : 'asc';

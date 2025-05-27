@@ -171,7 +171,7 @@ exports.createPet = async (req, res) => {
 exports.getPets = async (req, res) => {
     // Extract filter and pagination parameters
     const { 
-      species, status, breed, 
+      species, status, breed, visibility,
       page = 1, 
       limit = 10, 
       sort = 'createdAt'
@@ -182,6 +182,7 @@ exports.getPets = async (req, res) => {
     if (species) filters.species = species;
     if (status) filters.status = status;
     if (breed) filters.breed = breed;
+    if (visibility) filters.visibility = visibility;
     
     // Multitenancy: filter by organizationId unless super admin
     if (!req.user.isSuperAdmin && req.organizationId) {
@@ -192,9 +193,12 @@ exports.getPets = async (req, res) => {
     const pageNumber = parseInt(page, 10);
     const pageSize = parseInt(limit, 10);
     
+    // Determine if user can see hidden pets (admins and moderators)
+    const includeHidden = req.user.role === 'admin' || req.user.role === 'moderator' || req.user.isSuperAdmin;
+    
     // Call the model with filter, pagination and sorting options
     try {
-      const pets = await petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort);
+      const pets = await petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort, includeHidden);
       res.status(200).json(pets);
     } catch (err) {
       console.error('Error retrieving pets:', err);
@@ -269,6 +273,20 @@ exports.updatePet = async (req, res) => {
       }
     }
     
+    // Validate visibility if it's being updated
+    if (petData.visibility !== undefined) {
+      const validVisibility = ['visible', 'hidden', 'featured'];
+      if (!validVisibility.includes(petData.visibility)) {
+        return res.status(400).json({
+          error: 'Validation failed',
+          details: [{
+            field: 'visibility',
+            message: 'Visibility must be one of: visible, hidden, featured'
+          }]
+        });
+      }
+    }
+    
     try {
       const updatedPet = await petModel.updatePet(id, petData);
       res.status(200).json(updatedPet);
@@ -301,7 +319,7 @@ exports.deletePet = async (req, res) => {
 exports.searchPets = async (req, res) => {
     // Extract search parameters
     const { 
-        name, species, status, breed,
+        name, species, status, breed, visibility,
         page = 1, 
         limit = 10, 
         sort = 'name' 
@@ -313,14 +331,18 @@ exports.searchPets = async (req, res) => {
     if (species) searchCriteria.species = species;
     if (status) searchCriteria.status = status;
     if (breed) searchCriteria.breed = breed;
+    if (visibility) searchCriteria.visibility = visibility;
     
     // Parse pagination parameters
     const pageNumber = parseInt(page, 10);
     const pageSize = parseInt(limit, 10);
     
+    // Determine if user can see hidden pets (admins and moderators)
+    const includeHidden = req.user?.role === 'admin' || req.user?.role === 'moderator' || req.user?.isSuperAdmin;
+    
     // Call the model with search criteria
     try {
-      const pets = await petModel.searchPets(searchCriteria, pageNumber, pageSize, sort);
+      const pets = await petModel.searchPets(searchCriteria, pageNumber, pageSize, sort, includeHidden);
         res.status(200).json({
             results: pets,
             pagination: {
@@ -482,5 +504,74 @@ exports.createPetFromUrls = async (req, res) => {
   } catch (error) {
     console.error('Error in createPetFromUrls:', error);
     res.status(500).json({ error: 'Failed to create pet from URLs', details: error.message });
+  }
+};
+
+/**
+ * Hide a pet (set visibility to 'hidden')
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.hidePet = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const updatedPet = await petModel.updatePet(id, { visibility: 'hidden' });
+    res.status(200).json({
+      message: 'Pet hidden successfully',
+      pet: updatedPet
+    });
+  } catch (err) {
+    console.error('Error hiding pet:', err);
+    if (err.message === 'Pet not found') {
+      return res.status(404).json({ error: 'Pet not found' });
+    }
+    res.status(500).json({ error: 'Error hiding pet', details: err.message });
+  }
+};
+
+/**
+ * Show a pet (set visibility to 'visible')
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.showPet = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const updatedPet = await petModel.updatePet(id, { visibility: 'visible' });
+    res.status(200).json({
+      message: 'Pet is now visible',
+      pet: updatedPet
+    });
+  } catch (err) {
+    console.error('Error showing pet:', err);
+    if (err.message === 'Pet not found') {
+      return res.status(404).json({ error: 'Pet not found' });
+    }
+    res.status(500).json({ error: 'Error showing pet', details: err.message });
+  }
+};
+
+/**
+ * Feature a pet (set visibility to 'featured')
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.featurePet = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const updatedPet = await petModel.updatePet(id, { visibility: 'featured' });
+    res.status(200).json({
+      message: 'Pet is now featured',
+      pet: updatedPet
+    });
+  } catch (err) {
+    console.error('Error featuring pet:', err);
+    if (err.message === 'Pet not found') {
+      return res.status(404).json({ error: 'Pet not found' });
+    }
+    res.status(500).json({ error: 'Error featuring pet', details: err.message });
   }
 };
