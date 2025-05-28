@@ -5,6 +5,8 @@
 
 # Firebase service account keys
 */config/*-firebase-adminsdk-*.json
+config/*-firebase-adminsdk-*.json
+config/pet-api-dev-*.json
 
 # Specific service account keys
 config/pet-api-prod-firebase-adminsdk-fbsvc-d95299d01b.json
