@@ -66,6 +66,8 @@ describe('Organizations E2E Tests', () => {
       expect(response.data).toHaveProperty('id');
       expect(response.data.name).toBe(organizationData.name);
       expect(response.data.createdBy).toBe(adminUserId);
+      // Verify default type is set
+      expect(response.data.type).toBe('shelter');
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -90,6 +92,34 @@ describe('Organizations E2E Tests', () => {
       expect(response.data).toHaveProperty('id');
       expect(response.data.name).toBe(organizationData.name);
       expect(response.data.createdBy).toBe(regularUserId);
+      // Verify default type is set
+      expect(response.data.type).toBe('shelter');
+      
+      // Store for cleanup
+      testOrganizations.push(response.data);
+    });
+
+    test('Should create organization with explicit shelter type', async () => {
+      const organizationData = {
+        name: `Explicit Shelter ${Date.now()}`,
+        type: 'shelter',
+        description: 'Shelter with explicit type',
+        address: '456 Shelter Avenue',
+        phone: '+1987654321',
+        email: `explicit-shelter-${Date.now()}@example.com`
+      };
+
+      const response = await axios.post(
+        'http://localhost:3000/api/organizations',
+        organizationData,
+        {
+          headers: { Authorization: `Bearer ${adminToken}` }
+        }
+      );
+
+      expect(response.status).toBe(201);
+      expect(response.data.type).toBe('shelter');
+      expect(response.data.name).toBe(organizationData.name);
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -145,6 +175,8 @@ describe('Organizations E2E Tests', () => {
       expect(response.status).toBe(200);
       expect(response.data.id).toBe(testOrg.id);
       expect(response.data.name).toBe(testOrg.name);
+      // Verify type field is present
+      expect(response.data.type).toBe('shelter');
     });
 
     test('Should fail with invalid organization ID', async () => {
