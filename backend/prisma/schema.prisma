@@ -68,6 +68,7 @@ model Pet {
 model Organization {
   id           String        @id @default(uuid())
   name         String
+  type         String        @default("shelter")
   description  String?
   logo         String?
   address      String?
@@ -87,6 +88,7 @@ model Organization {
   // Indexes
   @@index([status])
   @@index([createdBy])
+  @@index([type])
 }
 
 // Membership model (junction table between Users and Organizations)

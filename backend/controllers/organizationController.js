@@ -1,5 +1,10 @@
 // controllers/organizationController.js
 const { organizationModel, membershipModel } = require('../models/adapter');
+const { 
+  getAllOrganizationTypes, 
+  getOrganizationType,
+  isValidOrganizationType 
+} = require('../config/organizationTypes');
 
 exports.createOrganization = async (req, res) => {
   // Añadir el ID del usuario actual como creador
@@ -7,6 +12,14 @@ exports.createOrganization = async (req, res) => {
     ...req.body,
     createdBy: req.user.uid
   };
+  
+  // Validar tipo de organización si se proporciona
+  if (orgData.type && !isValidOrganizationType(orgData.type)) {
+    return res.status(400).json({ 
+      error: 'Invalid organization type', 
+      details: `Type '${orgData.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    });
+  }
   
   // No need to set organizationId when creating an organization
   // The organization itself is the tenant, not part of another tenant
@@ -61,6 +74,14 @@ exports.updateOrganization = async (req, res) => {
   const { id } = req.params;
   const orgData = req.body;
   
+  // Validar tipo de organización si se está actualizando
+  if (orgData.type && !isValidOrganizationType(orgData.type)) {
+    return res.status(400).json({ 
+      error: 'Invalid organization type', 
+      details: `Type '${orgData.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    });
+  }
+  
   // Multitenancy: super admin can update any org, others must be admin of the org
   if (req.user.isSuperAdmin) {
     await performUpdate();
@@ -109,9 +130,12 @@ exports.deleteOrganization = async (req, res) => {
 
   async function performDelete() {
     try {
-      const result = await organizationModel.deleteOrganization(id);
+      await organizationModel.deleteOrganization(id);
       res.status(200).json({ message: 'Organization deleted successfully' });
     } catch (err) {
+      if (err.message && err.message.includes('not found')) {
+        return res.status(404).json({ error: 'Organization not found', details: err.message });
+      }
       return res.status(500).json({ error: 'Error deleting organization', details: err.message });
     }
   }
@@ -120,28 +144,23 @@ exports.deleteOrganization = async (req, res) => {
 exports.getOrganizationMembers = async (req, res) => {
   const { id } = req.params;
   
-  // Multitenancy: super admin can view any org members, others must be a member of the org
-  if (req.user.isSuperAdmin) {
-    await fetchMembers();
-  } else {
+  // Multitenancy: ensure only members can view organization members unless super admin
+  if (!req.user.isSuperAdmin) {
     try {
       const isMember = await membershipModel.checkUserRole(req.user.uid, id, null);
       if (!isMember) {
         return res.status(403).json({ error: 'Unauthorized. You must be a member to view organization members.' });
       }
-      await fetchMembers();
     } catch (err) {
       return res.status(403).json({ error: 'Unauthorized. You must be a member to view organization members.' });
     }
   }
 
-  async function fetchMembers() {
-    try {
-      const members = await organizationModel.getOrganizationMembers(id);
-      res.status(200).json(members);
-    } catch (err) {
-      return res.status(500).json({ error: 'Error retrieving organization members', details: err.message });
-    }
+  try {
+    const members = await organizationModel.getOrganizationMembers(id);
+    res.status(200).json(members);
+  } catch (err) {
+    return res.status(500).json({ error: 'Error retrieving organization members', details: err.message });
   }
 };
 
@@ -149,10 +168,18 @@ exports.getOrganizations = async (req, res) => {
   // Get query parameters for filtering
   const filters = {
     name: req.query.name,
-    type: req.query.type,
+    type: req.query.type, // Soporte para filtrar por tipo
     status: req.query.status,
     createdBy: req.query.createdBy
   };
+
+  // Validar tipo si se proporciona en el filtro
+  if (filters.type && !isValidOrganizationType(filters.type)) {
+    return res.status(400).json({ 
+      error: 'Invalid organization type filter', 
+      details: `Type '${filters.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    });
+  }
 
   // Multitenancy: filter by organizations the user is a member of, unless super admin
   if (!req.user.isSuperAdmin) {
@@ -172,5 +199,34 @@ exports.getOrganizations = async (req, res) => {
     } catch (err) {
       return res.status(500).json({ error: 'Error retrieving organizations', details: err.message });
     }
+  }
+};
+
+/**
+ * Get available organization types
+ */
+exports.getOrganizationTypes = async (req, res) => {
+  try {
+    const types = getAllOrganizationTypes();
+    res.status(200).json(types);
+  } catch (err) {
+    return res.status(500).json({ error: 'Error retrieving organization types', details: err.message });
+  }
+};
+
+/**
+ * Get specific organization type information
+ */
+exports.getOrganizationTypeInfo = async (req, res) => {
+  const { type } = req.params;
+  
+  try {
+    const orgType = getOrganizationType(type);
+    if (!orgType) {
+      return res.status(404).json({ error: 'Organization type not found' });
+    }
+    res.status(200).json(orgType);
+  } catch (err) {
+    return res.status(500).json({ error: 'Error retrieving organization type', details: err.message });
   }
 };
