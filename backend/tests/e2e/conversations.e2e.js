@@ -59,6 +59,8 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       
       testOrganization = orgResponse.data;
       testOrganizations.push(testOrganization);
+      // Verify default type is set
+      expect(testOrganization.type).toBe('shelter');
 
       // 3. Create second test organization for multitenancy tests
       console.log('\n3️⃣ Creating second test organization...');
@@ -74,6 +76,8 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       
       testOrganization2 = org2Response.data;
       testOrganizations.push(testOrganization2);
+      // Verify default type is set
+      expect(testOrganization2.type).toBe('shelter');
 
       // 4. Create regular user
       console.log('\n4️⃣ Creating regular user...');

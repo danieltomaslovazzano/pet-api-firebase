@@ -44,6 +44,8 @@ describe('Memberships E2E Tests', () => {
       }
     );
     testOrganization = orgResponse.data;
+    // Verify default type is set
+    expect(testOrganization.type).toBe('shelter');
   });
 
   afterAll(async () => {

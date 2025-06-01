@@ -59,6 +59,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
     );
     testOrganization = orgResponse.data;
     testOrganizations.push(testOrganization);
+    // Verify default type is set
+    expect(testOrganization.type).toBe('shelter');
 
     const otherOrgResponse = await axios.post(
       'http://localhost:3000/api/organizations',
@@ -73,6 +75,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
     );
     otherOrganization = otherOrgResponse.data;
     testOrganizations.push(otherOrganization);
+    // Verify default type is set
+    expect(otherOrganization.type).toBe('shelter');
 
     // Add admin user to test organization as admin
     await axios.post(
