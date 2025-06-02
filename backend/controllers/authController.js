@@ -20,24 +20,29 @@ const authController = {
       const { email, password, name } = req.body;
       
       if (!email || !password || !name) {
-        const response = { error: 'Se requieren todos los campos: email, password y name' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { missingFields: { email: !email, password: !password, name: !name } });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } },
+          { field: 'password', messageKey: 'validation.required', params: { field: 'Password' } },
+          { field: 'name', messageKey: 'validation.required', params: { field: 'Name' } }
+        ].filter((error, index) => [!email, !password, !name][index]));
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        const response = { error: 'Formato de email inválido' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { invalidEmail: email });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.invalid_email' }
+        ]);
       }
 
       // Validar fortaleza de contraseña
       if (password.length < 6) {
-        const response = { error: 'La contraseña debe tener al menos 6 caracteres' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { weakPassword: true });
+        return res.validationError([
+          { field: 'password', messageKey: 'validation.min_length', params: { field: 'Password', min: 6 } }
+        ]);
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -76,14 +81,15 @@ const authController = {
       // Enviar email de verificación
       await admin.auth().generateEmailVerificationLink(email);
       
-      const successResponse = {
-        message: 'Usuario registrado correctamente',
-        user: {
-          id: localId,
-          email,
-          name,
-          role: 'user'
-        },
+      const userData = {
+        id: localId,
+        email,
+        name,
+        role: 'user'
+      };
+      
+      const responseData = {
+        user: userData,
         tokens: {
           idToken,
           refreshToken,
@@ -92,7 +98,7 @@ const authController = {
       };
       
       logAuthEvent('Register Success', { email, userId: localId });
-      res.status(201).json(successResponse);
+      res.created('auth.user_registered_successfully', responseData);
     } catch (error) {
       const errorResponse = error.response?.data?.error || error;
       logAuthEvent('Register Error', errorResponse, true);
@@ -102,23 +108,17 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_EXISTS':
-            return res.status(400).json({ error: 'El email ya está registrado' });
+            return res.error('auth.email_already_exists', 400);
           case 'INVALID_EMAIL':
-            return res.status(400).json({ error: 'Formato de email inválido' });
+            return res.error('auth.invalid_email_format', 400);
           case 'WEAK_PASSWORD':
-            return res.status(400).json({ error: 'La contraseña es demasiado débil' });
+            return res.error('auth.weak_password', 400);
           default:
-            return res.status(400).json({ 
-              error: 'Error en el registro', 
-              details: firebaseError.message 
-            });
+            return res.error('auth.registration_error', 400, { details: firebaseError.message });
         }
       }
       
-      res.status(500).json({ 
-        error: 'Error en el proceso de registro', 
-        details: error.message 
-      });
+      res.serverError('auth.registration_process_error', { details: error.message });
     }
   },
 
@@ -128,24 +128,20 @@ const authController = {
       const { token } = req.body;
       
       if (!token) {
-        const response = { error: 'Se requiere el token de verificación' };
-        logAuthEvent('Email Verification Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Validation Failed', { missingToken: true });
+        return res.error('auth.verification_token_required', 400);
       }
       
       // Manejo especial para tokens de prueba
       if (token === 'valid-token-123') {
-        const successResponse = { message: 'Email verificado correctamente' };
         logAuthEvent('Email Verification Success', { userId: 'test-user-id' });
-        return res.status(200).json(successResponse);
+        return res.success('auth.email_verified_successfully');
       } else if (token === 'invalid-token-123') {
-        const response = { error: 'Token de verificación inválido' };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Error', { invalidTestToken: true });
+        return res.error('auth.invalid_verification_token', 400);
       } else if (token === 'expired-token-123') {
-        const response = { error: 'Token de verificación expirado' };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Error', { expiredTestToken: true });
+        return res.error('auth.expired_verification_token', 400);
       }
       
       // Verificar el token con Firebase Auth para tokens reales
@@ -158,27 +154,23 @@ const authController = {
           emailVerified: true
         });
         
-        const successResponse = { message: 'Email verificado correctamente' };
         logAuthEvent('Email Verification Success', { userId: uid });
-        res.status(200).json(successResponse);
+        res.success('auth.email_verified_successfully');
       } catch (error) {
-        const response = {
-          error: error.code === 'auth/id-token-expired'
-            ? 'Token de verificación expirado'
-            : error.code === 'auth/invalid-id-token'
-            ? 'Token de verificación inválido'
-            : 'Error en la verificación del email',
-          details: error.message
-        };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        let errorKey = 'auth.email_verification_error';
+        
+        if (error.code === 'auth/id-token-expired') {
+          errorKey = 'auth.expired_verification_token';
+        } else if (error.code === 'auth/invalid-id-token') {
+          errorKey = 'auth.invalid_verification_token';
+        }
+        
+        logAuthEvent('Email Verification Error', { firebaseError: error.code });
+        return res.error(errorKey, 400, { details: error.message });
       }
     } catch (error) {
       logAuthEvent('Email Verification Error', error, true);
-      res.status(500).json({ 
-        error: 'Error en la verificación del email', 
-        details: error.message 
-      });
+      res.serverError('auth.email_verification_error', { details: error.message });
     }
   },
 
@@ -187,18 +179,23 @@ const authController = {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(400).json({ error: 'Se requieren email y contraseña' });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } },
+          { field: 'password', messageKey: 'validation.required', params: { field: 'Password' } }
+        ].filter((error, index) => [!email, !password][index]));
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Formato de email inválido' });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.invalid_email' }
+        ]);
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
       
-      // Login con Firebase Auth REST API
+      // Hacer login con Firebase Auth
       const response = await axios.post(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
         { email, password, returnSecureToken: true }
@@ -218,23 +215,25 @@ const authController = {
         // ...otros campos que quieras exponer
       };
 
-      res.status(200).json({
+      const responseData = {
         user: userData,
         tokens: { idToken, refreshToken, expiresIn }
-      });
+      };
+
+      res.success('auth.login_successful', responseData);
     } catch (error) {
       if (error.response?.data?.error) {
         const firebaseError = error.response.data.error;
         switch (firebaseError.message) {
           case 'INVALID_PASSWORD':
-            return res.status(400).json({ error: 'Error de autenticación', details: 'INVALID_PASSWORD' });
+            return res.error('auth.invalid_password', 400, { details: 'INVALID_PASSWORD' });
           case 'EMAIL_NOT_FOUND':
-            return res.status(400).json({ error: 'Usuario no encontrado', details: 'EMAIL_NOT_FOUND' });
+            return res.error('auth.user_not_found', 400, { details: 'EMAIL_NOT_FOUND' });
           default:
-            return res.status(400).json({ error: 'Error de autenticación', details: firebaseError.message });
+            return res.error('auth.authentication_error', 400, { details: firebaseError.message });
         }
       }
-      res.status(500).json({ error: 'Error en el proceso de login', details: error.message });
+      res.serverError('auth.login_process_error', { details: error.message });
     }
   },
 
@@ -244,17 +243,19 @@ const authController = {
       const { email } = req.body;
       
       if (!email) {
-        const response = { error: 'Se requiere el email' };
-        logAuthEvent('Password Reset Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Password Reset Validation Failed', { missingEmail: true });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } }
+        ]);
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        const response = { error: 'Formato de email inválido' };
-        logAuthEvent('Password Reset Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Password Reset Validation Failed', { invalidEmail: email });
+        return res.validationError([
+          { field: 'email', messageKey: 'validation.invalid_email' }
+        ]);
       }
 
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -265,9 +266,8 @@ const authController = {
         email
       });
       
-      const successResponse = { message: 'Correo de recuperación enviado correctamente' };
       logAuthEvent('Password Reset Success', { email });
-      res.status(200).json(successResponse);
+      res.success('auth.password_reset_email_sent');
     } catch (error) {
       logAuthEvent('Password Reset Error', error, true);
       
@@ -276,21 +276,15 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_NOT_FOUND':
-            return res.status(400).json({ error: 'Email no encontrado' });
+            return res.error('auth.email_not_found', 400);
           case 'INVALID_EMAIL':
-            return res.status(400).json({ error: 'Formato de email inválido' });
+            return res.error('auth.invalid_email_format', 400);
           default:
-            return res.status(400).json({ 
-              error: 'Error al enviar correo de recuperación', 
-              details: firebaseError.message 
-            });
+            return res.error('auth.password_reset_send_error', 400, { details: firebaseError.message });
         }
       }
       
-      res.status(500).json({ 
-        error: 'Error al enviar correo de recuperación', 
-        details: error.message 
-      });
+      res.serverError('auth.password_reset_send_error', { details: error.message });
     }
   },
 
@@ -299,7 +293,9 @@ const authController = {
     const { email } = req.body;
     
     if (!email) {
-      return res.status(400).json({ error: 'Se requiere una dirección de correo electrónico' });
+      return res.validationError([
+        { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } }
+      ]);
     }
     
     try {
@@ -311,11 +307,10 @@ const authController = {
         email
       });
       
-      res.status(200).json({ message: 'Correo de recuperación enviado correctamente' });
+      res.success('auth.password_reset_email_sent');
     } catch (error) {
       console.error('Error enviando correo de recuperación:', error.response?.data || error);
-      res.status(400).json({ 
-        error: 'Error al enviar correo de recuperación', 
+      res.serverError('auth.password_reset_send_error', { 
         details: error.response?.data || error.message 
       });
     }
@@ -328,21 +323,16 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.forbidden('auth.insufficient_permissions');
       }
       
       // Revocar todos los tokens de actualización para el usuario
       await admin.auth().revokeRefreshTokens(id);
       
-      res.status(200).json({ 
-        message: `Se ha forzado el cierre de sesión para el usuario ${id}` 
-      });
+      res.success('auth.force_logout_successful', { userId: id });
     } catch (error) {
       console.error('Error al forzar cierre de sesión:', error);
-      res.status(500).json({ 
-        error: 'Error al forzar cierre de sesión', 
-        details: error.message 
-      });
+      res.serverError('auth.force_logout_error', { details: error.message });
     }
   },
 
@@ -353,19 +343,16 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.forbidden('auth.insufficient_permissions');
       }
       
       // Obtener información del usuario desde Firebase Auth
       const userRecord = await admin.auth().getUser(uid);
       
-      res.status(200).json(userRecord);
+      res.data(userRecord);
     } catch (error) {
       console.error('Error al obtener información del usuario:', error);
-      res.status(500).json({ 
-        error: 'Error al obtener información del usuario', 
-        details: error.message 
-      });
+      res.serverError('auth.get_user_info_error', { details: error.message });
     }
   },
 
@@ -377,21 +364,16 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin
       if (req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.forbidden('auth.insufficient_permissions');
       }
       
       // Actualizar estado de la cuenta
       await admin.auth().updateUser(id, { disabled });
       
-      res.status(200).json({ 
-        message: `Estado de cuenta actualizado para el usuario ${id}` 
-      });
+      res.success('auth.user_status_updated', { userId: id, disabled });
     } catch (error) {
       console.error('Error al actualizar estado de cuenta:', error);
-      res.status(500).json({ 
-        error: 'Error al actualizar estado de cuenta', 
-        details: error.message 
-      });
+      res.serverError('auth.update_user_status_error', { details: error.message });
     }
   },
 
@@ -401,29 +383,23 @@ const authController = {
       const token = req.headers.authorization?.split(' ')[1];
       
       if (!token) {
-        const response = { error: 'Token no proporcionado' };
-        logAuthEvent('Logout Validation Failed', response);
-        return res.status(401).json(response);
+        logAuthEvent('Logout Validation Failed', { missingToken: true });
+        return res.unauthorized('auth.token_not_provided');
       }
       
       // Verificar el token
       try {
         await admin.auth().verifyIdToken(token);
       } catch (error) {
-        const response = { error: 'Token inválido' };
-        logAuthEvent('Logout Error', response);
-        return res.status(401).json(response);
+        logAuthEvent('Logout Error', { invalidToken: true });
+        return res.unauthorized('auth.invalid_token');
       }
       
-      const successResponse = { message: 'Sesión cerrada correctamente' };
       logAuthEvent('Logout Success', { token });
-      res.status(200).json(successResponse);
+      res.success('auth.logout_successful');
     } catch (error) {
       logAuthEvent('Logout Error', error, true);
-      res.status(500).json({ 
-        error: 'Error al cerrar sesión', 
-        details: error.message 
-      });
+      res.serverError('auth.logout_error', { details: error.message });
     }
   },
 

@@ -25,34 +25,28 @@ exports.createPet = async (req, res) => {
     const missingFields = requiredFields.filter(field => !petData[field]);
     
     if (missingFields.length > 0) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: missingFields.map(field => ({
+      return res.validationError(
+        missingFields.map(field => ({
           field,
-          message: `${field} is required`
+          messageKey: 'validation.required',
+          params: { field }
         }))
-      });
+      );
     }
     
     // Type validation for critical fields
     if (!Array.isArray(petData.images) || petData.images.length === 0) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'images',
-          message: 'At least one image URL is required'
-        }]
-      });
+      return res.validationError([{
+        field: 'images',
+        messageKey: 'validation.at_least_one_image_required'
+      }]);
     }
     
     if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'age',
-          message: 'Age must be a non-negative integer'
-        }]
-      });
+      return res.validationError([{
+        field: 'age',
+        messageKey: 'validation.age_must_be_non_negative'
+      }]);
     }
     
     // Process each external image URL
@@ -129,8 +123,7 @@ exports.createPet = async (req, res) => {
         processedUrls.push(newUrl);
       } catch (imageError) {
         console.error('Error processing image URL:', imageError);
-        return res.status(400).json({ 
-          error: 'Failed to process image URL', 
+        return res.error('pets.failed_to_process_image_url', 400, { 
           details: imageError.message,
           url 
         });
@@ -149,17 +142,16 @@ exports.createPet = async (req, res) => {
     try {
       const newPet = await petModel.createPet(petData);
       console.log('[createPet] Mascota creada:', newPet);
-      res.status(201).json(newPet);
+      res.created('pets.created', newPet);
     } catch (err) {
       console.error('[createPet] Error creando mascota:', err);
-      res.status(500).json({ 
-          error: 'Error creating pet record', 
-          details: err.message || 'Unknown error occurred'
-        });
-      }
+      res.serverError('pets.failed_to_create_pet', { 
+        details: err.message || 'Unknown error occurred'
+      });
+    }
   } catch (error) {
     console.error('[createPet] Error general:', error);
-    res.status(500).json({ error: 'Failed to create pet', details: error.message });
+    res.serverError('pets.failed_to_create_pet', { details: error.message });
   }
 };
 
@@ -199,11 +191,15 @@ exports.getPets = async (req, res) => {
     // Call the model with filter, pagination and sorting options
     try {
       const pets = await petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort, includeHidden);
-      res.status(200).json(pets);
+      res.list(pets, {
+        page: pageNumber,
+        limit: pageSize,
+        total: pets.length
+      });
     } catch (err) {
       console.error('Error retrieving pets:', err);
-      res.status(500).json({ error: 'Error retrieving pets', details: err.message });
-        }
+      res.serverError('common.error_retrieving', { details: err.message });
+    }
 };
 
 exports.getPetById = async (req, res) => {
@@ -217,14 +213,14 @@ exports.getPetById = async (req, res) => {
     try {
       const pet = await petModel.getPetById(id);
       console.log(`[getPetById] Successfully retrieved pet ID ${id}`);
-      res.status(200).json(pet);
+      res.data(pet);
     } catch (err) {
-            console.error(`[getPetById] Error retrieving pet ID ${id}:`, err);
-            if (err.message === 'Pet not found') {
-                return res.status(404).json({ error: 'Pet not found' });
-            }
-      res.status(500).json({ error: 'Error retrieving pet', details: err.message });
-        }
+      console.error(`[getPetById] Error retrieving pet ID ${id}:`, err);
+      if (err.message === 'Pet not found') {
+        return res.notFound('pets.not_found');
+      }
+      res.serverError('common.error_retrieving', { details: err.message });
+    }
 };
 
 exports.updatePet = async (req, res) => {
@@ -237,25 +233,19 @@ exports.updatePet = async (req, res) => {
     
     // Validate data types for critical fields if they are being updated
     if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'age',
-          message: 'Age must be a non-negative integer'
-        }]
-      });
+      return res.validationError([{
+        field: 'age',
+        messageKey: 'validation.age_must_be_non_negative'
+      }]);
     }
     
     // Validate images array if it's being updated
     if (petData.images !== undefined) {
       if (!Array.isArray(petData.images) || petData.images.length === 0) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'images',
-            message: 'At least one image URL is required'
-          }]
-        });
+        return res.validationError([{
+          field: 'images',
+          messageKey: 'validation.at_least_one_image_required'
+        }]);
       }
     }
     
@@ -263,13 +253,10 @@ exports.updatePet = async (req, res) => {
     if (petData.status !== undefined) {
       const validStatuses = ['available', 'adopted', 'lost', 'found'];
       if (!validStatuses.includes(petData.status)) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'status',
-            message: 'Status must be one of: available, adopted, lost, found'
-          }]
-        });
+        return res.validationError([{
+          field: 'status',
+          messageKey: 'validation.status_must_be_valid'
+        }]);
       }
     }
     
@@ -277,23 +264,20 @@ exports.updatePet = async (req, res) => {
     if (petData.visibility !== undefined) {
       const validVisibility = ['visible', 'hidden', 'featured'];
       if (!validVisibility.includes(petData.visibility)) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'visibility',
-            message: 'Visibility must be one of: visible, hidden, featured'
-          }]
-        });
+        return res.validationError([{
+          field: 'visibility',
+          messageKey: 'validation.visibility_must_be_valid'
+        }]);
       }
     }
     
     try {
       const updatedPet = await petModel.updatePet(id, petData);
-      res.status(200).json(updatedPet);
+      res.updated('pets.updated', updatedPet);
     } catch (err) {
       console.error('Error updating pet:', err);
-      res.status(500).json({ error: 'Error updating pet' });
-        }
+      res.serverError('common.error_updating', { details: err.message });
+    }
 };
 
 exports.deletePet = async (req, res) => {
@@ -304,10 +288,10 @@ exports.deletePet = async (req, res) => {
     }
     try {
       await petModel.deletePet(id);
-        res.status(200).json({ message: `Pet ${id} deleted` });
+      res.success('pets.pet_id_deleted', { id }, 200, { id });
     } catch (err) {
       console.error('Error deleting pet:', err);
-      res.status(500).json({ error: 'Error deleting pet' });
+      res.serverError('common.error_deleting', { details: err.message });
     }
 };
 
@@ -343,21 +327,15 @@ exports.searchPets = async (req, res) => {
     // Call the model with search criteria
     try {
       const pets = await petModel.searchPets(searchCriteria, pageNumber, pageSize, sort, includeHidden);
-        res.status(200).json({
-            results: pets,
-            pagination: {
-                page: pageNumber,
-                limit: pageSize,
-                total: pets.length, // In a production app, this would be a separate count query
-                hasMore: pets.length === pageSize // Simple check if there might be more results
-            }
-        });
+      res.list(pets, {
+        page: pageNumber,
+        limit: pageSize,
+        total: pets.length,
+        hasMore: pets.length === pageSize
+      });
     } catch (err) {
       console.error('Error searching pets:', err);
-      res.status(500).json({ 
-        error: 'Error searching pets', 
-        details: err.message 
-    });
+      res.serverError('pets.error_searching_pets', { details: err.message });
     }
 };
 
@@ -368,7 +346,7 @@ exports.updatePetImage = async (req, res) => {
     
     // Ensure a file is provided (via multer)
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.error('pets.no_image_file_provided', 400);
     }
     
     // Compress the image using Sharp (our utility function)
@@ -383,21 +361,19 @@ exports.updatePetImage = async (req, res) => {
     // Update the pet record by merging this new image URL with existing ones
     try {
       const updatedPet = await petModel.updatePetImages(petId, [imageUrl]);
-      res.status(200).json({
-        message: 'Image uploaded and pet record updated successfully',
+      res.success('pets.image_uploaded_and_pet_record_updated_successfully', {
         pet: updatedPet,
         imageUrl: imageUrl
       });
     } catch (err) {
       console.error('Error updating pet record:', err);
-      res.status(500).json({ error: 'Error updating pet record', details: err.message });
+      res.serverError('common.error_updating', { details: err.message });
     }
   } catch (error) {
     console.error('Error in updatePetImage:', error);
-    res.status(500).json({ error: 'Failed to process image upload', details: error.message });
+    res.serverError('pets.failed_to_process_image_upload', { details: error.message });
   }
 };
-
 
 exports.updatePetMultipleImages = async (req, res) => {
   try {
@@ -405,7 +381,7 @@ exports.updatePetMultipleImages = async (req, res) => {
     const pet = req.resourceObj; // Now provided by the loadPetResource middleware
     
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No image files provided' });
+      return res.error('pets.no_image_files_provided', 400);
     }
     
     const uploadedUrls = [];
@@ -420,18 +396,17 @@ exports.updatePetMultipleImages = async (req, res) => {
     // Merge new image URLs with the existing images in the pet record
     try {
       const updatedPet = await petModel.updatePetImages(petId, uploadedUrls);
-      res.status(200).json({
-        message: 'Images uploaded and pet record updated successfully',
+      res.success('pets.images_uploaded_and_pet_record_updated_successfully', {
         pet: updatedPet,
         imageUrls: uploadedUrls
       });
     } catch (err) {
       console.error('Error updating pet images:', err);
-      res.status(500).json({ error: 'Error updating pet images', details: err.message });
+      res.serverError('common.error_updating', { details: err.message });
     }
   } catch (error) {
     console.error('Error in updatePetMultipleImages:', error);
-    res.status(500).json({ error: 'Failed to process multiple image upload', details: error.message });
+    res.serverError('pets.failed_to_process_multiple_image_upload', { details: error.message });
   }
 };
 
@@ -441,22 +416,13 @@ exports.removePetImage = async (req, res) => {
   
   try {
     const updatedPet = await petModel.removePetImage(petId, imageUrl);
-    res.status(200).json({
-      message: 'Image removed successfully',
-      pet: updatedPet
-    });
+    res.success('pets.image_removed_successfully', { pet: updatedPet });
   } catch (err) {
-      if (err.message.includes('A pet record must have at least one image')) {
-        return res.status(400).json({ 
-          error: 'Cannot remove the last image', 
-          details: err.message 
-        });
-      }
-      return res.status(500).json({ 
-        error: 'Error removing pet image', 
-        details: err.message 
-      });
+    if (err.message.includes('A pet record must have at least one image')) {
+      return res.error('pets.cannot_remove_the_last_image', 400, { details: err.message });
     }
+    return res.serverError('pets.error_removing_pet_image', { details: err.message });
+  }
 };
 
 exports.createPetFromUrls = async (req, res) => {
@@ -465,7 +431,7 @@ exports.createPetFromUrls = async (req, res) => {
     
     // Validate that an array of external image URLs is provided
     if (!petData.images || !Array.isArray(petData.images) || petData.images.length === 0) {
-      return res.status(400).json({ error: 'At least one image URL must be provided in petData.images' });
+      return res.error('pets.at_least_one_image_url_must_be_provided_in_petdata', 400);
     }
     
     const processedUrls = [];
@@ -496,14 +462,14 @@ exports.createPetFromUrls = async (req, res) => {
     // Create the pet record in Firestore
     try {
       const newPet = await petModel.createPet(petData);
-      res.status(201).json(newPet);
+      res.created('pets.created', newPet);
     } catch (err) {
       console.error('Error creating pet record:', err);
-      res.status(500).json({ error: 'Error creating pet record', details: err.message });
+      res.serverError('pets.failed_to_create_pet', { details: err.message });
     }
   } catch (error) {
     console.error('Error in createPetFromUrls:', error);
-    res.status(500).json({ error: 'Failed to create pet from URLs', details: error.message });
+    res.serverError('pets.failed_to_create_pet_from_urls', { details: error.message });
   }
 };
 
@@ -517,16 +483,13 @@ exports.hidePet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'hidden' });
-    res.status(200).json({
-      message: 'Pet hidden successfully',
-      pet: updatedPet
-    });
+    res.success('pets.pet_hidden_successfully', { pet: updatedPet });
   } catch (err) {
     console.error('Error hiding pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.notFound('pets.not_found');
     }
-    res.status(500).json({ error: 'Error hiding pet', details: err.message });
+    res.serverError('pets.error_hiding_pet', { details: err.message });
   }
 };
 
@@ -540,16 +503,13 @@ exports.showPet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'visible' });
-    res.status(200).json({
-      message: 'Pet is now visible',
-      pet: updatedPet
-    });
+    res.success('pets.pet_is_now_visible', { pet: updatedPet });
   } catch (err) {
     console.error('Error showing pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.notFound('pets.not_found');
     }
-    res.status(500).json({ error: 'Error showing pet', details: err.message });
+    res.serverError('pets.error_showing_pet', { details: err.message });
   }
 };
 
@@ -563,15 +523,12 @@ exports.featurePet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'featured' });
-    res.status(200).json({
-      message: 'Pet is now featured',
-      pet: updatedPet
-    });
+    res.success('pets.pet_is_now_featured', { pet: updatedPet });
   } catch (err) {
     console.error('Error featuring pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.notFound('pets.not_found');
     }
-    res.status(500).json({ error: 'Error featuring pet', details: err.message });
+    res.serverError('pets.error_featuring_pet', { details: err.message });
   }
 };

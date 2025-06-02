@@ -6,6 +6,8 @@ const app = express();
 const cors = require('cors');
 const { verifyToken } = require('./middlewares/auth');
 const organizationContext = require('./middlewares/organizationContext');
+const { languageDetection, addLanguageHeaders } = require('./middlewares/languageDetection');
+const { responseFormatter } = require('./middlewares/responseFormatter');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -30,6 +32,11 @@ app.use(cors({
 
 // Middleware for parsing JSON
 app.use(express.json());
+
+// i18n middlewares - detectar idioma y formatear respuestas
+app.use(languageDetection);
+app.use(responseFormatter);
+app.use(addLanguageHeaders);
 
 // Rutas públicas
 app.use('/api/auth', authRoutes);
