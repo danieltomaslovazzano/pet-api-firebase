@@ -10,6 +10,7 @@
   "address_required": "Address is required for shelter organizations",
   "phone_required": "Phone number is required for shelter organizations",
   "invalid_type": "Invalid organization type",
+  "invalid_type_filter": "Invalid organization type filter",
   "type_changed": "Organization type changed to {{type}}",
   "member_added": "Member added to organization",
   "member_removed": "Member removed from organization",
@@ -94,5 +95,17 @@
   "subscription_cancelled": "Subscription cancelled",
   "billing_updated": "Billing information updated",
   "payment_successful": "Payment processed successfully",
-  "payment_failed": "Payment processing failed"
+  "payment_failed": "Payment processing failed",
+  "error_creating": "Error creating organization",
+  "error_updating": "Error updating organization",
+  "error_deleting": "Error deleting organization",
+  "error_retrieving": "Error retrieving organizations",
+  "error_retrieving_members": "Error retrieving organization members",
+  "error_retrieving_types": "Error retrieving organization types",
+  "error_retrieving_type": "Error retrieving organization type",
+  "organization_type_not_found": "Organization type not found",
+  "unauthorized_view_organization": "Unauthorized. You must be a member to view this organization.",
+  "unauthorized_update": "Unauthorized. Only admins can update organization details.",
+  "unauthorized_delete": "Unauthorized. Only admins can delete organizations.",
+  "unauthorized_view_members": "Unauthorized. You must be a member to view organization members."
 } 
