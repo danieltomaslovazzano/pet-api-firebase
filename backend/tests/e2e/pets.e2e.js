@@ -51,7 +51,9 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       {
         name: `Pets Test Organization ${Date.now()}`,
         email: `pets-test-${Date.now()}@example.com`,
-        description: 'Organization for pets E2E testing'
+        description: 'Organization for pets E2E testing',
+        address: '123 Pets Test Street',
+        phone: '+1234567890'
       },
       {
         headers: { Authorization: `Bearer ${adminToken}` }
@@ -59,13 +61,17 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
     );
     testOrganization = orgResponse.data;
     testOrganizations.push(testOrganization);
+    // Verify default type is set
+    expect(testOrganization.type).toBe('shelter');
 
     const otherOrgResponse = await axios.post(
       'http://localhost:3000/api/organizations',
       {
         name: `Other Pets Organization ${Date.now()}`,
         email: `other-pets-${Date.now()}@example.com`,
-        description: 'Another organization for multitenancy testing'
+        description: 'Another organization for multitenancy testing',
+        address: '456 Other Pets Avenue',
+        phone: '+0987654321'
       },
       {
         headers: { Authorization: `Bearer ${adminToken}` }
@@ -73,6 +79,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
     );
     otherOrganization = otherOrgResponse.data;
     testOrganizations.push(otherOrganization);
+    // Verify default type is set
+    expect(otherOrganization.type).toBe('shelter');
 
     // Add admin user to test organization as admin
     await axios.post(

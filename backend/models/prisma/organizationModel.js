@@ -7,6 +7,11 @@
 
 const { PrismaClient } = require('@prisma/client');
 const { v4: uuidv4 } = require('uuid');
+const { 
+  isValidOrganizationType, 
+  validateOrganizationByType,
+  getValidOrganizationTypeIds 
+} = require('../../config/organizationTypes');
 
 // Create default Prisma client instance
 const defaultPrisma = new PrismaClient();
@@ -42,6 +47,20 @@ const validateOrganizationData = (orgData) => {
   for (const field of requiredFields) {
     if (!orgData[field]) {
       return new Error('Invalid organization data');
+    }
+  }
+
+  // Validate organization type
+  if (orgData.type && !isValidOrganizationType(orgData.type)) {
+    const validTypes = getValidOrganizationTypeIds().join(', ');
+    return new Error(`Invalid organization type. Valid types are: ${validTypes}`);
+  }
+
+  // Validate organization data based on its type
+  if (orgData.type) {
+    const typeValidation = validateOrganizationByType(orgData.type, orgData);
+    if (!typeValidation.isValid) {
+      return new Error(`Type validation failed: ${typeValidation.errors.join(', ')}`);
     }
   }
 
@@ -85,6 +104,11 @@ class OrganizationModel {
    */
   async createOrganization(orgData) {
     try {
+      // Set default type if not provided
+      if (!orgData.type) {
+        orgData.type = 'shelter';
+      }
+
       // Validate organization data
       const validationError = validateOrganizationData(orgData);
       if (validationError) {
@@ -291,8 +315,8 @@ class OrganizationModel {
       if (filters.name) where.name = { contains: filters.name, mode: 'insensitive' };
       if (filters.status) where.status = filters.status;
       if (filters.createdBy) where.createdBy = filters.createdBy;
+      if (filters.type) where.type = filters.type;
       if (filters.id) where.id = Array.isArray(filters.id) ? { in: filters.id } : filters.id;
-      // Ignorar filters.type porque no existe en el modelo
 
       const organizations = await this.prisma.organization.findMany({
         where,

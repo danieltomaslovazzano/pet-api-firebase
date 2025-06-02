@@ -66,6 +66,8 @@ describe('Organizations E2E Tests', () => {
       expect(response.data).toHaveProperty('id');
       expect(response.data.name).toBe(organizationData.name);
       expect(response.data.createdBy).toBe(adminUserId);
+      // Verify default type is set
+      expect(response.data.type).toBe('shelter');
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -75,7 +77,9 @@ describe('Organizations E2E Tests', () => {
       const organizationData = {
         name: `User Org ${Date.now()}`,
         description: 'Organization created by regular user',
-        email: `user-org-${Date.now()}@example.com`
+        email: `user-org-${Date.now()}@example.com`,
+        address: '789 User Street',
+        phone: '+1555666777'
       };
 
       const response = await axios.post(
@@ -90,6 +94,34 @@ describe('Organizations E2E Tests', () => {
       expect(response.data).toHaveProperty('id');
       expect(response.data.name).toBe(organizationData.name);
       expect(response.data.createdBy).toBe(regularUserId);
+      // Verify default type is set
+      expect(response.data.type).toBe('shelter');
+      
+      // Store for cleanup
+      testOrganizations.push(response.data);
+    });
+
+    test('Should create organization with explicit shelter type', async () => {
+      const organizationData = {
+        name: `Explicit Shelter ${Date.now()}`,
+        type: 'shelter',
+        description: 'Shelter with explicit type',
+        address: '456 Shelter Avenue',
+        phone: '+1987654321',
+        email: `explicit-shelter-${Date.now()}@example.com`
+      };
+
+      const response = await axios.post(
+        'http://localhost:3000/api/organizations',
+        organizationData,
+        {
+          headers: { Authorization: `Bearer ${adminToken}` }
+        }
+      );
+
+      expect(response.status).toBe(201);
+      expect(response.data.type).toBe('shelter');
+      expect(response.data.name).toBe(organizationData.name);
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -124,7 +156,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Get Test Org ${Date.now()}`,
           description: 'Organization for get tests',
-          email: `get-test-org-${Date.now()}@example.com`
+          email: `get-test-org-${Date.now()}@example.com`,
+          address: '321 Get Test Avenue',
+          phone: '+1888999000'
         },
         {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -145,6 +179,8 @@ describe('Organizations E2E Tests', () => {
       expect(response.status).toBe(200);
       expect(response.data.id).toBe(testOrg.id);
       expect(response.data.name).toBe(testOrg.name);
+      // Verify type field is present
+      expect(response.data.type).toBe('shelter');
     });
 
     test('Should fail with invalid organization ID', async () => {
@@ -157,7 +193,8 @@ describe('Organizations E2E Tests', () => {
         );
         fail('Should have thrown an error');
       } catch (error) {
-        expect(error.response.status).toBe(404);
+        expect(error.response.status).toBe(400);
+        expect(error.response.data.error).toContain('Invalid');
       }
     });
 
@@ -181,7 +218,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Update Test Org ${Date.now()}`,
           description: 'Organization for update tests',
-          email: `update-test-org-${Date.now()}@example.com`
+          email: `update-test-org-${Date.now()}@example.com`,
+          address: '456 Update Test Boulevard',
+          phone: '+1777888999'
         },
         {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -254,7 +293,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Delete Test Org ${Date.now()}`,
           description: 'Organization for delete tests',
-          email: `delete-test-org-${Date.now()}@example.com`
+          email: `delete-test-org-${Date.now()}@example.com`,
+          address: '789 Delete Test Street',
+          phone: '+1333444555'
         },
         {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -296,7 +337,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `No Delete Perm Org ${Date.now()}`,
           description: 'Organization for permission test',
-          email: `no-delete-perm-org-${Date.now()}@example.com`
+          email: `no-delete-perm-org-${Date.now()}@example.com`,
+          address: '999 Permission Test Lane',
+          phone: '+1666777888'
         },
         {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -358,7 +401,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Members Test Org ${Date.now()}`,
           description: 'Organization for members tests',
-          email: `members-test-org-${Date.now()}@example.com`
+          email: `members-test-org-${Date.now()}@example.com`,
+          address: '111 Members Test Road',
+          phone: '+1222333444'
         },
         {
           headers: { Authorization: `Bearer ${adminToken}` }
@@ -431,7 +476,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Org1 ${Date.now()}`,
           description: 'First organization for multitenant test',
-          email: `org1-${Date.now()}@example.com`
+          email: `org1-${Date.now()}@example.com`,
+          address: '123 Org1 Street',
+          phone: '+1111222333'
         },
         {
           headers: { Authorization: `Bearer ${org1AdminToken}` }
@@ -445,7 +492,9 @@ describe('Organizations E2E Tests', () => {
         {
           name: `Org2 ${Date.now()}`,
           description: 'Second organization for multitenant test',
-          email: `org2-${Date.now()}@example.com`
+          email: `org2-${Date.now()}@example.com`,
+          address: '456 Org2 Avenue',
+          phone: '+1444555666'
         },
         {
           headers: { Authorization: `Bearer ${org2AdminToken}` }

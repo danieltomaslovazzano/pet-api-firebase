@@ -37,13 +37,17 @@ describe('Memberships E2E Tests', () => {
       {
         name: `Test Org for Memberships ${Date.now()}`,
         description: 'Organization for membership testing',
-        email: `test-org-${Date.now()}@example.com`
+        email: `test-org-${Date.now()}@example.com`,
+        address: '123 Membership Test Street',
+        phone: '+1234567890'
       },
       {
         headers: { Authorization: `Bearer ${adminToken}` }
       }
     );
     testOrganization = orgResponse.data;
+    // Verify default type is set
+    expect(testOrganization.type).toBe('shelter');
   });
 
   afterAll(async () => {
@@ -588,7 +592,9 @@ describe('Memberships E2E Tests', () => {
         {
           name: `Other Org ${Date.now()}`,
           description: 'Other organization for cross-access test',
-          email: `other-org-${Date.now()}@example.com`
+          email: `other-org-${Date.now()}@example.com`,
+          address: '789 Other Org Boulevard',
+          phone: '+1122334455'
         },
         {
           headers: { Authorization: `Bearer ${otherOrgAdminToken}` }

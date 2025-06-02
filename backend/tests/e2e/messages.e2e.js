@@ -57,13 +57,17 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         {
           name: 'Messages Test Org',
           description: 'Organization for message testing',
-          email: 'messages-test@example.com'
+          email: 'messages-test@example.com',
+          address: '123 Messages Test Street',
+          phone: '+1234567890'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
       
       testOrganization = orgResponse.data;
       testOrganizations.push(testOrganization);
+      // Verify default type is set
+      expect(testOrganization.type).toBe('shelter');
 
       // 3. Create second test organization for multitenancy tests
       console.log('\n3️⃣ Creating second test organization...');
@@ -72,13 +76,17 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         {
           name: 'Messages Test Org 2',
           description: 'Second organization for message testing',
-          email: 'messages-test2@example.com'
+          email: 'messages-test2@example.com',
+          address: '456 Messages Test Avenue',
+          phone: '+0987654321'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
       
       testOrganization2 = org2Response.data;
       testOrganizations.push(testOrganization2);
+      // Verify default type is set
+      expect(testOrganization2.type).toBe('shelter');
 
       // 4. Create regular user
       console.log('\n4️⃣ Creating regular user...');
