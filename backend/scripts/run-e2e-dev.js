@@ -7,6 +7,8 @@
  *   node scripts/run-e2e-dev.js auth               # Run auth tests only
  *   node scripts/run-e2e-dev.js users              # Run users tests only
  *   node scripts/run-e2e-dev.js organizations      # Run organizations tests only
+ *   node scripts/run-e2e-dev.js organization-types # Run organization types tests only
+ *   node scripts/run-e2e-dev.js organization-types-integration # Run organization types integration tests only
  *   node scripts/run-e2e-dev.js memberships        # Run memberships tests only
  *   node scripts/run-e2e-dev.js pets               # Run pets tests only
  *   node scripts/run-e2e-dev.js conversations      # Run conversations tests only
@@ -25,11 +27,13 @@ const TEST_SUITES = {
   auth: ['auth.e2e.js'],
   users: ['users.e2e.js'],
   organizations: ['organizations.e2e.js'],
+  'organization-types': ['organization-types.e2e.js'],
+  'organization-types-integration': ['organization-types-integration.e2e.js'],
   memberships: ['memberships.e2e.js'],
   pets: ['pets.e2e.js'],
   conversations: ['conversations.e2e.js'],
   messages: ['messages.e2e.js'],
-  all: ['auth.e2e.js', 'users.e2e.js', 'organizations.e2e.js', 'memberships.e2e.js', 'pets.e2e.js', 'conversations.e2e.js', 'messages.e2e.js']
+  all: ['auth.e2e.js', 'users.e2e.js', 'organizations.e2e.js', 'organization-types.e2e.js', 'organization-types-integration.e2e.js', 'memberships.e2e.js', 'pets.e2e.js', 'conversations.e2e.js', 'messages.e2e.js']
 };
 
 const COLORS = {

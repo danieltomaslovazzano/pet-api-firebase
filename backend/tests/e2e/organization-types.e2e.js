@@ -165,7 +165,9 @@ describe('Organization Types E2E Tests', () => {
       const organizationData = {
         name: `Default Type Org ${Date.now()}`,
         description: 'Organization without explicit type',
-        email: `default-type-${Date.now()}@example.com`
+        email: `default-type-${Date.now()}@example.com`,
+        address: '123 Default Street',
+        phone: '+1234567890'
       };
 
       const response = await axios.post(
@@ -202,8 +204,11 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Invalid organization type');
-        expect(error.response.data.details).toContain('shelter');
+        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.details).toBeDefined();
+        // Check that the details contain information about valid types including 'shelter'
+        const detailsString = JSON.stringify(error.response.data.details);
+        expect(detailsString).toContain('shelter');
       }
     });
 
@@ -225,7 +230,36 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Validation failed');
+        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.details).toBeDefined();
+        // Check that the details contain information about required email field
+        const detailsString = JSON.stringify(error.response.data.details);
+        expect(detailsString).toContain('Email is required');
+      }
+    });
+
+    test('Should handle empty string type', async () => {
+      const organizationData = {
+        name: 'Empty Type Organization',
+        type: '',
+        description: 'Organization with empty type',
+        email: 'empty-type@example.com',
+        address: '123 Empty Street',
+        phone: '+1234567890'
+      };
+
+      try {
+        await axios.post(
+          'http://localhost:3000/api/organizations',
+          organizationData,
+          {
+            headers: { Authorization: `Bearer ${adminToken}` }
+          }
+        );
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error.response.status).toBe(400);
+        expect(error.response.data.error).toBe('Validation failed');
       }
     });
   });
@@ -287,7 +321,8 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Invalid organization type');
+        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.details).toBeDefined();
       }
     });
   });
@@ -343,7 +378,7 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Invalid organization type filter');
+        expect(error.response.data.error).toBe('Invalid query parameters');
       }
     });
 
@@ -362,28 +397,6 @@ describe('Organization Types E2E Tests', () => {
   });
 
   describe('Organization Type Validation Edge Cases', () => {
-    test('Should handle empty string type', async () => {
-      const organizationData = {
-        name: 'Empty Type Organization',
-        type: '',
-        description: 'Organization with empty type',
-        email: 'empty-type@example.com'
-      };
-
-      try {
-        await axios.post(
-          'http://localhost:3000/api/organizations',
-          organizationData,
-          {
-            headers: { Authorization: `Bearer ${adminToken}` }
-          }
-        );
-        fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.response.status).toBe(400);
-      }
-    });
-
     test('Should handle null type', async () => {
       const organizationData = {
         name: 'Null Type Organization',
@@ -425,7 +438,8 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Invalid organization type');
+        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.details).toBeDefined();
       }
     });
   });

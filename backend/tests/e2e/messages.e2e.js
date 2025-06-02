@@ -57,7 +57,9 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         {
           name: 'Messages Test Org',
           description: 'Organization for message testing',
-          email: 'messages-test@example.com'
+          email: 'messages-test@example.com',
+          address: '123 Messages Test Street',
+          phone: '+1234567890'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -74,7 +76,9 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         {
           name: 'Messages Test Org 2',
           description: 'Second organization for message testing',
-          email: 'messages-test2@example.com'
+          email: 'messages-test2@example.com',
+          address: '456 Messages Test Avenue',
+          phone: '+0987654321'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -345,8 +349,8 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         );
         expect(true).toBe(false); // Should not reach here
       } catch (error) {
-        expect(error.response.status).toBe(500);
-        expect(error.response.data.error).toContain('Error creating message');
+        expect(error.response.status).toBe(400);
+        expect(error.response.data.error).toContain('Conversation ID is required');
       }
     });
 

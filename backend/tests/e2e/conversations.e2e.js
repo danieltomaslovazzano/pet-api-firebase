@@ -52,7 +52,9 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         {
           name: 'Conversations Test Org',
           description: 'Organization for conversation testing',
-          email: 'conversations-test@example.com'
+          email: 'conversations-test@example.com',
+          address: '123 Conversations Test Street',
+          phone: '+1234567890'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -69,7 +71,9 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         {
           name: 'Conversations Test Org 2',
           description: 'Second organization for conversation testing',
-          email: 'conversations-test2@example.com'
+          email: 'conversations-test2@example.com',
+          address: '456 Conversations Test Avenue',
+          phone: '+0987654321'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );

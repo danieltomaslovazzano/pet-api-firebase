@@ -20,9 +20,12 @@ exports.validateCreateOrganization = [
     .optional()
     .isString().withMessage('Type must be a string')
     .custom((value) => {
-      if (value && !isValidOrganizationType(value)) {
-        const validTypes = getValidOrganizationTypeIds().join(', ');
-        throw new Error(`Invalid organization type. Valid types are: ${validTypes}`);
+      // Check if value is provided and not empty
+      if (value !== undefined && value !== null) {
+        if (!isValidOrganizationType(value)) {
+          const validTypes = getValidOrganizationTypeIds().join(', ');
+          throw new Error(`Invalid organization type. Valid types are: ${validTypes}`);
+        }
       }
       return true;
     }),
@@ -81,9 +84,12 @@ exports.validateUpdateOrganization = [
     .optional()
     .isString().withMessage('Type must be a string')
     .custom((value) => {
-      if (value && !isValidOrganizationType(value)) {
-        const validTypes = getValidOrganizationTypeIds().join(', ');
-        throw new Error(`Invalid organization type. Valid types are: ${validTypes}`);
+      // Check if value is provided and not empty
+      if (value !== undefined && value !== null) {
+        if (!isValidOrganizationType(value)) {
+          const validTypes = getValidOrganizationTypeIds().join(', ');
+          throw new Error(`Invalid organization type. Valid types are: ${validTypes}`);
+        }
       }
       return true;
     }),
