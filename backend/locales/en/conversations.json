@@ -159,5 +159,22 @@
   "rules_updated": "Conversation rules updated",
   "guidelines_updated": "Conversation guidelines updated",
   "terms_updated": "Conversation terms updated",
-  "privacy_policy_updated": "Conversation privacy policy updated"
+  "privacy_policy_updated": "Conversation privacy policy updated",
+  "participants_required": "Participants must be an array with at least two participants",
+  "participants_must_belong_to_organization": "All conversation participants must belong to the organization",
+  "error_verifying_organization_membership": "Error verifying organization membership",
+  "cannot_access_outside_organization": "Cannot access conversation outside your organization",
+  "must_be_participant_to_view": "You must be a participant to view this conversation",
+  "must_be_participant_to_modify": "You must be a participant to modify this conversation",
+  "cannot_access_users_outside_organization": "Cannot access conversations for users outside your organization",
+  "only_admins_can_view_other_users": "Only organization admins can view other users' conversations",
+  "can_only_view_own_conversations": "You can only view your own conversations",
+  "cannot_delete_outside_organization": "Cannot delete conversation outside your organization",
+  "insufficient_permissions_permanent_delete": "Insufficient permissions to permanently delete conversations",
+  "error_soft_deleting": "Error soft deleting conversation",
+  "error_permanently_deleting": "Error permanently deleting conversation",
+  "error_hiding": "Error hiding conversation",
+  "error_unhiding": "Error unhiding conversation",
+  "error_blocking": "Error blocking conversation",
+  "error_unblocking": "Error unblocking conversation"
 } 

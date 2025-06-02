@@ -7,7 +7,7 @@ exports.createConversation = async (req, res) => {
     
     // Validate participants
     if (!conversationData.participants || !Array.isArray(conversationData.participants) || conversationData.participants.length < 2) {
-      return res.status(400).json({ error: 'Participants must be an array with at least two participants' });
+      return res.validationError('conversations.participants_required');
     }
     
     // Multitenancy: Set organization context for the conversation
@@ -28,14 +28,12 @@ exports.createConversation = async (req, res) => {
           });
           
           if (!isMember) {
-            return res.status(403).json({ 
-              error: 'Forbidden: All conversation participants must belong to the organization',
-              details: `User ${participantId} is not a member of this organization`
+            return res.forbidden('conversations.participants_must_belong_to_organization', {
+              details: req.t('conversations.participants_must_belong_to_organization', { userId: participantId })
             });
           }
         } catch (error) {
-          return res.status(500).json({ 
-            error: 'Error verifying organization membership', 
+          return res.serverError('conversations.error_verifying_organization_membership', { 
             details: error.message 
           });
         }
@@ -44,11 +42,11 @@ exports.createConversation = async (req, res) => {
     
     // Create the conversation
     const conversation = await conversationModel.createConversation(conversationData);
-    res.status(201).json(conversation);
+    res.created(conversation, 'conversations.created');
     
   } catch (error) {
     console.error('Error creating conversation:', error);
-    res.status(500).json({ error: 'Error creating conversation', details: error.message });
+    res.serverError('common.error_creating', { details: error.message });
   }
 };
 
@@ -58,42 +56,38 @@ exports.getConversationById = async (req, res) => {
     
     // Validate ID format (basic UUID check)
     if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      return res.status(400).json({ error: 'Invalid conversation ID format' });
+      return res.validationError('validation.invalid_conversation_id_format');
     }
     
     // Get the conversation
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     // Super admin can access any conversation
     if (req.user.isSuperAdmin) {
-      return res.status(200).json(conversation);
+      return res.success(conversation);
     }
     
     // Org context: check if conversation belongs to this organization
     if (req.organizationId && conversation.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot access conversation outside your organization' 
-      });
+      return res.forbidden('conversations.cannot_access_outside_organization');
     }
     
     // Check if user is participant (participants is now an array of IDs)
     const isParticipant = conversation.participants.includes(req.user.uid);
     if (!isParticipant) {
-      return res.status(403).json({ 
-        error: 'Forbidden: You must be a participant to view this conversation' 
-      });
+      return res.forbidden('conversations.must_be_participant_to_view');
     }
     
     // User has access, return the conversation
-    res.status(200).json(conversation);
+    res.success(conversation);
     
   } catch (error) {
     console.error('Error getting conversation by ID:', error);
-    res.status(500).json({ error: 'Error retrieving conversation', details: error.message });
+    res.serverError('common.error_retrieving', { details: error.message });
   }
 };
 
@@ -105,14 +99,14 @@ exports.getConversationsForUser = async (req, res) => {
     if (req.user.isSuperAdmin) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.status(200).json(conversations);
+      return res.success(conversations);
     }
     
     // Users can view their own conversations
     if (req.user.uid === userId) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.status(200).json(conversations);
+      return res.success(conversations);
     }
     
     // With organization context, check if target user belongs to this org
@@ -125,9 +119,7 @@ exports.getConversationsForUser = async (req, res) => {
       });
       
       if (!isMember) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot access conversations for users outside your organization'
-        });
+        return res.forbidden('conversations.cannot_access_users_outside_organization');
       }
       
       // Check if current user is admin in this org
@@ -139,28 +131,24 @@ exports.getConversationsForUser = async (req, res) => {
       });
       
       if (!isAdmin) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Only organization admins can view other users\' conversations'
-        });
+        return res.forbidden('conversations.only_admins_can_view_other_users');
       }
       
       const conversations = await conversationModel.getConversationsForUser(userId, req.organizationId);
-      return res.status(200).json(conversations);
+      return res.success(conversations);
     } else {
       // Without organization context, only allow admin users
       if (req.user.role === 'admin') {
         const conversations = await conversationModel.getConversationsForUser(userId, null);
-        return res.status(200).json(conversations);
+        return res.success(conversations);
       } else {
-        return res.status(403).json({ 
-          error: 'Forbidden: You can only view your own conversations'
-        });
+        return res.forbidden('conversations.can_only_view_own_conversations');
       }
     }
     
   } catch (error) {
     console.error('Error getting conversations for user:', error);
-    res.status(500).json({ error: 'Error retrieving conversations', details: error.message });
+    res.serverError('common.error_retrieving', { details: error.message });
   }
 };
 
@@ -173,34 +161,30 @@ exports.softDeleteConversation = async (req, res) => {
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     // Super admin can access any conversation
     if (!req.user.isSuperAdmin) {
       // Org context: check if conversation belongs to this organization
       if (req.organizationId && conversation.organizationId !== req.organizationId) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot access conversation outside your organization' 
-        });
+        return res.forbidden('conversations.cannot_access_outside_organization');
       }
       
       // Check if user is participant (participants is now an array of IDs)
       const isParticipant = conversation.participants.includes(userId);
       if (!isParticipant) {
-        return res.status(403).json({ 
-          error: 'Forbidden: You must be a participant to modify this conversation' 
-        });
+        return res.forbidden('conversations.must_be_participant_to_modify');
       }
     }
     
     // Perform soft delete
     const result = await conversationModel.softDeleteConversation(id, userId);
-    res.status(200).json(result);
+    res.success(result, 'conversations.deleted');
     
   } catch (error) {
     console.error('Error soft deleting conversation:', error);
-    res.status(500).json({ error: 'Error soft deleting conversation', details: error.message });
+    res.serverError('conversations.error_soft_deleting', { details: error.message });
   }
 };
 
@@ -211,21 +195,19 @@ exports.permanentDeleteConversation = async (req, res) => {
     // Super admin can delete any conversation
     if (req.user.isSuperAdmin) {
       const result = await conversationModel.permanentDeleteConversation(id);
-      return res.status(200).json(result);
+      return res.success(result, 'conversations.deleted');
     }
     
     // Get the conversation to check organization and access
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     // Org context: check if conversation belongs to this organization
     if (req.organizationId && conversation.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot delete conversation outside your organization' 
-      });
+      return res.forbidden('conversations.cannot_delete_outside_organization');
     }
     
     // Check if user is admin in this org
@@ -238,26 +220,22 @@ exports.permanentDeleteConversation = async (req, res) => {
       });
       
       if (!isAdmin) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Insufficient permissions to permanently delete conversations'
-        });
+        return res.forbidden('conversations.insufficient_permissions_permanent_delete');
       }
     } else {
       // Without organization context, only allow global admin
       if (req.user.role !== 'admin') {
-        return res.status(403).json({ 
-          error: 'Forbidden: Insufficient permissions to permanently delete conversations'
-        });
+        return res.forbidden('conversations.insufficient_permissions_permanent_delete');
       }
     }
     
     // Perform permanent delete
     const result = await conversationModel.permanentDeleteConversation(id);
-    res.status(200).json(result);
+    res.success(result, 'conversations.deleted');
     
   } catch (error) {
     console.error('Error permanently deleting conversation:', error);
-    res.status(500).json({ error: 'Error permanently deleting conversation', details: error.message });
+    res.serverError('conversations.error_permanently_deleting', { details: error.message });
   }
 };
 
@@ -266,7 +244,7 @@ async function checkConversationAccess(conversationId, userId, req) {
   const conversation = await conversationModel.getConversationById(conversationId);
   
   if (!conversation) {
-    const error = new Error('Conversation not found');
+    const error = new Error(req.t('conversations.not_found'));
     error.statusCode = 404;
     throw error;
   }
@@ -278,7 +256,7 @@ async function checkConversationAccess(conversationId, userId, req) {
   
   // Org context: check if conversation belongs to this organization
   if (req.organizationId && conversation.organizationId !== req.organizationId) {
-    const error = new Error('Forbidden: Cannot access conversation outside your organization');
+    const error = new Error(req.t('conversations.cannot_access_outside_organization'));
     error.statusCode = 403;
     throw error;
   }
@@ -286,7 +264,7 @@ async function checkConversationAccess(conversationId, userId, req) {
   // Check if user is participant (participants is now an array of IDs)
   const isParticipant = conversation.participants.includes(userId);
   if (!isParticipant) {
-    const error = new Error('Forbidden: You must be a participant to modify this conversation');
+    const error = new Error(req.t('conversations.must_be_participant_to_modify'));
     error.statusCode = 403;
     throw error;
   }
@@ -306,15 +284,21 @@ exports.hideConversation = async (req, res) => {
     const result = await conversationModel.hideConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
-    res.status(200).json(result);
+    res.success(result, 'conversations.hidden');
     
   } catch (error) {
     console.error('Error hiding conversation:', error);
     const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (statusCode === 404) {
+      res.notFound(error.message);
+    } else if (statusCode === 403) {
+      res.forbidden(error.message);
+    } else {
+      res.serverError('conversations.error_hiding', { details: error.message });
+    }
   }
 };
 
@@ -330,15 +314,21 @@ exports.unhideConversation = async (req, res) => {
     const result = await conversationModel.unhideConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
-    res.status(200).json(result);
+    res.success(result, 'conversations.unhidden');
     
   } catch (error) {
     console.error('Error unhiding conversation:', error);
     const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (statusCode === 404) {
+      res.notFound(error.message);
+    } else if (statusCode === 403) {
+      res.forbidden(error.message);
+    } else {
+      res.serverError('conversations.error_unhiding', { details: error.message });
+    }
   }
 };
 
@@ -354,15 +344,21 @@ exports.blockConversation = async (req, res) => {
     const result = await conversationModel.blockConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
-    res.status(200).json(result);
+    res.success(result, 'conversations.blocked');
     
   } catch (error) {
     console.error('Error blocking conversation:', error);
     const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (statusCode === 404) {
+      res.notFound(error.message);
+    } else if (statusCode === 403) {
+      res.forbidden(error.message);
+    } else {
+      res.serverError('conversations.error_blocking', { details: error.message });
+    }
   }
 };
 
@@ -378,15 +374,21 @@ exports.unblockConversation = async (req, res) => {
     const result = await conversationModel.unblockConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
-    res.status(200).json(result);
+    res.success(result, 'conversations.unblocked');
     
   } catch (error) {
     console.error('Error unblocking conversation:', error);
     const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (statusCode === 404) {
+      res.notFound(error.message);
+    } else if (statusCode === 403) {
+      res.forbidden(error.message);
+    } else {
+      res.serverError('conversations.error_unblocking', { details: error.message });
+    }
   }
 };
 
@@ -406,10 +408,10 @@ exports.getConversations = async (req, res) => {
     }
 
     const conversations = await conversationModel.getConversations(filters);
-    res.status(200).json(conversations);
+    res.success(conversations);
     
   } catch (error) {
     console.error('Error getting conversations:', error);
-    res.status(500).json({ error: 'Error retrieving conversations', details: error.message });
+    res.serverError('common.error_retrieving', { details: error.message });
   }
 };

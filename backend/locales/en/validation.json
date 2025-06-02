@@ -42,5 +42,6 @@
   "at_least_one_image_required": "At least one image URL is required",
   "age_must_be_non_negative": "Age must be a non-negative integer",
   "status_must_be_valid": "Status must be one of: available, adopted, lost, found",
-  "visibility_must_be_valid": "Visibility must be one of: visible, hidden, featured"
+  "visibility_must_be_valid": "Visibility must be one of: visible, hidden, featured",
+  "invalid_conversation_id_format": "Invalid conversation ID format"
 } 

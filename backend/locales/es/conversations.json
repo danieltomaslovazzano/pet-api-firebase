@@ -159,5 +159,22 @@
   "rules_updated": "Reglas de conversación actualizadas",
   "guidelines_updated": "Directrices de conversación actualizadas",
   "terms_updated": "Términos de conversación actualizados",
-  "privacy_policy_updated": "Política de privacidad de conversación actualizada"
+  "privacy_policy_updated": "Política de privacidad de la conversación actualizada",
+  "participants_required": "Los participantes deben ser un array con al menos dos participantes",
+  "participants_must_belong_to_organization": "Todos los participantes de la conversación deben pertenecer a la organización",
+  "error_verifying_organization_membership": "Error verificando la membresía de la organización",
+  "cannot_access_outside_organization": "No se puede acceder a conversaciones fuera de tu organización",
+  "must_be_participant_to_view": "Debes ser un participante para ver esta conversación",
+  "must_be_participant_to_modify": "Debes ser un participante para modificar esta conversación",
+  "cannot_access_users_outside_organization": "No se puede acceder a conversaciones de usuarios fuera de tu organización",
+  "only_admins_can_view_other_users": "Solo los administradores de la organización pueden ver las conversaciones de otros usuarios",
+  "can_only_view_own_conversations": "Solo puedes ver tus propias conversaciones",
+  "cannot_delete_outside_organization": "No se puede eliminar conversaciones fuera de tu organización",
+  "insufficient_permissions_permanent_delete": "Permisos insuficientes para eliminar conversaciones permanentemente",
+  "error_soft_deleting": "Error eliminando conversación temporalmente",
+  "error_permanently_deleting": "Error eliminando conversación permanentemente",
+  "error_hiding": "Error ocultando conversación",
+  "error_unhiding": "Error mostrando conversación",
+  "error_blocking": "Error bloqueando conversación",
+  "error_unblocking": "Error desbloqueando conversación"
 } 
