@@ -43,5 +43,6 @@
   "age_must_be_non_negative": "La edad debe ser un entero no negativo",
   "status_must_be_valid": "El estado debe ser uno de: available, adopted, lost, found",
   "visibility_must_be_valid": "La visibilidad debe ser una de: visible, hidden, featured",
-  "invalid_conversation_id_format": "Formato de ID de conversación inválido"
+  "invalid_conversation_id_format": "Formato de ID de conversación inválido",
+  "invalid_language": "Idioma inválido. Idiomas soportados: {{availableLanguages}}"
 } 

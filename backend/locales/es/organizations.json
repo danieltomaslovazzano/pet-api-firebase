@@ -107,5 +107,7 @@
   "unauthorized_view_organization": "No autorizado. Debes ser miembro para ver esta organización.",
   "unauthorized_update": "No autorizado. Solo los administradores pueden actualizar detalles de organización.",
   "unauthorized_delete": "No autorizado. Solo los administradores pueden eliminar organizaciones.",
-  "unauthorized_view_members": "No autorizado. Debes ser miembro para ver los miembros de la organización."
+  "unauthorized_view_members": "No autorizado. Debes ser miembro para ver los miembros de la organización.",
+  "forbidden_admin_only": "Solo los administradores de la organización pueden realizar esta acción",
+  "language_preference_updated": "Preferencia de idioma de la organización actualizada exitosamente"
 } 

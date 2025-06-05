@@ -55,5 +55,10 @@
   "rejected": "Rejected",
   "completed": "Completed",
   "in_progress": "In Progress",
-  "cancelled": "Cancelled"
+  "cancelled": "Cancelled",
+  "results": "results",
+  "no_results": "No results found",
+  "language_en": "English",
+  "language_es": "Spanish",
+  "error_retrieving_languages": "Error retrieving supported languages"
 } 

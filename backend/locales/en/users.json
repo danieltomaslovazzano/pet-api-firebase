@@ -169,5 +169,11 @@
   "only_organization_admins_can_access_detailed_user_information": "Only organization admins can access detailed user information",
   "cannot_access_user_outside_organization_context": "Cannot access user outside your organization",
   "only_admins_can_access_detailed_user_information": "Only admins can access detailed user information",
-  "not_found_in_database": "User not found in database"
+  "not_found_in_database": "User not found in database",
+  "unfollowed": "User unfollowed successfully",
+  "unexpected_error": "Unexpected error",
+  "forbidden_access_outside_organization": "Forbidden: Cannot access users outside your organization context",
+  "forbidden_view_user": "You do not have permission to view this user",
+  "preference_updated": "Language preference updated successfully",
+  "missing_id": "Missing user ID in request parameters"
 } 

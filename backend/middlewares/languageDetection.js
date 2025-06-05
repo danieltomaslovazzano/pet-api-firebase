@@ -1,11 +1,12 @@
 const i18nConfig = require('../config/i18n');
 const { i18nManager } = require('../utils/i18n');
+const { userModel, organizationModel } = require('../models/adapter');
 
 /**
  * Middleware para detectar el idioma preferido del usuario
  * Implementa el orden de prioridad definido en la configuración
  */
-const languageDetection = (req, res, next) => {
+const languageDetection = async (req, res, next) => {
   let detectedLanguage = null;
   const detectionOrder = i18nConfig.detection.order;
 
@@ -22,6 +23,34 @@ const languageDetection = (req, res, next) => {
     
     // Verificar si está soportado
     return i18nManager.isLanguageSupported(normalizedLang) ? normalizedLang : null;
+  };
+
+  // Función para cargar preferencias del usuario desde la base de datos
+  const loadUserLanguagePreference = async (userId) => {
+    if (!userId) return null;
+    
+    try {
+      const user = await userModel.getUserById(userId);
+      return user?.preferredLanguage;
+    } catch (error) {
+      // En caso de error, continuar con la detección normal
+      console.warn('[i18n] Error loading user language preference:', error.message);
+      return null;
+    }
+  };
+
+  // Función para cargar preferencias de la organización desde la base de datos
+  const loadOrganizationLanguagePreference = async (organizationId) => {
+    if (!organizationId) return null;
+    
+    try {
+      const organization = await organizationModel.getOrganizationById(organizationId);
+      return organization?.defaultLanguage;
+    } catch (error) {
+      // En caso de error, continuar con la detección normal
+      console.warn('[i18n] Error loading organization language preference:', error.message);
+      return null;
+    }
   };
 
   // Iterar por el orden de detección configurado
@@ -68,8 +97,15 @@ const languageDetection = (req, res, next) => {
 
       case 'user':
         // 3. Usuario autenticado: preferredLanguage
-        if (!detectedLanguage && req.user && req.user.preferredLanguage) {
-          detectedLanguage = validateLanguage(req.user.preferredLanguage);
+        if (!detectedLanguage && req.user) {
+          let userLanguage = req.user.preferredLanguage;
+          
+          // Si no está en el objeto user, intentar cargar desde la base de datos
+          if (!userLanguage && req.user.uid) {
+            userLanguage = await loadUserLanguagePreference(req.user.uid);
+          }
+          
+          detectedLanguage = validateLanguage(userLanguage);
           if (detectedLanguage) {
             req.languageSource = 'user';
           }
@@ -78,8 +114,15 @@ const languageDetection = (req, res, next) => {
 
       case 'organization':
         // 4. Organización: defaultLanguage
-        if (!detectedLanguage && req.organization && req.organization.defaultLanguage) {
-          detectedLanguage = validateLanguage(req.organization.defaultLanguage);
+        if (!detectedLanguage && req.organizationId) {
+          let organizationLanguage = req.organization?.defaultLanguage;
+          
+          // Si no está en el objeto organization, cargar desde la base de datos
+          if (!organizationLanguage) {
+            organizationLanguage = await loadOrganizationLanguagePreference(req.organizationId);
+          }
+          
+          detectedLanguage = validateLanguage(organizationLanguage);
           if (detectedLanguage) {
             req.languageSource = 'organization';
           }

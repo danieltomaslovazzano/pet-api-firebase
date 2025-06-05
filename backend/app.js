@@ -18,6 +18,7 @@ const conversationRoutes = require('./routes/conversationRoutes');
 const authRoutes = require('./routes/authRoutes');
 const organizationRoutes = require('./routes/organizationRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
+const languagePreferencesRoutes = require('./routes/languagePreferencesRoutes');
 
 // Configure CORS
 app.use(cors({
@@ -53,6 +54,7 @@ app.use('/api/organizations', organizationRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/memberships', membershipRoutes);
+app.use('/api/language-preferences', languagePreferencesRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {

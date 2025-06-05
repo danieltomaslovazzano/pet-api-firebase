@@ -169,5 +169,11 @@
   "only_organization_admins_can_access_detailed_user_information": "Solo los administradores de organización pueden acceder a información detallada del usuario",
   "cannot_access_user_outside_organization_context": "No se puede acceder a usuario fuera de su organización",
   "only_admins_can_access_detailed_user_information": "Solo los administradores pueden acceder a información detallada del usuario",
-  "not_found_in_database": "Usuario no encontrado en la base de datos"
+  "not_found_in_database": "Usuario no encontrado en la base de datos",
+  "unfollowed": "Usuario dejado de seguir exitosamente",
+  "unexpected_error": "Error inesperado",
+  "forbidden_access_outside_organization": "Prohibido: No puedes acceder a usuarios fuera del contexto de tu organización",
+  "forbidden_view_user": "No tienes permiso para ver este usuario",
+  "preference_updated": "Preferencia de idioma actualizada exitosamente",
+  "missing_id": "Falta el ID de usuario en los parámetros de la solicitud"
 } 

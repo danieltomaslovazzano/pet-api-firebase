@@ -7,30 +7,26 @@ exports.createMessage = async (req, res) => {
     
     // Multitenancy: Verify conversation belongs to the organization context
     if (!messageData.conversationId) {
-      return res.status(400).json({ error: 'Conversation ID is required' });
+      return res.error('messages.conversation_id_required', 400);
     }
     
     // Get conversation to check context and permissions
     const conversation = await conversationModel.getConversationById(messageData.conversationId);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     // Super admin can send messages in any conversation
     if (!req.user.isSuperAdmin) {
       // Organization context validation
       if (req.organizationId && conversation.organizationId !== req.organizationId) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot send message to conversation outside your organization' 
-        });
+        return res.forbidden('messages.forbidden_send_outside_organization');
       }
       
       // Check if user is a participant in the conversation
       if (!conversation.participants.includes(req.user.uid)) {
-        return res.status(403).json({ 
-          error: 'Forbidden: You must be a participant to send messages to this conversation' 
-        });
+        return res.forbidden('messages.forbidden_send_not_participant');
       }
     }
     
@@ -44,11 +40,11 @@ exports.createMessage = async (req, res) => {
     
     // Create the message
     const newMessage = await messageModel.createMessage(messageData);
-    res.status(201).json(newMessage);
+    res.created('messages.sent', newMessage);
     
   } catch (error) {
     console.error('Error creating message:', error);
-    res.status(500).json({ error: 'Error creating message', details: error.message });
+    res.serverError('messages.error_creating', { error: error.message });
   }
 };
 
@@ -60,33 +56,29 @@ exports.getMessagesByConversation = async (req, res) => {
     const conversation = await conversationModel.getConversationById(conversationId);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     // Super admin can access any conversation
     if (!req.user.isSuperAdmin) {
       // Organization context validation
       if (req.organizationId && conversation.organizationId !== req.organizationId) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot access conversation outside your organization' 
-        });
+        return res.forbidden('messages.forbidden_access_outside_organization');
       }
       
       // Check if user is a participant in the conversation
       if (!conversation.participants.includes(req.user.uid)) {
-        return res.status(403).json({ 
-          error: 'Forbidden: You must be a participant to view messages in this conversation' 
-        });
+        return res.forbidden('messages.forbidden_view_not_participant');
       }
     }
     
     // Get messages for the conversation
     const messages = await messageModel.getMessagesByConversation(conversationId);
-    res.status(200).json(messages);
+    res.list(messages);
     
   } catch (error) {
     console.error('Error getting messages by conversation:', error);
-    res.status(500).json({ error: 'Error retrieving messages', details: error.message });
+    res.serverError('messages.error_retrieving', { error: error.message });
   }
 };
 
@@ -111,31 +103,27 @@ exports.getMessages = async (req, res) => {
       const conversation = await conversationModel.getConversationById(filters.conversationId);
       
       if (!conversation) {
-        return res.status(404).json({ error: 'Conversation not found' });
+        return res.notFound('conversations.not_found');
       }
       
       // Organization context validation
       if (req.organizationId && conversation.organizationId !== req.organizationId) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot access conversation outside your organization' 
-        });
+        return res.forbidden('messages.forbidden_access_outside_organization');
       }
       
       // Check if user is a participant
       if (!conversation.participants.includes(req.user.uid)) {
-        return res.status(403).json({ 
-          error: 'Forbidden: You must be a participant to view messages in this conversation' 
-        });
+        return res.forbidden('messages.forbidden_view_not_participant');
       }
     }
     
     // Get messages with filters
     const messages = await messageModel.getMessages(filters);
-    res.status(200).json(messages);
+    res.list(messages);
     
   } catch (error) {
     console.error('Error getting messages:', error);
-    res.status(500).json({ error: 'Error retrieving messages', details: error.message });
+    res.serverError('messages.error_retrieving', { error: error.message });
   }
 };
 
@@ -145,46 +133,42 @@ exports.getMessageById = async (req, res) => {
     
     // Validate ID format (basic UUID check)
     if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      return res.status(400).json({ error: 'Invalid message ID format' });
+      return res.error('messages.invalid_id_format', 400);
     }
     
     // Get the message
     const message = await messageModel.getMessageById(id);
     
     if (!message) {
-      return res.status(404).json({ error: 'Message not found' });
+      return res.notFound('messages.not_found');
     }
     
     // Super admin can access any message
     if (req.user.isSuperAdmin) {
-      return res.status(200).json(message);
+      return res.data(message);
     }
     
     // Organization context validation
     if (req.organizationId && message.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot access message outside your organization' 
-      });
+      return res.forbidden('messages.forbidden_access_outside_organization');
     }
     
     // Check if user is a participant in the conversation
     const conversation = await conversationModel.getConversationById(message.conversationId);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.notFound('conversations.not_found');
     }
     
     if (!conversation.participants.includes(req.user.uid)) {
-      return res.status(403).json({ 
-        error: 'Forbidden: You must be a participant to view this message' 
-      });
+      return res.forbidden('messages.forbidden_view_message');
     }
     
-    res.status(200).json(message);
+    res.data(message);
     
   } catch (error) {
     console.error('Error getting message by ID:', error);
-    res.status(500).json({ error: 'Error retrieving message', details: error.message });
+    res.serverError('messages.error_retrieving', { error: error.message });
   }
 };
 
@@ -194,33 +178,31 @@ exports.deleteMessage = async (req, res) => {
     
     // Validate ID format (basic UUID check)
     if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      return res.status(400).json({ error: 'Invalid message ID format' });
+      return res.error('messages.invalid_id_format', 400);
     }
     
     // Get the message to check permissions
     const message = await messageModel.getMessageById(id);
     
     if (!message) {
-      return res.status(404).json({ error: 'Message not found' });
+      return res.notFound('messages.not_found');
     }
     
     // Super admin can delete any message
     if (req.user.isSuperAdmin) {
       const result = await messageModel.deleteMessage(id);
-      return res.status(200).json(result);
+      return res.deleted('messages.deleted', result);
     }
     
     // Organization context validation
     if (req.organizationId && message.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot delete message outside your organization' 
-      });
+      return res.forbidden('messages.forbidden_delete_outside_organization');
     }
     
     // Users can delete their own messages
     if (message.senderId === req.user.uid) {
       const result = await messageModel.deleteMessage(id);
-      return res.status(200).json(result);
+      return res.deleted('messages.deleted', result);
     }
     
     // Organization admins can delete messages in their organization
@@ -233,27 +215,23 @@ exports.deleteMessage = async (req, res) => {
       });
       
       if (!isAdmin) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Only message sender or organization admin can delete messages' 
-        });
+        return res.forbidden('messages.forbidden_delete_permission');
       }
       
       const result = await messageModel.deleteMessage(id);
-      return res.status(200).json(result);
+      return res.deleted('messages.deleted', result);
     } else {
       // Without org context, only allow global admin or message sender
       if (req.user.role === 'admin') {
         const result = await messageModel.deleteMessage(id);
-        return res.status(200).json(result);
+        return res.deleted('messages.deleted', result);
       } else {
-        return res.status(403).json({ 
-          error: 'Forbidden: You can only delete your own messages' 
-        });
+        return res.forbidden('messages.forbidden_delete_own_only');
       }
     }
     
   } catch (error) {
     console.error('Error deleting message:', error);
-    res.status(500).json({ error: 'Error deleting message', details: error.message });
+    res.serverError('messages.error_deleting', { error: error.message });
   }
 };

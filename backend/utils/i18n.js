@@ -228,6 +228,14 @@ class I18nManager {
   isLanguageSupported(language) {
     return i18nConfig.supportedLanguages.includes(language);
   }
+
+  /**
+   * Obtiene la lista de idiomas soportados
+   * @returns {Array<string>} Array de códigos de idioma soportados
+   */
+  getSupportedLanguages() {
+    return [...i18nConfig.supportedLanguages];
+  }
 }
 
 // Instancia singleton del manager

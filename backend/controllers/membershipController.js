@@ -6,7 +6,7 @@ exports.getMemberships = async (req, res) => {
   
   // At least one filter must be provided
   if (!userId && !organizationId) {
-    return res.status(400).json({ error: 'Either userId or organizationId must be provided' });
+    return res.error('memberships.filter_required', 400);
   }
   
   // Multitenancy: Super admin can access any memberships
@@ -16,26 +16,22 @@ exports.getMemberships = async (req, res) => {
   if (organizationId) {
     // Multitenancy: Apply organization context check
     if (req.organizationId && organizationId !== req.organizationId && !isSuperAdmin) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot access memberships outside your organization context' 
-      });
+      return res.forbidden('memberships.forbidden_access_outside_organization');
     }
     
     // Check if user is an admin of the organization
     const isAdmin = await membershipModel.checkUserRole(req.user.uid, organizationId, 'admin');
     
     if (!isAdmin && !isSuperAdmin) {
-      return res.status(403).json({ 
-        error: 'No tienes permisos para ver todas las membresías de la organización' 
-      });
+      return res.forbidden('memberships.forbidden_view_all_memberships');
     }
     
     // User is admin or super admin, proceed to get all memberships for the organization
     try {
       const memberships = await membershipModel.getMembershipsByOrganization(organizationId);
-      res.status(200).json(memberships);
+      res.list(memberships);
     } catch (error) {
-      res.status(500).json({ error: 'Error retrieving memberships', details: error.message });
+      res.serverError('memberships.error_retrieving', { error: error.message });
     }
   } 
   // If requesting by userId, check if it's the current user or admin
@@ -47,9 +43,9 @@ exports.getMemberships = async (req, res) => {
       
       try {
         const memberships = await membershipModel.getMembershipsByUser(userId, orgFilter);
-        return res.status(200).json(memberships);
+        return res.list(memberships);
       } catch (error) {
-        return res.status(500).json({ error: 'Error retrieving memberships', details: error.message });
+        return res.serverError('memberships.error_retrieving', { error: error.message });
       }
     }
 
@@ -68,18 +64,14 @@ exports.getMemberships = async (req, res) => {
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
       
       if (!isAdmin) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Only organization admins can view other users\' memberships'
-        });
+        return res.forbidden('memberships.forbidden_view_other_memberships');
       }
       
       // Check if target user is in this organization
       const isMember = await membershipModel.checkUserRole(userId, req.organizationId, null);
       
       if (!isMember) {
-        return res.status(403).json({ 
-          error: 'Forbidden: Cannot access memberships for users outside your organization'
-        });
+        return res.forbidden('memberships.forbidden_access_user_outside_organization');
       }
       
       return await fetchUserMemberships();
@@ -90,9 +82,7 @@ exports.getMemberships = async (req, res) => {
     } 
     // No permission
     else {
-      return res.status(403).json({ 
-        error: 'You can only view your own memberships' 
-      });
+      return res.forbidden('memberships.view_own_memberships_only');
     }
   }
 };
@@ -102,7 +92,7 @@ exports.getMembershipById = async (req, res) => {
     const { id } = req.params;
     
     if (!id) {
-      return res.status(400).json({ error: 'Missing membership ID in request parameters' });
+      return res.error('memberships.missing_id', 400);
     }
     
     // Load the membership directly
@@ -112,21 +102,19 @@ exports.getMembershipById = async (req, res) => {
     } catch (error) {
       // If membership not found, return 404
       if (error.message === 'Membership not found') {
-        return res.status(404).json({ error: 'Membership not found' });
+        return res.notFound('memberships.not_found');
       }
       throw error; // Re-throw other errors
     }
     
     // Multitenancy: Super admin can access any membership
     if (req.user.isSuperAdmin) {
-      return res.status(200).json(membership);
+      return res.data(membership);
     }
     
     // Multitenancy: Check organization context
     if (req.organizationId && membership.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
-        error: 'Forbidden: Cannot access membership outside your organization context'
-      });
+      return res.forbidden('memberships.forbidden_access_outside_context');
     }
     
     // Check if the user has permission to view this membership
@@ -135,15 +123,15 @@ exports.getMembershipById = async (req, res) => {
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
       
       if (!isAdmin) {
-        return res.status(403).json({ error: 'You do not have permission to view this membership' });
+        return res.forbidden('memberships.forbidden_view_membership');
       }
     }
     
     // User is either the member, a global admin, or an org admin
-    res.status(200).json(membership);
+    res.data(membership);
   } catch (error) {
     console.error('Error in getMembershipById:', error);
-    res.status(500).json({ error: 'Error retrieving membership', details: error.message });
+    res.serverError('memberships.error_retrieving_single', { error: error.message });
   }
 };
 
@@ -152,9 +140,7 @@ exports.inviteUser = async (req, res) => {
   
   // Multitenancy: Check organization context
   if (req.organizationId && organizationId !== req.organizationId && !req.user.isSuperAdmin) {
-    return res.status(403).json({ 
-      error: 'Forbidden: Cannot invite users to organizations outside your context'
-    });
+    return res.forbidden('memberships.forbidden_invite_outside_context');
   }
 
   async function createMembership() {
@@ -166,9 +152,9 @@ exports.inviteUser = async (req, res) => {
     
     try {
       const membership = await membershipModel.createMembership(membershipData);
-      return res.status(201).json(membership);
+      return res.created('memberships.created', membership);
     } catch (error) {
-      return res.status(500).json({ error: 'Error inviting user', details: error.message });
+      return res.serverError('memberships.error_inviting', { error: error.message });
     }
   }
   
@@ -181,7 +167,7 @@ exports.inviteUser = async (req, res) => {
   const isAdmin = await membershipModel.checkUserRole(req.user.uid, organizationId, 'admin');
   
   if (!isAdmin) {
-    return res.status(403).json({ error: 'Unauthorized. Only admins can invite users.' });
+    return res.forbidden('memberships.unauthorized_invite');
   }
   
   return await createMembership();
@@ -193,16 +179,14 @@ exports.updateMemberRole = async (req, res) => {
   
   // Verificar que el rol sea válido
   if (!['admin', 'manager', 'moderator', 'volunteer', 'observer'].includes(role)) {
-    return res.status(400).json({ error: 'Invalid role' });
+    return res.error('memberships.invalid_role', 400);
   }
   
   // Obtener la membresía para verificar la organización
   const membership = await membershipModel.getMembershipById(id);
   
   if (req.organizationId && membership.organizationId !== req.organizationId && !req.user.isSuperAdmin) {
-    return res.status(403).json({ 
-      error: 'Forbidden: Cannot modify membership outside your organization context'
-    });
+    return res.forbidden('memberships.forbidden_modify_outside_context');
   }
 
   async function updateMembershipRole() {
@@ -212,9 +196,9 @@ exports.updateMemberRole = async (req, res) => {
     
     try {
       const updatedMembership = await membershipModel.updateMembership(id, updateData);
-      return res.status(200).json(updatedMembership);
+      return res.updated('memberships.role_updated', updatedMembership, { role });
     } catch (error) {
-      return res.status(500).json({ error: 'Error updating membership', details: error.message });
+      return res.serverError('memberships.error_updating', { error: error.message });
     }
   }
   
@@ -227,7 +211,7 @@ exports.updateMemberRole = async (req, res) => {
   const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
   
   if (!isAdmin) {
-    return res.status(403).json({ error: 'Unauthorized. Only admins can modify roles.' });
+    return res.forbidden('memberships.unauthorized_modify');
   }
   
   return await updateMembershipRole();
@@ -240,17 +224,15 @@ exports.removeMember = async (req, res) => {
   const membership = await membershipModel.getMembershipById(id);
   
   if (req.organizationId && membership.organizationId !== req.organizationId && !req.user.isSuperAdmin) {
-    return res.status(403).json({ 
-      error: 'Forbidden: Cannot remove membership outside your organization context'
-    });
+    return res.forbidden('memberships.forbidden_remove_outside_context');
   }
 
-  async function removeMembership(message = 'Membership removed successfully') {
+  async function removeMembership(messageKey = 'memberships.member_removed_successfully') {
     try {
       await membershipModel.deleteMembership(id);
-      return res.status(200).json({ message });
+      return res.deleted(messageKey);
     } catch (error) {
-      return res.status(500).json({ error: 'Error removing membership', details: error.message });
+      return res.serverError('memberships.error_removing', { error: error.message });
     }
   }
   
@@ -262,15 +244,15 @@ exports.removeMember = async (req, res) => {
   // Verificar si el modificador tiene permisos de admin o si es el propio usuario abandonando
   if (req.user.uid === membership.userId) {
     // Usuario abandonando
-    return await removeMembership('You have left the organization successfully');
+    return await removeMembership('memberships.user_left_organization');
   } else {
     // Admin removiendo a alguien
     const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
     
     if (!isAdmin) {
-      return res.status(403).json({ error: 'Unauthorized. Only admins can remove members.' });
+      return res.forbidden('memberships.unauthorized_remove');
     }
     
-    return await removeMembership('Member removed successfully');
+    return await removeMembership('memberships.member_removed_successfully');
   }
 };

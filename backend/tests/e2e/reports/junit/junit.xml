@@ -1,345 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="162" failures="0" errors="0" time="291.25">
-  <testsuite name="Conversations E2E Tests - Comprehensive Test Suite (25 tests)" errors="0" failures="0" skipped="0" timestamp="2025-06-01T23:59:50" time="49.633" tests="26">
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create a conversation with valid participants" time="1.942">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation with insufficient participants" time="0.724">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation without participants array" time="0.589">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create group conversation with multiple participants" time="1.251">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation by ID for participant" time="0.972">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversation by ID for non-participant" time="1.731">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversations for user" time="1.062">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversations for other user without permission" time="10.012">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation with invalid ID format" time="0.678">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should soft delete conversation for user" time="0.914">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should hide conversation for user" time="0.833">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unhide conversation for user" time="0.831">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should block conversation (moderator)" time="0.825">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unblock conversation (moderator)" time="0.943">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should fail to block conversation as regular user" time="0.482">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should permanently delete conversation (admin)" time="2.017">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to permanently delete conversation as regular user" time="0.477">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should get all conversations (admin)" time="1.078">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to get all conversations as regular user" time="0.501">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should create conversation in specific organization" time="1.033">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should not access conversation from different organization" time="1.825">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should filter conversations by organization" time="0.981">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Super admin should access conversations across organizations" time="1.029">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle non-existent conversation ID" time="0.723">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.011">
-    </testcase>
-    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle malformed request data" time="0.657">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:00:39" time="60.29" tests="20">
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Admin should invite user to organization successfully" time="0.56">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should fail to invite same user twice" time="0.631">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.462">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should invite user with different roles" time="7.547">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by organization" time="0.536">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by user" time="0.486">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="User should get their own memberships" time="0.425">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Should fail without userId or organizationId" time="0.463">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Regular user should fail to get other user memberships" time="0.453">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Admin should get membership by ID" time="0.578">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Should fail with invalid membership ID" time="0.942">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Admin should update member role successfully" time="0.656">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Should fail with invalid role" time="0.431">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Regular user should fail to update role without permissions" time="0.987">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Admin should remove member successfully" time="1.039">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Regular user should fail to remove member without permissions" time="1.919">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.096">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.436">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="1.946">
-    </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.095">
-    </testcase>
-  </testsuite>
-  <testsuite name="Messages E2E Tests - Comprehensive Test Suite (28 tests)" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:01:40" time="47.459" tests="27">
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should create a message with valid content" time="1.594">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should create a message with attachments" time="0.83">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message without conversation ID" time="0.878">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message without content or attachments" time="0.782">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message in non-existent conversation" time="0.655">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation" name="Should fail to create message as non-participant" time="1.831">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get messages by conversation ID" time="0.866">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get message by ID" time="0.615">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get message by invalid ID format" time="0.654">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get non-existent message" time="0.578">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should fail to get messages from conversation as non-participant" time="1.842">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval" name="Should get messages with filters (admin)" time="0.694">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should allow message sender to view their message" time="0.73">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should allow conversation participant to view message" time="0.595">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Permissions" name="Should fail to view message as non-participant" time="2.566">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should allow message sender to delete their own message" time="1.57">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should allow admin to delete any message" time="1.479">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should fail to delete message as non-sender non-admin" time="1.565">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Deletion" name="Should fail to delete non-existent message" time="0.58">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should create message in specific organization" time="2.671">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should not access messages from different organization" time="0.648">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Should filter messages by organization" time="0.651">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy &amp; Organization Isolation" name="Super admin should access messages across organizations" time="0.563">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.008">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle malformed message data" time="0.558">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle invalid message ID format in deletion" time="0.612">
-    </testcase>
-    <testcase classname="Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling &amp; Edge Cases" name="Should handle message creation with location data" time="0.874">
-    </testcase>
-  </testsuite>
-  <testsuite name="Pets E2E Tests - Comprehensive Test Suite (33 tests)" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:02:27" time="47.772" tests="34">
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Admin should create a pet successfully" time="1.701">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Regular user should create a pet successfully" time="1.243">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without required fields" time="0.64">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without organization context" time="1.354">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should get pet by ID" time="0.445">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should list pets for organization" time="0.338">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by species" time="0.372">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by status" time="0.41">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should fail with invalid pet ID" time="0.242">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Admin should update pet successfully" time="0.85">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Regular user should update pet successfully" time="0.517">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Should fail with invalid pet ID" time="0.242">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Admin should delete pet successfully" time="2.875">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Should fail with invalid pet ID" time="1.661">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should only see pets from their organization" time="0.412">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not access pets from other organizations" time="0.353">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not update pets from other organizations" time="0.595">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not delete pets from other organizations" time="0.533">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Super admin should access pets from any organization" time="0.521">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Public pet browsing - users can view all available pets without organization context" time="0.296">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with default visibility as visible" time="1.461">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with explicit visibility setting" time="1.374">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should hide a pet successfully" time="1.34">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should show a hidden pet successfully" time="0.865">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should feature a pet successfully" time="0.714">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should update pet visibility directly via PUT" time="0.701">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail with invalid visibility value" time="0.649">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not access hidden pets in listings" time="1.04">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Admin should see hidden pets in listings" time="0.356">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should filter pets by visibility" time="1.418">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should search pets with visibility filtering" time="1.171">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not see hidden pets in search results" time="1.147">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should demonstrate adopted pet with visible status for 7-day showcase" time="1.845">
-    </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail visibility actions with invalid pet ID" time="0.249">
-    </testcase>
-  </testsuite>
-  <testsuite name="Organizations E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:03:15" time="33.332" tests="17">
-    <testcase classname="Organizations E2E Tests Create Organization" name="Admin should create organization successfully" time="0.556">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Create Organization" name="Regular user should create organization successfully" time="0.421">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Create Organization" name="Should create organization with explicit shelter type" time="0.531">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Create Organization" name="Should fail without authentication" time="0.093">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Get Organization by ID" name="Admin should get organization by ID" time="0.533">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Get Organization by ID" name="Should fail with invalid organization ID" time="0.404">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Get Organization by ID" name="Should fail without authentication" time="0.008">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Update Organization" name="Admin should update organization successfully" time="0.951">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Update Organization" name="Should fail without proper permissions" time="0.686">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Delete Organization" name="Admin should delete organization successfully" time="1.534">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Delete Organization" name="Should fail without proper permissions" time="1.222">
-    </testcase>
-    <testcase classname="Organizations E2E Tests List Organizations" name="Admin should list all organizations" time="0.874">
-    </testcase>
-    <testcase classname="Organizations E2E Tests List Organizations" name="Should fail without admin permissions" time="0.392">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Get Organization Members" name="Admin should get organization members" time="0.601">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Get Organization Members" name="Should fail without membership" time="0.513">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Multitenancy Validation" name="Organization admin should only access their own organization" time="0.955">
-    </testcase>
-    <testcase classname="Organizations E2E Tests Multitenancy Validation" name="Super admin should access all organizations" time="1.129">
-    </testcase>
-  </testsuite>
-  <testsuite name="Organization Types Integration E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:03:48" time="22.883" tests="7">
-    <testcase classname="Organization Types Integration E2E Tests Shelter Organizations with Pets Integration" name="Should verify shelter organization has correct type and features" time="1.289">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Shelter Organizations with Pets Integration" name="Should list pets filtered by shelter organization" time="0.357">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Organization Type Permissions Validation" name="Shelter members should have appropriate permissions" time="0.431">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Organization Type Permissions Validation" name="Should validate required fields for shelter type" time="0.475">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Multi-Organization Type Scenarios" name="Should handle multiple shelter organizations correctly" time="2.37">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Backward Compatibility" name="Existing organizations without explicit type should default to shelter" time="0.621">
-    </testcase>
-    <testcase classname="Organization Types Integration E2E Tests Backward Compatibility" name="Should handle organization updates without breaking type field" time="1.477">
-    </testcase>
-  </testsuite>
-  <testsuite name="Organization Types E2E Tests" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:04:11" time="21.338" tests="18">
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should get all available organization types" time="0.703">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Regular user should also get organization types" time="0.435">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should fail without authentication" time="0.084">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should get shelter type information" time="0.535">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail for invalid organization type" time="0.459">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail without authentication" time="0.015">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create shelter organization successfully" time="0.885">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create organization with default type when not specified" time="0.491">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should fail with invalid organization type" time="0.418">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should validate required fields for shelter type" time="0.373">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should handle empty string type" time="0.443">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should update organization type successfully" time="0.9">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should fail when updating to invalid type" time="0.403">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should filter organizations by shelter type" time="0.815">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should fail with invalid type filter" time="0.425">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should return all organizations when no type filter is applied" time="0.693">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle null type" time="0.419">
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle case sensitivity" time="0.462">
-    </testcase>
-  </testsuite>
-  <testsuite name="E2E: Users" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:04:32" time="5.119" tests="6">
-    <testcase classname="E2E: Users" name="should create a user" time="1.378">
-    </testcase>
-    <testcase classname="E2E: Users" name="should get user by ID" time="0.674">
-    </testcase>
-    <testcase classname="E2E: Users" name="should list users" time="0.614">
-    </testcase>
-    <testcase classname="E2E: Users" name="should update user" time="0.665">
-    </testcase>
-    <testcase classname="E2E: Users" name="should change user role" time="0.554">
-    </testcase>
-    <testcase classname="E2E: Users" name="should delete user" time="0.842">
-    </testcase>
-  </testsuite>
-  <testsuite name="E2E: Auth" errors="0" failures="0" skipped="0" timestamp="2025-06-02T00:04:38" time="3.188" tests="7">
-    <testcase classname="E2E: Auth" name="should register a user" time="0.948">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should login user" time="0.252">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should deny login with wrong credentials" time="0.297">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should access profile with token" time="0.618">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should deny access to profile without token" time="0.009">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should login as superadmin" time="0.311">
-    </testcase>
-    <testcase classname="E2E: Auth" name="should list users as admin" time="0.642">
+<testsuites name="jest tests" tests="18" failures="18" errors="0" time="2.499">
+  <testsuite name="Organization Types E2E Tests" errors="0" failures="18" skipped="0" timestamp="2025-06-05T15:19:18" time="2.375" tests="18">
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should get all available organization types" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Regular user should also get organization types" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should fail without authentication" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should get shelter type information" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail for invalid organization type" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail without authentication" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create shelter organization successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create organization with default type when not specified" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should fail with invalid organization type" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should validate required fields for shelter type" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should handle empty string type" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should update organization type successfully" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should fail when updating to invalid type" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should filter organizations by shelter type" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should fail with invalid type filter" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should return all organizations when no type filter is applied" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle null type" time="0.001">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle case sensitivity" time="0">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
+    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
     </testcase>
   </testsuite>
 </testsuites>

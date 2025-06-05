@@ -8,11 +8,11 @@ exports.bulkAction = async (req, res) => {
     const { userIds, action } = req.body;
     
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ error: 'Se requiere una lista válida de IDs de usuario' });
+      return res.error('admin.bulk_action_user_ids_required', 400);
     }
     
     if (!action) {
-      return res.status(400).json({ error: 'Se requiere especificar una acción' });
+      return res.error('admin.bulk_action_required', 400);
     }
     
     let results = [];
@@ -62,7 +62,7 @@ exports.bulkAction = async (req, res) => {
         // Cambiar rol de usuarios en lote
         const { role } = req.body;
         if (!role) {
-          return res.status(400).json({ error: 'Se requiere especificar un rol' });
+          return res.error('admin.bulk_action_role_required', 400);
         }
         
         for (const userId of userIds) {
@@ -90,20 +90,20 @@ exports.bulkAction = async (req, res) => {
         break;
         
       default:
-        return res.status(400).json({ error: 'Acción no soportada' });
+        return res.error('admin.bulk_action_unsupported', 400);
     }
     
-    res.status(200).json({
-      message: `Acción "${action}" completada para ${results.length} usuarios con ${errors.length} errores`,
+    res.success('admin.bulk_action_completed', {
       results,
       errors
+    }, {
+      action,
+      successCount: results.length,
+      errorCount: errors.length
     });
   } catch (err) {
     console.error('Error en acción masiva:', err);
-    res.status(500).json({ 
-      error: 'Error en acción masiva', 
-      details: err.message 
-    });
+    res.serverError('admin.bulk_action_error', { error: err.message });
   }
 };
 
@@ -113,7 +113,7 @@ exports.inviteUser = async (req, res) => {
     const { email, role } = req.body;
     
     if (!email) {
-      return res.status(400).json({ error: 'Se requiere un correo electrónico' });
+      return res.error('admin.invite_email_required', 400);
     }
     
     // Generar un link de invitación con Firebase Auth
@@ -127,16 +127,10 @@ exports.inviteUser = async (req, res) => {
     // Aquí podrías implementar lógica para enviar el correo electrónico con el link
     // O devolver el link para que el frontend lo maneje
     
-    res.status(200).json({ 
-      message: 'Invitación generada correctamente',
-      invitationLink: link
-    });
+    res.success('admin.invite_generated', { invitationLink: link });
   } catch (err) {
     console.error('Error al generar invitación:', err);
-    res.status(500).json({ 
-      error: 'Error al generar invitación', 
-      details: err.message 
-    });
+    res.serverError('admin.invite_error', { error: err.message });
   }
 };
 
@@ -167,10 +161,7 @@ exports.getAllUsers = async (req, res) => {
       console.log('[DEBUG] userModel.getUsers respondió', { usersCount: users ? users.length : null });
     } catch (err) {
         console.error('Error al recuperar usuarios:', err);
-        return res.status(500).json({ 
-          error: 'Error al recuperar usuarios', 
-          details: err.message 
-        });
+        return res.serverError('admin.users_retrieval_error', { error: err.message });
       }
 
       // Si hay usuarios, obtener información adicional desde Firebase Auth
@@ -275,10 +266,7 @@ exports.getAllUsers = async (req, res) => {
       res.status(200).json(sanitizedUsers);
   } catch (err) {
     console.error('Error inesperado en getAllUsers:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.users_unexpected_error', { error: err.message });
   }
 };
 
@@ -305,10 +293,7 @@ exports.getAllPets = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al recuperar mascotas:', err);
-        return res.status(500).json({ 
-          error: 'Error al recuperar mascotas', 
-          details: err.message 
-        });
+        return res.serverError('admin.pets_retrieval_error', { error: err.message });
       }
       // Sanitizar datos y enviar respuesta
       const sanitizedPets = pets.map(pet => ({
@@ -322,13 +307,10 @@ exports.getAllPets = async (req, res) => {
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt,
       }));
-      res.status(200).json(sanitizedPets);
+      res.list(sanitizedPets);
   } catch (err) {
     console.error('Error inesperado en getAllPets:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.pets_unexpected_error', { error: err.message });
   }
 };
 
@@ -339,7 +321,7 @@ exports.updatePet = async (req, res) => {
     const petData = req.body;
     // Verificar que el usuario tiene permisos
     if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-      return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+      return res.forbidden('admin.pet_update_permission_denied');
     }
     // Refactor: usar async/await en vez de callback
     let updatedPet;
@@ -352,18 +334,12 @@ exports.updatePet = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al actualizar mascota:', err);
-        return res.status(500).json({ 
-          error: 'Error al actualizar mascota', 
-          details: err.message 
-        });
+        return res.serverError('admin.pet_update_error', { error: err.message });
       }
-      res.status(200).json(updatedPet);
+      res.data(updatedPet);
   } catch (err) {
     console.error('Error inesperado en updatePet:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.pet_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -376,12 +352,12 @@ exports.updateUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to update user in this organization' });
-    }
+        return res.forbidden('admin.user_update_permission_denied_organization');
+      }
     }
     // Si se está cambiando el rol, verificar que sea admin
     if (updates.role && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo los administradores pueden cambiar roles' });
+      return res.forbidden('admin.user_update_role_permission_denied');
     }
     // Actualizar en Firebase Auth si es necesario
     if (updates.disabled !== undefined) {
@@ -398,18 +374,12 @@ exports.updateUser = async (req, res) => {
       updatedUser = await userModel.updateUser(id, updates);
     } catch (err) {
         console.error('Error al actualizar usuario:', err);
-        return res.status(500).json({ 
-          error: 'Error al actualizar usuario', 
-          details: err.message 
-        });
+        return res.serverError('admin.user_update_error', { error: err.message });
       }
-      res.status(200).json(updatedUser);
+      res.data(updatedUser);
   } catch (err) {
     console.error('Error inesperado en updateUser:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.user_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -421,8 +391,8 @@ exports.deleteUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to delete user in this organization' });
-    }
+        return res.forbidden('admin.user_delete_permission_denied_organization');
+      }
     }
     // Eliminar de Firebase Auth
     try {
@@ -437,18 +407,12 @@ exports.deleteUser = async (req, res) => {
       result = await userModel.deleteUser(id);
     } catch (err) {
         console.error('Error al eliminar usuario:', err);
-        return res.status(500).json({ 
-          error: 'Error al eliminar usuario', 
-          details: err.message 
-        });
+        return res.serverError('admin.user_delete_error', { error: err.message });
       }
-      res.status(200).json(result);
+      res.data(result);
   } catch (err) {
     console.error('Error inesperado en deleteUser:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.user_delete_unexpected_error', { error: err.message });
   }
 };
 
@@ -461,21 +425,18 @@ exports.updateUserRole = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to update user role in this organization' });
+        return res.forbidden('admin.user_role_update_permission_denied_organization');
       }
     }
     if (!role) {
-      return res.status(400).json({ error: 'Se requiere especificar un rol' });
+      return res.error('admin.user_role_required', 400);
     }
     // Actualizar custom claims en Firebase Auth
     try {
       await admin.auth().setCustomUserClaims(id, { role });
     } catch (authError) {
       console.error('Error al actualizar claims en Firebase Auth:', authError);
-      return res.status(500).json({ 
-        error: 'Error al actualizar rol en autenticación', 
-        details: authError.message 
-      });
+      return res.serverError('admin.user_role_update_auth_error', { error: authError.message });
     }
     // Refactor: usar async/await en vez de callback
     let updatedUser;
@@ -483,21 +444,12 @@ exports.updateUserRole = async (req, res) => {
       updatedUser = await userModel.updateUser(id, { role });
     } catch (err) {
         console.error('Error al actualizar rol en base de datos:', err);
-        return res.status(500).json({ 
-          error: 'Error al actualizar rol en base de datos', 
-          details: err.message 
-        });
+        return res.serverError('admin.user_role_update_db_error', { error: err.message });
       }
-      res.status(200).json({
-        message: `Rol actualizado correctamente a "${role}" para el usuario ${id}`,
-        user: updatedUser
-    });
+      res.success('admin.user_role_update_success', { user: updatedUser }, { role, userId: id });
   } catch (err) {
     console.error('Error inesperado en updateUserRole:', err);
-    res.status(500).json({ 
-      error: 'Error inesperado', 
-      details: err.message 
-    });
+    res.serverError('admin.user_role_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -506,7 +458,7 @@ exports.createUser = async (req, res) => {
   try {
     const { email, password, role, name } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.error('admin.user_create_email_password_required', 400);
     }
     // Create user in Firebase Auth
     const userRecord = await admin.auth().createUser({
@@ -533,20 +485,11 @@ exports.createUser = async (req, res) => {
       await userModel.createUser(userData);
     } catch (err) {
       console.error('Error al crear usuario en base de datos:', err);
-      return res.status(500).json({
-        error: 'Error al crear usuario en base de datos',
-        details: err.message
-      });
+      return res.serverError('admin.user_create_db_error', { error: err.message });
     }
-    res.status(201).json({
-      message: 'User created successfully',
-      user: userData
-    });
+    res.created('admin.user_created_successfully', userData);
   } catch (err) {
     console.error('Error creating user:', err);
-    res.status(500).json({
-      error: 'Error creating user',
-      details: err.message
-    });
+    res.serverError('admin.user_create_error', { error: err.message });
   }
 };

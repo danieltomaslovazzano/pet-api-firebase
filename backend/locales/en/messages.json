@@ -188,5 +188,19 @@
   "webhook_triggered": "Message webhook triggered",
   "webhook_failed": "Message webhook failed",
   "event_processed": "Message event processed",
-  "event_failed": "Message event processing failed"
+  "event_failed": "Message event processing failed",
+  "not_found": "Message not found",
+  "conversation_id_required": "Conversation ID is required",
+  "invalid_id_format": "Invalid message ID format",
+  "error_creating": "Error creating message",
+  "error_retrieving": "Error retrieving messages",
+  "error_deleting": "Error deleting message",
+  "forbidden_send_outside_organization": "Forbidden: Cannot send message to conversation outside your organization",
+  "forbidden_send_not_participant": "Forbidden: You must be a participant to send messages to this conversation",
+  "forbidden_access_outside_organization": "Forbidden: Cannot access conversation outside your organization",
+  "forbidden_view_not_participant": "Forbidden: You must be a participant to view messages in this conversation",
+  "forbidden_view_message": "Forbidden: You must be a participant to view this message",
+  "forbidden_delete_outside_organization": "Forbidden: Cannot delete message outside your organization",
+  "forbidden_delete_permission": "Forbidden: Only message sender or organization admin can delete messages",
+  "forbidden_delete_own_only": "Forbidden: You can only delete your own messages"
 } 
