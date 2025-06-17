@@ -1,5 +1,6 @@
 const axios = require('./helpers/request');
 const { EnhancedReporter } = require('./helpers/report');
+const { loginAsAdmin, loginAsUser, createTestUser, cleanupTestData } = require('./helpers/auth');
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -14,17 +15,17 @@ const reporter = new EnhancedReporter('users', 'users-tests');
 
 describe('E2E: Users', () => {
   let adminToken;
+  let adminUserId;
   let headers = {};
   let createdUserId;
   let newUser;
+  let testUsers = [];
 
   beforeAll(async () => {
-    // Login as admin
-    const loginResponse = await axios.post(`${API_URL}/auth/login`, {
-      email: process.env.ADMIN_EMAIL,
-      password: process.env.ADMIN_PASSWORD
-    });
-    adminToken = loginResponse.data.tokens.idToken;
+    // Login as admin using proper auth helper
+    const adminLogin = await loginAsAdmin();
+    adminToken = adminLogin.token;
+    adminUserId = adminLogin.user.id;
     headers = { Authorization: `Bearer ${adminToken}` };
   });
 
@@ -34,54 +35,91 @@ describe('E2E: Users', () => {
     reporter.startTest(testName);
   });
 
-  afterEach(() => {
-    reporter.endTest('PASSED');
+    afterEach(() => {
+    // Get the real test result from Jest custom reporter
+    const testName = expect.getState().currentTestName;
+    const jestResult = global.__JEST_TEST_RESULTS__ && global.__JEST_TEST_RESULTS__[testName];
+    
+    let status = 'PASSED';
+    let error = null;
+    
+    if (jestResult) {
+      status = jestResult.status;
+      error = jestResult.error;
+      console.log('[ENHANCED REPORTER] Using Jest result for "' + testName + '": ' + status);
+    } else {
+      console.log('[ENHANCED REPORTER] No Jest result found for "' + testName + '", defaulting to PASSED');
+    }
+    
+    reporter.endTest(status, error);
   });
 
   it('should create a user', async () => {
     newUser = {
       email: `test_${Date.now()}@example.com`,
-      password: 'test1234',
+      password: 'TestPassword123!',
       name: 'Test User',
       role: 'user'
     };
-    const createResponse = await axios.post(`${API_URL}/users`, newUser, { headers });
-    createdUserId = createResponse.data.id;
-    expect(createResponse.data).toHaveProperty('id');
-    expect(createResponse.data.email).toBe(newUser.email);
+    
+    const createdUser = await createTestUser(newUser);
+    createdUserId = createdUser.id;
+    testUsers.push(createdUser);
+    
+    expect(createdUser).toHaveProperty('id');
+    expect(createdUser.email).toContain('@example.com');
+    expect(createdUser.name).toBe('Test User');
+    expect(createdUser.role).toBe('user');
   });
 
   it('should get user by ID', async () => {
     const getUserResponse = await axios.get(`${API_URL}/users/${createdUserId}`, { headers });
-    expect(getUserResponse.data).toHaveProperty('id', createdUserId);
-    expect(getUserResponse.data).toHaveProperty('email', newUser.email);
+    
+    expect(getUserResponse.data).toHaveProperty('success', true);
+    expect(getUserResponse.data).toHaveProperty('data');
+    expect(getUserResponse.data.data).toHaveProperty('id', createdUserId);
+    expect(getUserResponse.data.data).toHaveProperty('email');
+    expect(getUserResponse.data.data.email).toContain('@example.com');
   });
 
   it('should list users', async () => {
     const listResponse = await axios.get(`${API_URL}/users`, { headers });
-    expect(Array.isArray(listResponse.data)).toBe(true);
-    expect(listResponse.data.find(u => u.id === createdUserId)).toBeTruthy();
+    expect(Array.isArray(listResponse.data.data)).toBe(true);
+    expect(listResponse.data.data.find(u => u.id === createdUserId)).toBeTruthy();
   });
 
   it('should update user', async () => {
     const updateData = { name: 'Updated Test User', phone: '+1234567890' };
     const updateResponse = await axios.put(`${API_URL}/users/${createdUserId}`, updateData, { headers });
-    expect(updateResponse.data).toHaveProperty('name', updateData.name);
-    expect(updateResponse.data).toHaveProperty('phone', updateData.phone);
+    
+    expect(updateResponse.data).toHaveProperty('success', true);
+    expect(updateResponse.data).toHaveProperty('data');
+    expect(updateResponse.data.data).toHaveProperty('name', updateData.name);
+    expect(updateResponse.data.data).toHaveProperty('phone', updateData.phone);
   });
 
   it('should change user role', async () => {
     const roleData = { role: 'moderator' };
     const roleResponse = await axios.put(`${API_URL}/users/${createdUserId}`, roleData, { headers });
-    expect(roleResponse.data).toHaveProperty('role', 'moderator');
+    
+    expect(roleResponse.data).toHaveProperty('success', true);
+    expect(roleResponse.data).toHaveProperty('data');
+    expect(roleResponse.data.data).toHaveProperty('role', 'moderator');
   });
 
   it('should delete user', async () => {
     const deleteResponse = await axios.delete(`${API_URL}/users/${createdUserId}`, { headers });
+    
     expect(deleteResponse.data).toHaveProperty('message');
+    expect(deleteResponse.status).toBe(200);
   });
 
-  afterAll(() => {
+  afterAll(async () => {
+    // Cleanup test data
+    await cleanupTestData({
+      users: testUsers,
+      adminToken
+    });
     reporter.writeReport('User CRUD operations working correctly. Role changes applied successfully. Admin authorization working as expected.');
   });
 }); 

@@ -18,7 +18,7 @@ const createTestUser = async (userData) => {
       name: userData.displayName || userData.name
     });
 
-    return response.data.user;
+    return response.data.data.user;
   } catch (error) {
     console.error('Error creating test user:', error.response?.data || error.message);
     throw error;
@@ -57,8 +57,8 @@ const getAuthToken = async (email, password) => {
     });
 
     return {
-      token: response.data.tokens.idToken,
-      user: response.data.user
+      token: response.data.data.tokens.idToken,
+      user: response.data.data.user
     };
   } catch (error) {
     console.error('Error getting auth token:', error.response?.data || error.message);

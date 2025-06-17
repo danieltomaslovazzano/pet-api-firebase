@@ -1,15 +1,20 @@
 const axios = require('./helpers/request');
+const { EnhancedReporter } = require('./helpers/report');
 const { loginAsAdmin, loginAsUser, createTestUser, cleanupTestData } = require('./helpers/auth');
-const { setupGlobalReporter, getGlobalReporter } = require('./helpers/report');
+const { setupManualReporter, getGlobalReporter } = require('./helpers/report');
+const { t } = require('../../utils/i18n');
 
 // Setup global reporter for automatic test tracking
-const reporter = setupGlobalReporter('organization-types', 'organization-types-tests');
+const reporter = setupManualReporter('organization-types', 'organization-types-tests');
 
+
+// Initialize Enhanced Reporter
 describe('Organization Types E2E Tests', () => {
   let adminToken, userToken;
   let adminUserId, regularUserId;
   let testOrganizations = [];
   let testUsers = [];
+  let currentLanguage = 'en';
 
   beforeAll(async () => {
     // Login as admin/superadmin for setup
@@ -49,7 +54,10 @@ describe('Organization Types E2E Tests', () => {
       const response = await axios.get(
         'http://localhost:3000/api/organizations/types',
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
         }
       );
 
@@ -57,7 +65,7 @@ describe('Organization Types E2E Tests', () => {
       expect(typeof response.data).toBe('object');
       expect(response.data.shelter).toBeDefined();
       expect(response.data.shelter.id).toBe('shelter');
-      expect(response.data.shelter.name).toBe('Protectora de Animales');
+      expect(response.data.shelter.name).toBe(t('organizations.types.shelter.name', currentLanguage));
       expect(response.data.shelter.features).toBeDefined();
       expect(Array.isArray(response.data.shelter.features)).toBe(true);
       expect(response.data.shelter.permissions).toBeDefined();
@@ -68,7 +76,10 @@ describe('Organization Types E2E Tests', () => {
       const response = await axios.get(
         'http://localhost:3000/api/organizations/types',
         {
-          headers: { Authorization: `Bearer ${userToken}` }
+          headers: { 
+            Authorization: `Bearer ${userToken}`,
+            'Accept-Language': currentLanguage
+          }
         }
       );
 
@@ -78,10 +89,13 @@ describe('Organization Types E2E Tests', () => {
 
     test('Should fail without authentication', async () => {
       try {
-        await axios.get('http://localhost:3000/api/organizations/types');
+        await axios.get('http://localhost:3000/api/organizations/types', {
+          headers: { 'Accept-Language': currentLanguage }
+        });
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(401);
+        expect(error.response.data.error).toBe(t('auth.unauthorized', currentLanguage));
       }
     });
   });
@@ -91,14 +105,17 @@ describe('Organization Types E2E Tests', () => {
       const response = await axios.get(
         'http://localhost:3000/api/organizations/types/shelter',
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
         }
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe('shelter');
-      expect(response.data.name).toBe('Protectora de Animales');
-      expect(response.data.description).toContain('rescate');
+      expect(response.data.data.data.id).toBe('shelter');
+      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+      expect(response.data.description).toContain(t('organizations.types.shelter.description', currentLanguage));
       expect(response.data.features).toContain('pet_adoption');
       expect(response.data.features).toContain('pet_rescue');
       expect(response.data.permissions.pets).toBeDefined();
@@ -112,22 +129,28 @@ describe('Organization Types E2E Tests', () => {
         await axios.get(
           'http://localhost:3000/api/organizations/types/invalid_type',
           {
-            headers: { Authorization: `Bearer ${adminToken}` }
+            headers: { 
+              Authorization: `Bearer ${adminToken}`,
+              'Accept-Language': currentLanguage
+            }
           }
         );
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toContain('Invalid organization type');
+        expect(error.response.data.error).toBe(t('organizations.invalid_type', currentLanguage));
       }
     });
 
     test('Should fail without authentication', async () => {
       try {
-        await axios.get('http://localhost:3000/api/organizations/types/shelter');
+        await axios.get('http://localhost:3000/api/organizations/types/shelter', {
+          headers: { 'Accept-Language': currentLanguage }
+        });
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(401);
+        expect(error.response.data.error).toBe(t('auth.unauthorized', currentLanguage));
       }
     });
   });
@@ -147,15 +170,25 @@ describe('Organization Types E2E Tests', () => {
         'http://localhost:3000/api/organizations',
         organizationData,
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
         }
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(organizationData.name);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.data.name).toBe(organizationData.name);
       expect(response.data.type).toBe('shelter');
       expect(response.data.createdBy).toBe(adminUserId);
+      expect(response.data.message).toBe(t('organizations.created', currentLanguage));
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -174,12 +207,16 @@ describe('Organization Types E2E Tests', () => {
         'http://localhost:3000/api/organizations',
         organizationData,
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
         }
       );
 
       expect(response.status).toBe(201);
       expect(response.data.type).toBe('shelter'); // Default type
+      expect(response.data.message).toBe(t('organizations.created', currentLanguage));
       
       // Store for cleanup
       testOrganizations.push(response.data);
@@ -198,13 +235,16 @@ describe('Organization Types E2E Tests', () => {
           'http://localhost:3000/api/organizations',
           organizationData,
           {
-            headers: { Authorization: `Bearer ${adminToken}` }
+            headers: { 
+              Authorization: `Bearer ${adminToken}`,
+              'Accept-Language': currentLanguage
+            }
           }
         );
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.error).toBe(t('organizations.invalid_type', currentLanguage));
         expect(error.response.data.details).toBeDefined();
         // Check that the details contain information about valid types including 'shelter'
         const detailsString = JSON.stringify(error.response.data.details);
@@ -224,17 +264,20 @@ describe('Organization Types E2E Tests', () => {
           'http://localhost:3000/api/organizations',
           organizationData,
           {
-            headers: { Authorization: `Bearer ${adminToken}` }
+            headers: { 
+              Authorization: `Bearer ${adminToken}`,
+              'Accept-Language': currentLanguage
+            }
           }
         );
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.error).toBe(t('organizations.validation_failed', currentLanguage));
         expect(error.response.data.details).toBeDefined();
         // Check that the details contain information about required email field
         const detailsString = JSON.stringify(error.response.data.details);
-        expect(detailsString).toContain('Email is required');
+        expect(detailsString).toContain(t('organizations.email_required', currentLanguage));
       }
     });
 
@@ -358,8 +401,8 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.data.length).toBeGreaterThan(0);
       
       // All returned organizations should be of type 'shelter'
       response.data.forEach(org => {
@@ -391,8 +434,8 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.data.length).toBeGreaterThan(0);
     });
   });
 
@@ -441,6 +484,37 @@ describe('Organization Types E2E Tests', () => {
         expect(error.response.data.error).toBe('Validation failed');
         expect(error.response.data.details).toBeDefined();
       }
+    });
+  });
+
+  // Test language switching
+  describe('Language Support', () => {
+    test('Should support different languages', async () => {
+      // Test in English
+      currentLanguage = 'en';
+      let response = await axios.get(
+        'http://localhost:3000/api/organizations/types/shelter',
+        {
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
+        }
+      );
+      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+
+      // Test in Spanish
+      currentLanguage = 'es';
+      response = await axios.get(
+        'http://localhost:3000/api/organizations/types/shelter',
+        {
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'Accept-Language': currentLanguage
+          }
+        }
+      );
+      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
     });
   });
 }); 

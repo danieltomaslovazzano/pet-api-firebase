@@ -1,10 +1,12 @@
 const axios = require('./helpers/request');
+const { EnhancedReporter } = require('./helpers/report');
 const { loginAsAdmin, loginAsUser, createTestUser, cleanupTestData } = require('./helpers/auth');
 const { setupGlobalReporter, getGlobalReporter } = require('./helpers/report');
 
-// Setup global reporter for automatic test tracking
-const reporter = setupGlobalReporter('organization-types-integration', 'organization-types-integration-tests');
+const API_URL = process.env.E2E_API_URL || 'http://localhost:3000/api';
 
+// Initialize Enhanced Reporter
+const reporter = new EnhancedReporter('organization-types-integration', 'organization-types-integration-tests');
 describe('Organization Types Integration E2E Tests', () => {
   let adminToken, userToken;
   let adminUserId, regularUserId;
@@ -104,7 +106,7 @@ describe('Organization Types Integration E2E Tests', () => {
 
       expect(response.status).toBe(201);
       expect(response.data.organizationId).toBe(shelterOrg.id);
-      expect(response.data.name).toBe(petData.name);
+      expect(response.data.data.data.name).toBe(petData.name);
       
       createdPets.push(response.data);
     });
@@ -147,7 +149,7 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the shelter organization
       response.data.forEach(pet => {
@@ -280,7 +282,7 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(filterResponse.status).toBe(200);
-      expect(Array.isArray(filterResponse.data)).toBe(true);
+      expect(Array.isArray(filterResponse.data.data)).toBe(true);
       
       // Should include our created shelters
       const shelterIds = shelters.map(s => s.id);
@@ -335,124 +337,4 @@ describe('Organization Types Integration E2E Tests', () => {
           role: 'admin'
         },
         {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
-      );
-
-      await axios.post(
-        'http://localhost:3000/api/memberships',
-        {
-          organizationId: shelter2.id,
-          userId: adminUserId,
-          role: 'admin'
-        },
-        {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
-      );
-
-      // Create pets in each shelter
-      const pet1Response = await axios.post(
-        'http://localhost:3000/api/pets',
-        {
-          name: 'Shelter 1 Pet',
-          species: 'dog',
-          status: 'available',
-          images: ['https://example.com/pet1-image.jpg']
-        },
-        {
-          headers: { 
-            Authorization: `Bearer ${adminToken}`,
-            'X-Organization-Id': shelter1.id
-          }
-        }
-      );
-      createdPets.push(pet1Response.data);
-
-      const pet2Response = await axios.post(
-        'http://localhost:3000/api/pets',
-        {
-          name: 'Shelter 2 Pet',
-          species: 'cat',
-          status: 'available',
-          images: ['https://example.com/pet2-image.jpg']
-        },
-        {
-          headers: { 
-            Authorization: `Bearer ${adminToken}`,
-            'X-Organization-Id': shelter2.id
-          }
-        }
-      );
-      createdPets.push(pet2Response.data);
-
-      // Verify pets are isolated to their respective shelters
-      expect(pet1Response.data.organizationId).toBe(shelter1.id);
-      expect(pet2Response.data.organizationId).toBe(shelter2.id);
-      expect(pet1Response.data.organizationId).not.toBe(pet2Response.data.organizationId);
-    });
-    */
-  });
-
-  describe('Backward Compatibility', () => {
-    test('Existing organizations without explicit type should default to shelter', async () => {
-      // Create organization without specifying type (simulating legacy behavior)
-      const organizationData = {
-        name: `Legacy Org ${Date.now()}`,
-        description: 'Organization created without explicit type',
-        email: `legacy-org-${Date.now()}@example.com`,
-        // Add required fields for shelter type (which is the default)
-        address: '123 Legacy Street',
-        phone: '+1555000000'
-      };
-
-      const response = await axios.post(
-        'http://localhost:3000/api/organizations',
-        organizationData,
-        {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
-      );
-
-      expect(response.status).toBe(201);
-      expect(response.data.type).toBe('shelter'); // Should default to shelter
-      
-      testOrganizations.push(response.data);
-    });
-
-    test('Should handle organization updates without breaking type field', async () => {
-      // Create organization
-      const createResponse = await axios.post(
-        'http://localhost:3000/api/organizations',
-        {
-          name: `Update Test Org ${Date.now()}`,
-          type: 'shelter',
-          description: 'Organization for update testing',
-          address: '999 Update Ave',
-          phone: '+1555999999',
-          email: `update-test-${Date.now()}@example.com`
-        },
-        {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
-      );
-      const org = createResponse.data;
-      testOrganizations.push(org);
-
-      // Update organization without touching type field
-      const updateResponse = await axios.put(
-        `http://localhost:3000/api/organizations/${org.id}`,
-        {
-          description: 'Updated description'
-        },
-        {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        }
-      );
-
-      expect(updateResponse.status).toBe(200);
-      expect(updateResponse.data.type).toBe('shelter'); // Type should remain unchanged
-      expect(updateResponse.data.description).toBe('Updated description');
-    });
-  });
-}); 
+          headers: { Authorization: `

@@ -1,9 +1,9 @@
 const axios = require('./helpers/request');
 const { loginAsAdmin, loginAsUser, createTestUser, cleanupTestData } = require('./helpers/auth');
-const { setupGlobalReporter, getGlobalReporter } = require('./helpers/report');
+const { EnhancedReporter } = require('./helpers/report');
 
-// Setup global reporter for automatic test tracking
-const reporter = setupGlobalReporter('organizations', 'organizations-tests');
+// Initialize Enhanced Reporter (same pattern as auth.e2e.js)
+const reporter = new EnhancedReporter('organizations', 'organizations-tests');
 
 describe('Organizations E2E Tests', () => {
   let adminToken, userToken;
@@ -29,6 +29,31 @@ describe('Organizations E2E Tests', () => {
     // Login as the test user
     const userLogin = await loginAsUser(testUser.email, 'TestPassword123!');
     userToken = userLogin.token;
+  });
+
+  beforeEach(() => {
+    // Get current test name from Jest (same pattern as auth.e2e.js)
+    const testName = expect.getState().currentTestName || 'unknown test';
+    reporter.startTest(testName);
+  });
+
+    afterEach(() => {
+    // Get the real test result from Jest custom reporter
+    const testName = expect.getState().currentTestName;
+    const jestResult = global.__JEST_TEST_RESULTS__ && global.__JEST_TEST_RESULTS__[testName];
+    
+    let status = 'PASSED';
+    let error = null;
+    
+    if (jestResult) {
+      status = jestResult.status;
+      error = jestResult.error;
+      console.log('[ENHANCED REPORTER] Using Jest result for "' + testName + '": ' + status);
+    } else {
+      console.log('[ENHANCED REPORTER] No Jest result found for "' + testName + '", defaulting to PASSED');
+    }
+    
+    reporter.endTest(status, error);
   });
 
   afterAll(async () => {
@@ -63,14 +88,17 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(organizationData.name);
-      expect(response.data.createdBy).toBe(adminUserId);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('message');
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.name).toBe(organizationData.name);
+      expect(response.data.data.createdBy).toBe(adminUserId);
       // Verify default type is set
-      expect(response.data.type).toBe('shelter');
+      expect(response.data.data.type).toBe('shelter');
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Regular user should create organization successfully', async () => {
@@ -91,14 +119,17 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(organizationData.name);
-      expect(response.data.createdBy).toBe(regularUserId);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('message');
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.name).toBe(organizationData.name);
+      expect(response.data.data.createdBy).toBe(regularUserId);
       // Verify default type is set
-      expect(response.data.type).toBe('shelter');
+      expect(response.data.data.type).toBe('shelter');
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should create organization with explicit shelter type', async () => {
@@ -120,11 +151,15 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.type).toBe('shelter');
-      expect(response.data.name).toBe(organizationData.name);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('message');
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.type).toBe('shelter');
+      expect(response.data.data.name).toBe(organizationData.name);
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should fail without authentication', async () => {
@@ -164,7 +199,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       testOrganizations.push(testOrg);
     });
 
@@ -177,10 +212,12 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testOrg.id);
-      expect(response.data.name).toBe(testOrg.name);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data.id).toBe(testOrg.id);
+      expect(response.data.data.name).toBe(testOrg.name);
       // Verify type field is present
-      expect(response.data.type).toBe('shelter');
+      expect(response.data.data.type).toBe('shelter');
     });
 
     test('Should fail with invalid organization ID', async () => {
@@ -226,7 +263,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       testOrganizations.push(testOrg);
     });
 
@@ -252,9 +289,12 @@ describe('Organizations E2E Tests', () => {
         );
 
         expect(response.status).toBe(200);
-        expect(response.data.name).toBe(updateData.name);
-        expect(response.data.description).toBe(updateData.description);
-        expect(response.data.phone).toBe(updateData.phone);
+        expect(response.data).toHaveProperty('success', true);
+        expect(response.data).toHaveProperty('message');
+        expect(response.data).toHaveProperty('data');
+        expect(response.data.data.name).toBe(updateData.name);
+        expect(response.data.data.description).toBe(updateData.description);
+        expect(response.data.data.phone).toBe(updateData.phone);
       } catch (error) {
         console.log('🔍 DEBUG: Error response status:', error.response?.status);
         console.log('🔍 DEBUG: Error response data:', JSON.stringify(error.response?.data, null, 2));
@@ -301,7 +341,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       // Don't add to testOrganizations since we'll delete it in the test
     });
 
@@ -314,6 +354,7 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('success', true);
       expect(response.data).toHaveProperty('message');
 
       // Verify it's deleted by trying to get it
@@ -345,7 +386,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      const noDeleteOrg = createResponse.data;
+      const noDeleteOrg = createResponse.data.data;
       testOrganizations.push(noDeleteOrg); // Add for cleanup
 
       try {
@@ -365,15 +406,17 @@ describe('Organizations E2E Tests', () => {
   describe('List Organizations', () => {
     test('Admin should list all organizations', async () => {
       const response = await axios.get(
-        'http://localhost:3000/api/admin/organizations',
+        'http://localhost:3000/api/organizations',
         {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
     });
 
     test('Should fail without admin permissions', async () => {
@@ -409,7 +452,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       testOrganizations.push(testOrg);
     });
 
@@ -422,7 +465,9 @@ describe('Organizations E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('Should fail without membership', async () => {
@@ -484,7 +529,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${org1AdminToken}` }
         }
       );
-      org1 = org1Response.data;
+      org1 = org1Response.data.data;
       testOrganizations.push(org1);
 
       const org2Response = await axios.post(
@@ -500,7 +545,7 @@ describe('Organizations E2E Tests', () => {
           headers: { Authorization: `Bearer ${org2AdminToken}` }
         }
       );
-      org2 = org2Response.data;
+      org2 = org2Response.data.data;
       testOrganizations.push(org2);
     });
 
@@ -513,7 +558,9 @@ describe('Organizations E2E Tests', () => {
         }
       );
       expect(response1.status).toBe(200);
-      expect(response1.data.id).toBe(org1.id);
+      expect(response1.data).toHaveProperty('success', true);
+      expect(response1.data).toHaveProperty('data');
+      expect(response1.data.data.id).toBe(org1.id);
 
       // Org1 admin should NOT access org2 (depends on membership)
       try {
@@ -548,6 +595,20 @@ describe('Organizations E2E Tests', () => {
         }
       );
       expect(response2.status).toBe(200);
+    });
+
+    test('Should fail without admin permissions', async () => {
+      try {
+        await axios.get(
+          'http://localhost:3000/api/organizations',
+          {
+            headers: { Authorization: `Bearer ${userToken}` }
+          }
+        );
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error.response.status).toBe(403);
+      }
     });
   });
 }); 

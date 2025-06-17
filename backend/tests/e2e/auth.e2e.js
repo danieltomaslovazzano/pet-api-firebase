@@ -25,24 +25,56 @@ describe('E2E: Auth', () => {
     reporter.startTest(testName);
   });
 
-  afterEach(() => {
-    reporter.endTest('PASSED');
+    afterEach(() => {
+    // Get the real test result from Jest custom reporter
+    const testName = expect.getState().currentTestName;
+    const jestResult = global.__JEST_TEST_RESULTS__ && global.__JEST_TEST_RESULTS__[testName];
+    
+    let status = 'PASSED';
+    let error = null;
+    
+    if (jestResult) {
+      status = jestResult.status;
+      error = jestResult.error;
+      console.log('[ENHANCED REPORTER] Using Jest result for "' + testName + '": ' + status);
+    } else {
+      console.log('[ENHANCED REPORTER] No Jest result found for "' + testName + '", defaulting to PASSED');
+    }
+    
+    reporter.endTest(status, error);
   });
 
   it('should register a user', async () => {
     const registerPayload = { email, password, name };
     const resRegister = await axios.post(`${API_URL}/auth/register`, registerPayload);
-    expect(resRegister.data).toHaveProperty('user');
-    expect(resRegister.data.user).toHaveProperty('email', email);
+    
+    // AUTH operations use res.created() format: {success, message, data}
+    expect(resRegister.data).toHaveProperty('success', true);
+    expect(resRegister.data).toHaveProperty('message');
+    expect(resRegister.data).toHaveProperty('data');
+    expect(resRegister.data.data).toHaveProperty('user');
+    expect(resRegister.data.data).toHaveProperty('tokens');
+    expect(resRegister.data.data.user).toHaveProperty('email', email);
+    expect(resRegister.data.data.tokens).toHaveProperty('idToken');
+    expect(resRegister.data.data.tokens).toHaveProperty('refreshToken');
   });
 
   it('should login user', async () => {
     const loginPayload = { email, password };
     const resLogin = await axios.post(`${API_URL}/auth/login`, loginPayload);
-    idToken = resLogin.data.tokens.idToken;
-    refreshToken = resLogin.data.tokens.refreshToken;
-    expect(resLogin.data).toHaveProperty('tokens');
-    expect(resLogin.data.tokens).toHaveProperty('idToken');
+    
+    // Extract tokens for future tests
+    idToken = resLogin.data.data.tokens.idToken;
+    refreshToken = resLogin.data.data.tokens.refreshToken;
+    
+    // AUTH operations use res.created() format: {success, message, data}
+    expect(resLogin.data).toHaveProperty('success', true);
+    expect(resLogin.data).toHaveProperty('message');
+    expect(resLogin.data).toHaveProperty('data');
+    expect(resLogin.data.data).toHaveProperty('user');
+    expect(resLogin.data.data).toHaveProperty('tokens');
+    expect(resLogin.data.data.tokens).toHaveProperty('idToken');
+    expect(resLogin.data.data.tokens).toHaveProperty('refreshToken');
   });
 
   it('should deny login with wrong credentials', async () => {
@@ -59,7 +91,13 @@ describe('E2E: Auth', () => {
     const resProfile = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${idToken}` }
     });
-    expect(resProfile.data).toHaveProperty('email', email);
+    
+    // Profile endpoint uses res.data() format: {success, data} (no message)
+    expect(resProfile.data).toHaveProperty('success', true);
+    expect(resProfile.data).toHaveProperty('data');
+    expect(resProfile.data.data).toHaveProperty('email', email);
+    expect(resProfile.data.data).toHaveProperty('id');
+    expect(resProfile.data.data).toHaveProperty('name', name);
   });
 
   it('should deny access to profile without token', async () => {
@@ -76,16 +114,25 @@ describe('E2E: Auth', () => {
     const superadminPassword = 'PC.103638dl';
     const superadminLoginPayload = { email: superadminEmail, password: superadminPassword };
     const resSuperadminLogin = await axios.post(`${API_URL}/auth/login`, superadminLoginPayload);
-    const userRole = resSuperadminLogin.data?.user?.role || resSuperadminLogin.data?.role;
-    adminToken = resSuperadminLogin.data.tokens?.idToken;
+    
+    // Extract admin token and verify role
+    const userRole = resSuperadminLogin.data.data.user.role;
+    adminToken = resSuperadminLogin.data.data.tokens.idToken;
+    
     expect(userRole).toBe('superadmin');
+    expect(adminToken).toBeDefined();
   });
 
   it('should list users as admin', async () => {
     const usersRes = await axios.get(`${API_URL}/admin/users`, {
       headers: { Authorization: `Bearer ${adminToken}` }
     });
-    expect(Array.isArray(usersRes.data)).toBe(true);
+    
+    // Admin list users uses res.list() format: {success, data} (no message)
+    expect(usersRes.data).toHaveProperty('success', true);
+    expect(usersRes.data).toHaveProperty('data');
+    expect(Array.isArray(usersRes.data.data)).toBe(true);
+    expect(usersRes.data.data.length).toBeGreaterThan(0);
   });
 
   afterAll(() => {

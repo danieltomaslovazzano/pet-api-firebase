@@ -1,10 +1,9 @@
 const axios = require('./helpers/request');
+const { EnhancedReporter } = require('./helpers/report');
 const { loginAsAdmin, loginAsUser, createTestUser, cleanupTestData } = require('./helpers/auth');
-const { setupGlobalReporter, getGlobalReporter } = require('./helpers/report');
 
-// Setup global reporter for automatic test tracking
-const reporter = setupGlobalReporter('memberships', 'memberships-tests');
-
+// Initialize Enhanced Reporter
+const reporter = new EnhancedReporter('memberships', 'memberships-tests');
 describe('Memberships E2E Tests', () => {
   let adminToken, userToken;
   let adminUserId, regularUserId;
@@ -45,9 +44,34 @@ describe('Memberships E2E Tests', () => {
         headers: { Authorization: `Bearer ${adminToken}` }
       }
     );
-    testOrganization = orgResponse.data;
+    testOrganization = orgResponse.data.data;
     // Verify default type is set
     expect(testOrganization.type).toBe('shelter');
+  });
+
+  beforeEach(() => {
+    // Get current test name from Jest
+    const testName = expect.getState().currentTestName || 'unknown test';
+    reporter.startTest(testName);
+  });
+
+  afterEach(() => {
+    // Get the real test result from Jest custom reporter
+    const testName = expect.getState().currentTestName;
+    const jestResult = global.__JEST_TEST_RESULTS__ && global.__JEST_TEST_RESULTS__[testName];
+    
+    let status = 'PASSED';
+    let error = null;
+    
+    if (jestResult) {
+      status = jestResult.status;
+      error = jestResult.error;
+      console.log('[ENHANCED REPORTER] Using Jest result for "' + testName + '": ' + status);
+    } else {
+      console.log('[ENHANCED REPORTER] No Jest result found for "' + testName + '", defaulting to PASSED');
+    }
+    
+    reporter.endTest(status, error);
   });
 
   afterAll(async () => {
@@ -58,6 +82,12 @@ describe('Memberships E2E Tests', () => {
       memberships: testMemberships,
       adminToken
     });
+
+    // Wait a moment for Jest reporter to finish processing
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Sync Enhanced Reporter test results with real Jest results
+    reporter.syncWithJestResults();
 
     // Generate enhanced report
     const observations = `- Test organization: ${testOrganization?.name}\n- Total memberships created: ${testMemberships.length}\n- Total test users created: ${testUsers.length}\n- All test data cleaned up automatically`;
@@ -93,13 +123,15 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.organizationId).toBe(testOrganization.id);
-      expect(response.data.userId).toBe(inviteUser.id);
-      expect(response.data.role).toBe('member');
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
+      expect(response.data.data.userId).toBe(inviteUser.id);
+      expect(response.data.data.role).toBe('member');
       
       // Store for cleanup
-      testMemberships.push(response.data);
+      testMemberships.push(response.data.data);
     });
 
     test('Should fail to invite same user twice', async () => {
@@ -121,8 +153,9 @@ describe('Memberships E2E Tests', () => {
       } catch (error) {
         // Handle both network errors and HTTP response errors
         if (error.response) {
-          expect(error.response.status).toBe(500);
-          expect(error.response.data.details).toContain('already a member');
+          expect(error.response.status).toBe(400);
+          // Check for i18n key or translated message
+          expect(error.response.data.error).toMatch(/already a member|user_already_member/);
         } else {
           // Network error - log and fail the test appropriately
           console.error('Network error in test:', error.message);
@@ -192,8 +225,8 @@ describe('Memberships E2E Tests', () => {
         );
 
         expect(response.status).toBe(201);
-        expect(response.data.role).toBe(role);
-        testMemberships.push(response.data);
+        expect(response.data.data.role).toBe(role);
+        testMemberships.push(response.data.data);
       }
     });
   });
@@ -208,11 +241,11 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // Verify all memberships belong to the organization
-      response.data.forEach(membership => {
+      response.data.data.forEach(membership => {
         expect(membership.organizationId).toBe(testOrganization.id);
       });
     });
@@ -226,7 +259,7 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('User should get their own memberships', async () => {
@@ -238,7 +271,7 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('Should fail without userId or organizationId', async () => {
@@ -302,9 +335,9 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testMembership.id);
-      expect(response.data.organizationId).toBe(testMembership.organizationId);
-      expect(response.data.userId).toBe(testMembership.userId);
+      expect(response.data.data.id).toBe(testMembership.id);
+      expect(response.data.data.organizationId).toBe(testMembership.organizationId);
+      expect(response.data.data.userId).toBe(testMembership.userId);
     });
 
     test('Should fail with invalid membership ID', async () => {
@@ -349,7 +382,7 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.role).toBe(newRole);
+      expect(response.data.data.role).toBe(newRole);
       
       // Update our local reference
       membershipToUpdate.role = newRole;
@@ -425,7 +458,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      membershipToRemove = membershipResponse.data;
+      membershipToRemove = membershipResponse.data.data;
     });
 
     test('Admin should remove member successfully', async () => {
@@ -437,6 +470,7 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('success', true);
       expect(response.data).toHaveProperty('message');
 
       // Verify membership is deleted
@@ -480,7 +514,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      const anotherMembership = membershipResponse.data;
+      const anotherMembership = membershipResponse.data.data;
       testMemberships.push(anotherMembership);
 
       try {
@@ -533,7 +567,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      selfLeaveMembership = membershipResponse.data;
+      selfLeaveMembership = membershipResponse.data.data;
     });
 
     test('User should be able to leave organization (remove own membership)', async () => {
@@ -600,7 +634,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${otherOrgAdminToken}` }
         }
       );
-      otherOrganization = orgResponse.data;
+      otherOrganization = orgResponse.data.data;
     });
 
     afterAll(async () => {
