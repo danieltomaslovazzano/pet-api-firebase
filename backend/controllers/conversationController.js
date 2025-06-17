@@ -7,7 +7,7 @@ exports.createConversation = async (req, res) => {
     
     // Validate participants
     if (!conversationData.participants || !Array.isArray(conversationData.participants) || conversationData.participants.length < 2) {
-      return res.validationError('conversations.participants_required');
+      return res.error('conversations.participants_required', 400);
     }
     
     // Multitenancy: Set organization context for the conversation
@@ -42,7 +42,7 @@ exports.createConversation = async (req, res) => {
     
     // Create the conversation
     const conversation = await conversationModel.createConversation(conversationData);
-    res.created(conversation, 'conversations.created');
+    res.created('conversations.created', conversation);
     
   } catch (error) {
     console.error('Error creating conversation:', error);
@@ -56,7 +56,7 @@ exports.getConversationById = async (req, res) => {
     
     // Validate ID format (basic UUID check)
     if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      return res.validationError('validation.invalid_conversation_id_format');
+      return res.error('validation.invalid_conversation_id_format', 400);
     }
     
     // Get the conversation
@@ -68,7 +68,7 @@ exports.getConversationById = async (req, res) => {
     
     // Super admin can access any conversation
     if (req.user.isSuperAdmin) {
-      return res.success(conversation);
+      return res.data(conversation);
     }
     
     // Org context: check if conversation belongs to this organization
@@ -83,7 +83,7 @@ exports.getConversationById = async (req, res) => {
     }
     
     // User has access, return the conversation
-    res.success(conversation);
+    res.data(conversation);
     
   } catch (error) {
     console.error('Error getting conversation by ID:', error);
@@ -99,14 +99,14 @@ exports.getConversationsForUser = async (req, res) => {
     if (req.user.isSuperAdmin) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.success(conversations);
+      return res.data(conversations);
     }
     
     // Users can view their own conversations
     if (req.user.uid === userId) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.success(conversations);
+      return res.data(conversations);
     }
     
     // With organization context, check if target user belongs to this org
@@ -135,12 +135,12 @@ exports.getConversationsForUser = async (req, res) => {
       }
       
       const conversations = await conversationModel.getConversationsForUser(userId, req.organizationId);
-      return res.success(conversations);
+      return res.data(conversations);
     } else {
       // Without organization context, only allow admin users
       if (req.user.role === 'admin') {
         const conversations = await conversationModel.getConversationsForUser(userId, null);
-        return res.success(conversations);
+        return res.data(conversations);
       } else {
         return res.forbidden('conversations.can_only_view_own_conversations');
       }
@@ -180,7 +180,7 @@ exports.softDeleteConversation = async (req, res) => {
     
     // Perform soft delete
     const result = await conversationModel.softDeleteConversation(id, userId);
-    res.success(result, 'conversations.deleted');
+    res.success('conversations.deleted', result);
     
   } catch (error) {
     console.error('Error soft deleting conversation:', error);
@@ -195,7 +195,7 @@ exports.permanentDeleteConversation = async (req, res) => {
     // Super admin can delete any conversation
     if (req.user.isSuperAdmin) {
       const result = await conversationModel.permanentDeleteConversation(id);
-      return res.success(result, 'conversations.deleted');
+      return res.success('conversations.deleted', result);
     }
     
     // Get the conversation to check organization and access
@@ -231,7 +231,7 @@ exports.permanentDeleteConversation = async (req, res) => {
     
     // Perform permanent delete
     const result = await conversationModel.permanentDeleteConversation(id);
-    res.success(result, 'conversations.deleted');
+    res.success('conversations.deleted', result);
     
   } catch (error) {
     console.error('Error permanently deleting conversation:', error);
@@ -287,7 +287,7 @@ exports.hideConversation = async (req, res) => {
       return res.notFound('conversations.not_found');
     }
     
-    res.success(result, 'conversations.hidden');
+    res.success('conversations.hidden', result);
     
   } catch (error) {
     console.error('Error hiding conversation:', error);
@@ -317,7 +317,7 @@ exports.unhideConversation = async (req, res) => {
       return res.notFound('conversations.not_found');
     }
     
-    res.success(result, 'conversations.unhidden');
+    res.success('conversations.unhidden', result);
     
   } catch (error) {
     console.error('Error unhiding conversation:', error);
@@ -347,7 +347,7 @@ exports.blockConversation = async (req, res) => {
       return res.notFound('conversations.not_found');
     }
     
-    res.success(result, 'conversations.blocked');
+    res.success('conversations.blocked', result);
     
   } catch (error) {
     console.error('Error blocking conversation:', error);
@@ -377,7 +377,7 @@ exports.unblockConversation = async (req, res) => {
       return res.notFound('conversations.not_found');
     }
     
-    res.success(result, 'conversations.unblocked');
+    res.success('conversations.unblocked', result);
     
   } catch (error) {
     console.error('Error unblocking conversation:', error);
@@ -408,7 +408,7 @@ exports.getConversations = async (req, res) => {
     }
 
     const conversations = await conversationModel.getConversations(filters);
-    res.success(conversations);
+    res.data(conversations);
     
   } catch (error) {
     console.error('Error getting conversations:', error);

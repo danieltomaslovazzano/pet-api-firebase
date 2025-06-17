@@ -186,11 +186,18 @@ exports.getOrganizations = async (req, res) => {
     try {
       const memberships = await membershipModel.getUserMemberships(req.user.uid);
       const orgIds = memberships.map(m => m.organizationId);
+      
+      // If user has no memberships, they shouldn't be able to list any organizations
+      if (orgIds.length === 0) {
+        return res.forbidden('organizations.unauthorized_list_organizations');
+      }
+      
       filters.id = orgIds; // Filter to only include orgs the user belongs to
       const organizations = await organizationModel.getOrganizations(filters);
       res.list(organizations);
     } catch (err) {
-      return res.serverError('organizations.error_retrieving', { error: err.message });
+      // If there's an error getting memberships, it's likely a permissions issue
+      return res.forbidden('organizations.unauthorized_list_organizations');
     }
   } else {
     try {

@@ -154,6 +154,10 @@ exports.inviteUser = async (req, res) => {
       const membership = await membershipModel.createMembership(membershipData);
       return res.created('memberships.created', membership);
     } catch (error) {
+      // Handle specific "already a member" error as 400 Bad Request
+      if (error.message === 'User is already a member of this organization') {
+        return res.error('memberships.user_already_member', 400, { error: error.message });
+      }
       return res.serverError('memberships.error_inviting', { error: error.message });
     }
   }
@@ -183,7 +187,18 @@ exports.updateMemberRole = async (req, res) => {
   }
   
   // Obtener la membresía para verificar la organización
-  const membership = await membershipModel.getMembershipById(id);
+  let membership;
+  try {
+    membership = await membershipModel.getMembershipById(id);
+  } catch (error) {
+    // If membership not found, return 404
+    if (error.message === 'Membership not found') {
+      return res.notFound('memberships.not_found');
+    }
+    // Re-throw other errors
+    console.error('Error getting membership for update:', error);
+    return res.serverError('memberships.error_retrieving_for_update', { error: error.message });
+  }
   
   if (req.organizationId && membership.organizationId !== req.organizationId && !req.user.isSuperAdmin) {
     return res.forbidden('memberships.forbidden_modify_outside_context');
@@ -221,7 +236,18 @@ exports.removeMember = async (req, res) => {
   const { id } = req.params;
   
   // Obtener la membresía para verificar la organización
-  const membership = await membershipModel.getMembershipById(id);
+  let membership;
+  try {
+    membership = await membershipModel.getMembershipById(id);
+  } catch (error) {
+    // If membership not found, return 404
+    if (error.message === 'Membership not found') {
+      return res.notFound('memberships.not_found');
+    }
+    // Re-throw other errors
+    console.error('Error getting membership for removal:', error);
+    return res.serverError('memberships.error_retrieving_for_removal', { error: error.message });
+  }
   
   if (req.organizationId && membership.organizationId !== req.organizationId && !req.user.isSuperAdmin) {
     return res.forbidden('memberships.forbidden_remove_outside_context');

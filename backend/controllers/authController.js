@@ -408,7 +408,7 @@ const authController = {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {
-        return res.status(400).json({ error: 'Refresh token requerido' });
+        return res.error('Refresh token requerido', 400);
       }
       // Usando Firebase Admin SDK para verificar y refrescar el token
       const admin = require('../config/firebase');
@@ -418,13 +418,13 @@ const authController = {
       // (En producción, deberías usar el flujo recomendado por Firebase)
       const decoded = await admin.auth().verifySessionCookie(refreshToken, true).catch(() => null);
       if (!decoded) {
-        return res.status(401).json({ error: 'Refresh token inválido o expirado' });
+        return res.unauthorized('Refresh token inválido o expirado');
       }
       // Emitir un nuevo custom token
       const customToken = await admin.auth().createCustomToken(decoded.uid);
-      res.json({ accessToken: customToken });
+      res.data({ accessToken: customToken });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.serverError('auth.refresh_token_error', { details: error.message });
     }
   }
 };

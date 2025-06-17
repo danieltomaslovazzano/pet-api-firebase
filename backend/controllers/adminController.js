@@ -181,7 +181,7 @@ exports.getAllUsers = async (req, res) => {
           } catch (firebaseError) {
             console.warn('[WARN] Error o timeout en getUsers de Firebase Auth:', firebaseError);
             // Devolver usuarios sin enriquecer
-            return res.status(200).json(users);
+            return res.data(users);
           }
             // Crear un mapa para búsqueda rápida
             const authUserMap = new Map();
@@ -263,7 +263,7 @@ exports.getAllUsers = async (req, res) => {
         // No enviar datos sensibles como tokens, hashes, etc.
       }));
 
-      res.status(200).json(sanitizedUsers);
+      res.data(sanitizedUsers);
   } catch (err) {
     console.error('Error inesperado en getAllUsers:', err);
     res.serverError('admin.users_unexpected_error', { error: err.message });
