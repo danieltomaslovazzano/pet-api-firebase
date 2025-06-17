@@ -23,8 +23,6 @@ module.exports = {
     '/tests/'
   ],
   globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json'
-    }
+    NODE_ENV: 'test'
   }
 }; 

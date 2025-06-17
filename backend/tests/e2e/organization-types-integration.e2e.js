@@ -337,4 +337,81 @@ describe('Organization Types Integration E2E Tests', () => {
           role: 'admin'
         },
         {
-          headers: { Authorization: `
+          headers: { Authorization: `Bearer ${adminToken}` }
+        }
+      );
+
+      await axios.post(
+        'http://localhost:3000/api/memberships',
+        {
+          organizationId: shelter2.id,
+          userId: adminUserId,
+          role: 'admin'
+        },
+        {
+          headers: { Authorization: `Bearer ${adminToken}` }
+        }
+      );
+
+      // Test data isolation - create pets in different shelters
+      const pet1Data = {
+        name: 'Shelter 1 Pet',
+        species: 'dog',
+        status: 'available',
+        images: ['https://example.com/pet1.jpg']
+      };
+
+      const pet2Data = {
+        name: 'Shelter 2 Pet',
+        species: 'cat',
+        status: 'available',
+        images: ['https://example.com/pet2.jpg']
+      };
+
+      const pet1Response = await axios.post(
+        'http://localhost:3000/api/pets',
+        pet1Data,
+        {
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'X-Organization-Id': shelter1.id
+          }
+        }
+      );
+
+      const pet2Response = await axios.post(
+        'http://localhost:3000/api/pets',
+        pet2Data,
+        {
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'X-Organization-Id': shelter2.id
+          }
+        }
+      );
+
+      expect(pet1Response.status).toBe(201);
+      expect(pet2Response.status).toBe(201);
+      expect(pet1Response.data.organizationId).toBe(shelter1.id);
+      expect(pet2Response.data.organizationId).toBe(shelter2.id);
+
+      // Verify data isolation - shelter1 should not see shelter2's pets
+      const shelter1PetsResponse = await axios.get(
+        'http://localhost:3000/api/pets',
+        {
+          headers: { 
+            Authorization: `Bearer ${adminToken}`,
+            'X-Organization-Id': shelter1.id
+          }
+        }
+      );
+
+      const shelter1Pets = shelter1PetsResponse.data.data || shelter1PetsResponse.data;
+      const shelter1PetIds = shelter1Pets.map(pet => pet.id);
+      
+      expect(shelter1PetIds).toContain(pet1Response.data.id);  
+      expect(shelter1PetIds).not.toContain(pet2Response.data.id);
+    });
+    */
+  });
+});

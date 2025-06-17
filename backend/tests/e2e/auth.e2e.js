@@ -110,8 +110,13 @@ describe('E2E: Auth', () => {
   });
 
   it('should login as superadmin', async () => {
-    const superadminEmail = 'daniellovazzano+2@gmail.com';
-    const superadminPassword = 'PC.103638dl';
+    const superadminEmail = process.env.E2E_ADMIN_EMAIL;
+    const superadminPassword = process.env.E2E_ADMIN_PASSWORD;
+    
+    if (!superadminEmail || !superadminPassword) {
+      throw new Error('E2E admin credentials not configured. Please set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD environment variables.');
+    }
+    
     const superadminLoginPayload = { email: superadminEmail, password: superadminPassword };
     const resSuperadminLogin = await axios.post(`${API_URL}/auth/login`, superadminLoginPayload);
     

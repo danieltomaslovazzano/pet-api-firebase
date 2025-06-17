@@ -7,8 +7,9 @@ module.exports = {
   // Set the test environment
   testEnvironment: 'node',
   
-  // Define test file patterns
-  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js', '**/?(*.)+(e2e).js'],
+  // Define test file patterns (excluding E2E tests)
+  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  testPathIgnorePatterns: ['/node_modules/', '/tests/e2e/'],
   
   // Setup and teardown files
   // setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
@@ -31,12 +32,6 @@ module.exports = {
 
   // Don't stop on first failure - continue running all tests
   bail: false,
-  
-  // Don't stop on first failure - continue running all tests
-  bail: false,
-  
-  // Ignore patterns
-  testPathIgnorePatterns: ['/node_modules/'],
   
   // Advanced reporting
   verbose: true,
