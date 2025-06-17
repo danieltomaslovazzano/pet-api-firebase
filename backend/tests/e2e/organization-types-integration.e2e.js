@@ -83,14 +83,18 @@ describe('Organization Types Integration E2E Tests', () => {
       );
     });
 
-    // TODO: Fix this test - currently failing with 400 error on pet creation
-    /*
     test('Shelter should be able to create pets for adoption', async () => {
       const petData = {
         name: 'Shelter Pet',
         species: 'dog',
+        breed: 'Mixed Breed',
+        age: 2,
+        gender: 'male',
+        size: 'medium',
+        color: 'brown',
         status: 'available',
-        images: ['https://example.com/pet-image.jpg']
+        description: 'Friendly shelter dog looking for a home',
+        images: ['https://images.unsplash.com/photo-1552053831-71594a27632d?w=400']
       };
 
       const response = await axios.post(
@@ -105,12 +109,11 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.organizationId).toBe(shelterOrg.id);
-      expect(response.data.data.data.name).toBe(petData.name);
+      expect(response.data.data.organizationId).toBe(shelterOrg.id);
+      expect(response.data.data.name).toBe(petData.name);
       
-      createdPets.push(response.data);
+      createdPets.push(response.data.data);
     });
-    */
 
     test('Should verify shelter organization has correct type and features', async () => {
       // Get organization details
@@ -290,8 +293,6 @@ describe('Organization Types Integration E2E Tests', () => {
       expect(returnedShelters.length).toBe(3);
     });
 
-    // TODO: Fix this test - currently failing with 400 error on pet creation
-    /*
     test('Should maintain data isolation between organizations of same type', async () => {
       // Create two separate shelter organizations
       const shelter1Response = await axios.post(
@@ -357,15 +358,27 @@ describe('Organization Types Integration E2E Tests', () => {
       const pet1Data = {
         name: 'Shelter 1 Pet',
         species: 'dog',
+        breed: 'Labrador',
+        age: 3,
+        gender: 'male',
+        size: 'large',
+        color: 'black',
         status: 'available',
-        images: ['https://example.com/pet1.jpg']
+        description: 'Friendly dog from shelter 1',
+        images: ['https://images.unsplash.com/photo-1552053831-71594a27632d?w=400']
       };
 
       const pet2Data = {
         name: 'Shelter 2 Pet',
         species: 'cat',
+        breed: 'Persian',
+        age: 2,
+        gender: 'female',
+        size: 'medium',
+        color: 'white',
         status: 'available',
-        images: ['https://example.com/pet2.jpg']
+        description: 'Calm cat from shelter 2',
+        images: ['https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400']
       };
 
       const pet1Response = await axios.post(
@@ -392,8 +405,8 @@ describe('Organization Types Integration E2E Tests', () => {
 
       expect(pet1Response.status).toBe(201);
       expect(pet2Response.status).toBe(201);
-      expect(pet1Response.data.organizationId).toBe(shelter1.id);
-      expect(pet2Response.data.organizationId).toBe(shelter2.id);
+      expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
+      expect(pet2Response.data.data.organizationId).toBe(shelter2.id);
 
       // Verify data isolation - shelter1 should not see shelter2's pets
       const shelter1PetsResponse = await axios.get(
@@ -409,9 +422,8 @@ describe('Organization Types Integration E2E Tests', () => {
       const shelter1Pets = shelter1PetsResponse.data.data || shelter1PetsResponse.data;
       const shelter1PetIds = shelter1Pets.map(pet => pet.id);
       
-      expect(shelter1PetIds).toContain(pet1Response.data.id);  
-      expect(shelter1PetIds).not.toContain(pet2Response.data.id);
+      expect(shelter1PetIds).toContain(pet1Response.data.data.id);  
+      expect(shelter1PetIds).not.toContain(pet2Response.data.data.id);
     });
-    */
   });
 });
