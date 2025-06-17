@@ -19,6 +19,7 @@ const authRoutes = require('./routes/authRoutes');
 const organizationRoutes = require('./routes/organizationRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
 const languagePreferencesRoutes = require('./routes/languagePreferencesRoutes');
+const publicLanguageRoutes = require('./routes/publicLanguageRoutes');
 
 // Configure CORS
 app.use(cors({
@@ -41,6 +42,8 @@ app.use(addLanguageHeaders);
 
 // Rutas públicas
 app.use('/api/auth', authRoutes);
+// Endpoints públicos de idiomas (sin autenticación)
+app.use('/api/language-preferences', publicLanguageRoutes);
 
 // Middlewares de autenticación y organización para rutas protegidas
 app.use(verifyToken);
@@ -59,8 +62,7 @@ app.use('/api/language-preferences', languagePreferencesRoutes);
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Full error details:', err);
-  res.status(500).json({
-    error: 'Internal Server Error',
+  res.serverError('common.internal_server_error', {
     details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 });

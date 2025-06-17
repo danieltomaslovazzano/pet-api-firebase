@@ -7,6 +7,7 @@ module.exports = {
   testTimeout: 30000,
   reporters: [
     'default',
+    '<rootDir>/tests/e2e/helpers/jest-reporter.js',
     ['jest-junit', {
       outputDirectory: 'tests/e2e/reports/junit',
       outputName: 'junit.xml',

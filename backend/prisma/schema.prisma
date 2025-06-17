@@ -147,9 +147,20 @@ model Message {
   content         String
   status          String       @default("sent")
   timestamp       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
   attachments     Json?
   location        Json?
   organizationId  String?
+  
+  // Soft delete fields
+  deletedAt       DateTime?
+  deletedBy       String?
+  
+  // Moderation fields
+  moderationStatus String?
+  moderatedAt     DateTime?
+  moderatedBy     String?
+  moderationReason String?
   
   // Relationships
   conversation    Conversation @relation(fields: [conversationId], references: [id])
