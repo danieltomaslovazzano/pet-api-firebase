@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 // Load test environment variables
-dotenv.config({ path: path.join(__dirname, '.env.test') });
+dotenv.config({ path: path.join(__dirname, '../../.env.dev') });
 
 // Test data
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';

@@ -65,22 +65,29 @@ tests/e2e/
 
 ### Environment Variables
 
-Create or update `tests/e2e/config/test.env`:
+**E2E tests use `.env.dev` configuration** - No separate environment file needed.
+
+The tests automatically load configuration from `.env.dev` in the project root, which includes:
 
 ```env
 # API Configuration
-E2E_API_URL=http://localhost:3000/api
-NODE_ENV=test
+API_URL=http://localhost:3000/api
+NODE_ENV=development
+PORT=3000
 
-# Admin Credentials (DO NOT hardcode in tests)
+# Admin Credentials (configured in .env.dev)
+ADMIN_EMAIL=your-admin@example.com
+ADMIN_PASSWORD=your-secure-password
 E2E_ADMIN_EMAIL=your-admin@example.com
 E2E_ADMIN_PASSWORD=your-secure-password
 
 # Database
-DATABASE_URL=postgresql://user:password@localhost:5432/test_db
+DATABASE_URL=postgresql://user:password@localhost:5432/database
 
-# Other configurations as needed
+# Firebase, JWT, and other configurations...
 ```
+
+**Note**: The E2E tests will automatically use the development environment configuration, ensuring consistency between manual testing and automated E2E tests.
 
 ### Prerequisites
 

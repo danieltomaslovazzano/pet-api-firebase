@@ -7,6 +7,8 @@ dotenv.config({ path: path.join(__dirname, '../../.env.dev') });
 console.log('[E2E SETUP] Loaded .env.dev configuration');
 console.log('[E2E SETUP] Admin email configured:', !!process.env.ADMIN_EMAIL);
 console.log('[E2E SETUP] Admin password configured:', !!process.env.ADMIN_PASSWORD);
+console.log('[E2E SETUP] E2E Admin email configured:', !!process.env.E2E_ADMIN_EMAIL);
+console.log('[E2E SETUP] E2E Admin password configured:', !!process.env.E2E_ADMIN_PASSWORD);
 
 module.exports = {};
 
