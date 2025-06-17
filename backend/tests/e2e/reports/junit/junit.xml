@@ -1,163 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="18" failures="18" errors="0" time="2.499">
-  <testsuite name="Organization Types E2E Tests" errors="0" failures="18" skipped="0" timestamp="2025-06-05T15:19:18" time="2.375" tests="18">
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should get all available organization types" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+<testsuites name="jest tests" tests="34" failures="0" errors="0" time="53.56">
+  <testsuite name="Pets E2E Tests - Comprehensive Test Suite (33 tests)" errors="0" failures="0" skipped="0" timestamp="2025-06-15T19:40:54" time="53.439" tests="34">
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Admin should create a pet successfully" time="2.516">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Regular user should also get organization types" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Regular user should create a pet successfully" time="1.347">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should fail without authentication" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without required fields" time="0.709">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should get shelter type information" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without organization context" time="1.242">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail for invalid organization type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should get pet by ID" time="0.355">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail without authentication" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should list pets for organization" time="0.432">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create shelter organization successfully" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by species" time="0.391">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create organization with default type when not specified" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by status" time="0.38">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should fail with invalid organization type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should fail with invalid pet ID" time="0.286">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should validate required fields for shelter type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Admin should update pet successfully" time="0.937">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should handle empty string type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Regular user should update pet successfully" time="0.548">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should update organization type successfully" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Should fail with invalid pet ID" time="0.277">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should fail when updating to invalid type" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Admin should delete pet successfully" time="2.518">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should filter organizations by shelter type" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Should fail with invalid pet ID" time="1.721">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should fail with invalid type filter" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should only see pets from their organization" time="0.355">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should return all organizations when no type filter is applied" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not access pets from other organizations" time="0.376">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle null type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not update pets from other organizations" time="0.559">
     </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle case sensitivity" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not delete pets from other organizations" time="0.524">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Super admin should access pets from any organization" time="0.55">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Public pet browsing - users can view all available pets without organization context" time="0.301">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with default visibility as visible" time="1.436">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with explicit visibility setting" time="1.332">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should hide a pet successfully" time="0.823">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should show a hidden pet successfully" time="0.779">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should feature a pet successfully" time="0.757">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should update pet visibility directly via PUT" time="1.135">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail with invalid visibility value" time="0.637">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not access hidden pets in listings" time="1.047">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Admin should see hidden pets in listings" time="0.3">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should filter pets by visibility" time="1.477">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should search pets with visibility filtering" time="1.163">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not see hidden pets in search results" time="1.173">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should demonstrate adopted pet with visible status for 7-day showcase" time="1.718">
+    </testcase>
+    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail visibility actions with invalid pet ID" time="0.236">
     </testcase>
   </testsuite>
 </testsuites>
