@@ -108,6 +108,7 @@
   "unauthorized_update": "Unauthorized. Only admins can update organization details.",
   "unauthorized_delete": "Unauthorized. Only admins can delete organizations.",
   "unauthorized_view_members": "Unauthorized. You must be a member to view organization members.",
+  "unauthorized_list_organizations": "Unauthorized. Only members can list organizations.",
   "forbidden_admin_only": "Only organization administrators can perform this action",
   "language_preference_updated": "Organization language preference updated successfully"
 } 

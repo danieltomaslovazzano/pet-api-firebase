@@ -186,4 +186,138 @@ exports.deleteMessage = async (id) => {
   }
 };
 
+/**
+ * Update a message by ID
+ * @param {String} id - Message ID
+ * @param {Object} updateData - Data to update
+ * @returns {Promise<Object|null>} - Updated message or null if not found
+ */
+exports.updateMessage = async (id, updateData) => {
+  try {
+    const message = await prisma.message.findUnique({
+      where: { id }
+    });
+    
+    if (!message) {
+      return null; // Return null if not found
+    }
+    
+    // Prepare update data (only allowed fields)
+    const allowedFields = ['content', 'status', 'attachments', 'location'];
+    const updateFields = {};
+    
+    Object.keys(updateData).forEach(key => {
+      if (allowedFields.includes(key)) {
+        updateFields[key] = updateData[key];
+      }
+    });
+    
+    // Add updated timestamp
+    updateFields.updatedAt = new Date();
+    
+    const updatedMessage = await prisma.message.update({
+      where: { id },
+      data: updateFields
+    });
+    
+    return updatedMessage;
+  } catch (error) {
+    console.error('Error updating message:', error);
+    throw error;
+  }
+};
+
+/**
+ * Soft delete a message by ID
+ * @param {String} id - Message ID
+ * @param {String} deletedBy - User ID who deleted the message
+ * @returns {Promise<Object|null>} - Result of the operation or null if not found
+ */
+exports.softDeleteMessage = async (id, deletedBy) => {
+  try {
+    const message = await prisma.message.findUnique({
+      where: { id }
+    });
+    
+    if (!message) {
+      return null; // Return null if not found
+    }
+    
+    const updatedMessage = await prisma.message.update({
+      where: { id },
+      data: {
+        status: 'deleted',
+        deletedAt: new Date(),
+        deletedBy: deletedBy,
+        content: '[Message deleted]' // Replace content with placeholder
+      }
+    });
+    
+    return updatedMessage;
+  } catch (error) {
+    console.error('Error soft deleting message:', error);
+    throw error;
+  }
+};
+
+/**
+ * Moderate a message by ID
+ * @param {String} id - Message ID
+ * @param {Object} moderationData - Moderation data
+ * @returns {Promise<Object|null>} - Updated message or null if not found
+ */
+exports.moderateMessage = async (id, moderationData) => {
+  try {
+    const message = await prisma.message.findUnique({
+      where: { id }
+    });
+    
+    if (!message) {
+      return null; // Return null if not found
+    }
+    
+    // Prepare moderation update
+    const updateFields = {
+      moderationStatus: moderationData.action,
+      moderatedAt: moderationData.moderatedAt,
+      moderatedBy: moderationData.moderatedBy,
+      moderationReason: moderationData.reason || null
+    };
+    
+    // Handle specific moderation actions
+    switch (moderationData.action) {
+      case 'hide':
+        updateFields.status = 'hidden';
+        updateFields.content = '[Content hidden by moderator]';
+        break;
+      case 'flag':
+        updateFields.status = 'flagged';
+        break;
+      case 'reject':
+        updateFields.status = 'rejected';
+        break;
+      case 'approve':
+        updateFields.status = 'sent';
+        break;
+      case 'unhide':
+        // Note: This won't restore original content
+        updateFields.status = 'sent';
+        break;
+      case 'unflag':
+        updateFields.status = 'sent';
+        break;
+    }
+    
+    const updatedMessage = await prisma.message.update({
+      where: { id },
+      data: updateFields
+    });
+    
+    return updatedMessage;
+  } catch (error) {
+    console.error('Error moderating message:', error);
+    throw error;
+  }
+};
+
 module.exports = exports; 
