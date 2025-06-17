@@ -59,7 +59,7 @@ exports.verifyToken = async (req, res, next) => {
       });
       
       // Use backward-compatible error message
-      return res.status(401).json({ error: 'Token no proporcionado' });
+      return res.unauthorized('Token no proporcionado');
     }
 
     const token = authHeader.split('Bearer ')[1];
@@ -146,6 +146,6 @@ exports.verifyToken = async (req, res, next) => {
       path: req?.path || 'unknown'
     });
     
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    return res.serverError('Error interno del servidor');
   }
 }; 

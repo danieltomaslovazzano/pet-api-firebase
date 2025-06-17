@@ -63,7 +63,17 @@ const responseFormatter = (req, res, next) => {
 
   // Método para respuestas de datos sin mensaje específico
   res.data = (data, statusCode = 200) => {
-    res.status(statusCode).json(data);
+    const response = {
+      success: true,
+      data
+    };
+
+    // Agregar información de debugging en desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      response.language = req.language;
+    }
+
+    res.status(statusCode).json(response);
   };
 
   // Método para respuestas de lista con paginación

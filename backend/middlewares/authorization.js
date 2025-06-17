@@ -48,7 +48,7 @@ const checkPermission = (resource, action, options = {}) => {
         path: req.path,
         method: req.method
       });
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.unauthorized('Authentication required');
     }
     
     try {
