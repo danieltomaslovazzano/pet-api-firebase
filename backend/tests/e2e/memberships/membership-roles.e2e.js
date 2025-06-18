@@ -159,15 +159,8 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
     let membershipToUpdate;
 
     beforeAll(async () => {
-      // Create a membership specifically for testing updates
-      const testMembershipResponse = await axios.post(`${API_BASE_URL}/memberships`, {
-        userId: regularUser.id,
-        organizationId: testOrganization.id,
-        role: 'member'
-      }, { headers: { Authorization: `Bearer ${adminToken}` } });
-      
-      membershipToUpdate = testMembershipResponse.data.data;
-      testMemberships.push(membershipToUpdate);
+      // Use the membership created in the main setup
+      membershipToUpdate = testMemberships[0]; // Use the first membership from the main setup
     });
 
     test('Admin should update member role successfully', async () => {

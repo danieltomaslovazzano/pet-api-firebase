@@ -1,169 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="40" failures="8" errors="0" time="166.393">
-  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="4" skipped="0" timestamp="2025-06-18T18:26:03" time="82.211" tests="20">
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.818">
+<testsuites name="jest tests" tests="40" failures="0" errors="0" time="170.519">
+  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:22:12" time="86.79" tests="20">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.778">
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.534">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.655">
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.611">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.61">
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.495">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="8.897">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.616">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.691">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.751">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.585">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.463">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.391">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.483">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.491">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.348">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.373">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.532">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.698">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.602">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.542">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.003">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.63">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.002">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.52">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.003">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.587">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.108">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.148">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.625">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: false
-Received: true
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-removal.e2e.js:219:22)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.421">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.073">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.077">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.532">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.608">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.564">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.561">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.245">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.221">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:27:25" time="27.808" tests="4">
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.665">
+  <testsuite name="Memberships E2E Tests - Member Removal and Self-Leave" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:23:39" time="16.812" tests="3">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.171">
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.622">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.292">
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.483">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.141">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="0.992">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - Member Removal and Self-Leave" errors="0" failures="1" skipped="0" timestamp="2025-06-18T18:27:53" time="15.985" tests="3">
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.354">
+  <testsuite name="Memberships E2E Tests - Role Management and Updates" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:23:55" time="12.13" tests="3">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.538">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.697">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: false
-Received: true
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-removal.e2e.js:219:22)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.496">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.134">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.591">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - Role Management and Updates" errors="0" failures="3" skipped="0" timestamp="2025-06-18T18:28:09" time="10.947" tests="3">
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.003">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:08" time="26.699" tests="4">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.76">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.003">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.541">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.002">
-      <failure>AxiosError: Request failed with status code 400
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.489">
+    </testcase>
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.935">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - Membership Retrieval and Access" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:20" time="12.41" tests="5">
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.539">
+  <testsuite name="Memberships E2E Tests - Membership Retrieval and Access" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:34" time="12.764" tests="5">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.594">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.54">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.63">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.395">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.397">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.56">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.515">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.327">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.432">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - Cross-Organization Access Control" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:32" time="10.195" tests="3">
+  <testsuite name="Memberships E2E Tests - Cross-Organization Access Control" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:47" time="8.978" tests="3">
     <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.576">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.76">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.639">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.321">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.094">
     </testcase>
   </testsuite>
-  <testsuite name="Memberships E2E Tests - Membership Details and Information" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:42" time="6.6" tests="2">
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.64">
+  <testsuite name="Memberships E2E Tests - Membership Details and Information" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:56" time="6.149" tests="2">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.611">
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.642">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.675">
     </testcase>
   </testsuite>
 </testsuites>

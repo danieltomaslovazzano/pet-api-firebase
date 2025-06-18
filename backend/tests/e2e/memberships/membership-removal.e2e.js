@@ -82,11 +82,21 @@ describe('Memberships E2E Tests - Member Removal and Self-Leave', () => {
       testOrganization2 = org2Response.data.data;
       testOrganizations.push(testOrganization2);
 
-      // 4. For rate limiting avoidance, use admin user as regular user too
-      regularUser = adminUser;
-      regularUserToken = adminToken;
+      // 4. Create a real regular user for permission testing
+      regularUser = await createTestUser({
+        email: `membership-removal-regular-${Date.now()}@example.com`,
+        password: 'TestPassword123!',
+        name: 'Regular User'
+      });
+      testUsers.push(regularUser);
+
+      const regularUserResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
+        email: regularUser.email,
+        password: 'TestPassword123!'
+      });
+      regularUserToken = regularUserResponse.data.data.tokens.idToken;
       
-      // 5. Use admin user for additional test users too (to avoid rate limiting)
+      // 5. Use admin user for additional test users (to avoid rate limiting for those)
       testUser2 = adminUser;
       testUser3 = adminUser;
 
