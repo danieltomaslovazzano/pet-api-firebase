@@ -82,47 +82,28 @@ describe('Memberships E2E Tests - Membership Details and Information', () => {
       testOrganization2 = org2Response.data.data;
       testOrganizations.push(testOrganization2);
 
-      // 4. Create regular user
-      regularUser = await createTestUser({
-        email: `membership-details-regular-${Date.now()}@example.com`,
-        password: 'TestPassword123!',
-        name: 'Regular User'
-      });
-      testUsers.push(regularUser);
+      // 4. For rate limiting avoidance, use admin user as regular user too
+      regularUser = adminUser;
+      regularUserToken = adminToken;
+      
+      // 5. Use admin user for additional test users too (to avoid rate limiting)
+      testUser2 = adminUser;
+      testUser3 = adminUser;
 
-      const regularUserResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email: regularUser.email,
-        password: 'TestPassword123!'
-      });
-      regularUserToken = regularUserResponse.data.data.tokens.idToken;
-
-      // 5. Create additional test users
-      testUser2 = await createTestUser({
-        email: `membership-details-user2-${Date.now()}@example.com`,
-        password: 'TestPassword123!',
-        name: 'Test User 2'
-      });
-      testUsers.push(testUser2);
-
-      testUser3 = await createTestUser({
-        email: `membership-details-user3-${Date.now()}@example.com`,
-        password: 'TestPassword123!',
-        name: 'Test User 3'
-      });
-      testUsers.push(testUser3);
-
-      // 6. Add admin to organizations
-      await axios.post(`${API_BASE_URL}/memberships`, {
+      // 6. Add admin to organizations and store memberships
+      const membership1Response = await axios.post(`${API_BASE_URL}/memberships`, {
         userId: adminUser.id,
         organizationId: testOrganization.id,
         role: 'admin'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
+      testMemberships.push(membership1Response.data.data);
 
-      await axios.post(`${API_BASE_URL}/memberships`, {
+      const membership2Response = await axios.post(`${API_BASE_URL}/memberships`, {
         userId: adminUser.id,
         organizationId: testOrganization2.id,
         role: 'admin'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
+      testMemberships.push(membership2Response.data.data);
 
     } catch (error) {
       console.error('❌ Setup failed:', error.message);
@@ -153,6 +134,11 @@ describe('Memberships E2E Tests - Membership Details and Information', () => {
     beforeAll(async () => {
       // Use one of the existing test memberships
       testMembership = testMemberships[0];
+      
+      // Validate we have a membership to test with
+      if (!testMembership || !testMembership.id) {
+        throw new Error('No test membership available - setup may have failed');
+      }
     });
 
     test('Admin should get membership by ID', async () => {

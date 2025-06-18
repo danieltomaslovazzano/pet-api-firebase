@@ -236,10 +236,10 @@ describe('Memberships E2E Tests - User Invitations and Onboarding', () => {
           'http://localhost:3000/api/memberships',
           membershipData,
           {
-            headers: { Authorization: `Bearer ${userToken}` }
+            headers: { Authorization: `Bearer ${regularUserToken}` }
           }
         );
-        fail('Should have thrown an error');
+        expect(true).toBe(false); // Should have thrown an error
       } catch (error) {
         // Handle both network errors and HTTP response errors
         if (error.response) {

@@ -1,0 +1,176 @@
+# messages - messages-tests
+
+**Date:** 2025-06-17T18:56:29.649Z  
+**Duration:** 78996ms  
+**Tests:** 26 (26 passed, 0 failed)
+
+## Test Results
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation Should create a message in a conversation
+- **Status:** PASSED
+- **Duration:** 1595ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation Should fail to create message without content
+- **Status:** PASSED
+- **Duration:** 943ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation Should fail to create message without conversation ID
+- **Status:** PASSED
+- **Duration:** 571ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Creation Should create message in group conversation
+- **Status:** PASSED
+- **Duration:** 916ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval Should get message by ID for participant
+- **Status:** PASSED
+- **Duration:** 767ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval Should fail to get message by ID for non-participant
+- **Status:** PASSED
+- **Duration:** 3014ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval Should get messages for conversation
+- **Status:** PASSED
+- **Duration:** 1002ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Retrieval Should handle invalid message ID format
+- **Status:** PASSED
+- **Duration:** 680ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Management Should update message content (sender)
+- **Status:** PASSED
+- **Duration:** 739ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Management Should fail to update message as non-sender
+- **Status:** PASSED
+- **Duration:** 506ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Management Should soft delete message (sender)
+- **Status:** PASSED
+- **Duration:** 1649ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Management Should permanently delete message (admin)
+- **Status:** PASSED
+- **Duration:** 1939ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Message Management Should fail to permanently delete message as regular user
+- **Status:** PASSED
+- **Duration:** 10016ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Admin Operations Should get all messages (admin)
+- **Status:** PASSED
+- **Duration:** 920ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Admin Operations Should fail to get all messages as regular user
+- **Status:** PASSED
+- **Duration:** 537ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Admin Operations Should moderate message content (moderator)
+- **Status:** PASSED
+- **Duration:** 9034ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Admin Operations Should fail to moderate message as regular user
+- **Status:** PASSED
+- **Duration:** 8016ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy & Organization Isolation Should create message in specific organization
+- **Status:** PASSED
+- **Duration:** 2806ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy & Organization Isolation Should not access message from different organization
+- **Status:** PASSED
+- **Duration:** 2324ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy & Organization Isolation Should filter messages by organization
+- **Status:** PASSED
+- **Duration:** 859ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Multitenancy & Organization Isolation Super admin should access messages across organizations
+- **Status:** PASSED
+- **Duration:** 673ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling & Edge Cases Should handle non-existent message ID
+- **Status:** PASSED
+- **Duration:** 611ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling & Edge Cases Should handle unauthorized access
+- **Status:** PASSED
+- **Duration:** 829ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling & Edge Cases Should handle malformed request data
+- **Status:** PASSED
+- **Duration:** 1144ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling & Edge Cases Should handle very long message content
+- **Status:** PASSED
+- **Duration:** 985ms
+
+
+
+### Messages E2E Tests - Comprehensive Test Suite (28 tests) Error Handling & Edge Cases Should handle invalid conversation ID
+- **Status:** PASSED
+- **Duration:** 586ms
+
+
+
+## Summary
+
+- Total messages created: 3
+- Total conversations created: 2
+- Total organizations created: 2
+- Total test users created: 2
+- All test data cleaned up automatically
+- NEW FEATURES IMPLEMENTED: Message Update, Soft Delete, and Moderation
+
+---
+*Generated by SimpleReporter v1.0*

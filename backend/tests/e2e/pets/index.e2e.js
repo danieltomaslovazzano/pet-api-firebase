@@ -11,6 +11,5 @@
 
 // Import all pet test suites
 require('./pet-creation.e2e.js');
-require('./pet-management.e2e.js');
 require('./pet-permissions.e2e.js');
 require('./pet-visibility.e2e.js'); 

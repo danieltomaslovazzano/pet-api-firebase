@@ -158,6 +158,23 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
       testConversation2 = conv2Response.data.data;
       testConversations.push(testConversation2);
 
+      // 9. Create test messages
+      const msg1Response = await axios.post(`${API_BASE_URL}/messages`, {
+        content: 'Test message for retrieval',
+        conversationId: testConversation.id
+      }, { headers: { Authorization: `Bearer ${adminToken}`, 'X-Organization-Id': testOrganization.id } });
+      
+      testMessage = msg1Response.data.data;
+      testMessages.push(testMessage);
+
+      const msg2Response = await axios.post(`${API_BASE_URL}/messages`, {
+        content: 'Second test message',
+        conversationId: testConversation2.id
+      }, { headers: { Authorization: `Bearer ${adminToken}`, 'X-Organization-Id': testOrganization.id } });
+      
+      testMessage2 = msg2Response.data.data;
+      testMessages.push(testMessage2);
+
     } catch (error) {
       console.error('❌ Setup failed:', error.message);
       throw error;

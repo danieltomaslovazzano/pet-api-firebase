@@ -188,7 +188,9 @@ describe('Pet Creation E2E Tests', () => {
         throw new Error('Should have failed with incomplete data');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data).toHaveProperty('success', false);
+        expect(error.response.data).toHaveProperty('error', 'Validation failed');
+        expect(error.response.data).toHaveProperty('details');
+        expect(Array.isArray(error.response.data.details)).toBe(true);
       }
     });
 

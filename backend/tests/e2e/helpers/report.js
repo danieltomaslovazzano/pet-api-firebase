@@ -117,10 +117,16 @@ function useEnhancedReporter(group, testName) {
   return new SimpleReporter(group, testName);
 }
 
+// Legacy compatibility function
+function setupManualReporter(group, testName) {
+  return new SimpleReporter(group, testName);
+}
+
 module.exports = {
   SimpleReporter,
   EnhancedReporter, // Alias for backward compatibility
   setupGlobalReporter,
   getGlobalReporter,
-  useEnhancedReporter
+  useEnhancedReporter,
+  setupManualReporter // Legacy compatibility
 }; 

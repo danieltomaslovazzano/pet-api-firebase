@@ -25,17 +25,77 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env.dev') });
 
 // Test suite configurations
 const TEST_SUITES = {
-  auth: ['auth.e2e.js'],
-  users: ['users.e2e.js'],
-  organizations: ['organizations.e2e.js'],
-  'organization-types': ['organization-types.e2e.js'],
-  'organization-types-integration': ['organization-types-integration.e2e.js'],
-  memberships: ['memberships.e2e.js'],
-  pets: ['pets.e2e.js'],
-  conversations: ['conversations.e2e.js'],
-  messages: ['messages.e2e.js'],
-  i18n: ['i18n-system.e2e.js'],
-  all: ['auth.e2e.js', 'users.e2e.js', 'organizations.e2e.js', 'organization-types.e2e.js', 'organization-types-integration.e2e.js', 'memberships.e2e.js', 'pets.e2e.js', 'conversations.e2e.js', 'messages.e2e.js', 'i18n-system.e2e.js']
+  auth: ['auth/index.e2e.js'],
+  users: ['users/index.e2e.js'],
+  organizations: ['organizations/index.e2e.js'],
+  'organization-types': ['organization-types/index.e2e.js'],
+  'organization-types-integration': ['organization-types/organization-types-integration.e2e.js'],
+  memberships: [
+    'memberships/index.e2e.js',
+    'memberships/membership-invitations.e2e.js',
+    'memberships/membership-retrieval.e2e.js',
+    'memberships/membership-details.e2e.js',
+    'memberships/membership-roles.e2e.js',
+    'memberships/membership-removal.e2e.js',
+    'memberships/membership-access-control.e2e.js'
+  ],
+  pets: [
+    'pets/index.e2e.js',
+    'pets/pet-creation.e2e.js',
+    'pets/pet-permissions.e2e.js',
+    'pets/pet-visibility.e2e.js'
+  ],
+  conversations: [
+    'conversations/index.e2e.js',
+    'conversations/conversation-creation.e2e.js',
+    'conversations/conversation-retrieval.e2e.js',
+    'conversations/conversation-management.e2e.js',
+    'conversations/conversation-admin.e2e.js',
+    'conversations/conversation-multitenancy.e2e.js',
+    'conversations/conversation-edge-cases.e2e.js'
+  ],
+  messages: [
+    'messages/index.e2e.js',
+    'messages/message-creation.e2e.js',
+    'messages/message-retrieval.e2e.js',
+    'messages/message-management.e2e.js',
+    'messages/message-admin.e2e.js',
+    'messages/message-multitenancy.e2e.js',
+    'messages/message-edge-cases.e2e.js'
+  ],
+  i18n: ['i18n/index.e2e.js'],
+  all: [
+    'auth/index.e2e.js',
+    'users/index.e2e.js', 
+    'organizations/index.e2e.js',
+    'organization-types/index.e2e.js',
+    'memberships/index.e2e.js',
+    'memberships/membership-invitations.e2e.js',
+    'memberships/membership-retrieval.e2e.js',
+    'memberships/membership-details.e2e.js',
+    'memberships/membership-roles.e2e.js',
+    'memberships/membership-removal.e2e.js',
+    'memberships/membership-access-control.e2e.js',
+    'pets/index.e2e.js',
+    'pets/pet-creation.e2e.js',
+    'pets/pet-permissions.e2e.js',
+    'pets/pet-visibility.e2e.js',
+    'conversations/index.e2e.js',
+    'conversations/conversation-creation.e2e.js',
+    'conversations/conversation-retrieval.e2e.js',
+    'conversations/conversation-management.e2e.js',
+    'conversations/conversation-admin.e2e.js',
+    'conversations/conversation-multitenancy.e2e.js',
+    'conversations/conversation-edge-cases.e2e.js',
+    'messages/index.e2e.js',
+    'messages/message-creation.e2e.js',
+    'messages/message-retrieval.e2e.js',
+    'messages/message-management.e2e.js',
+    'messages/message-admin.e2e.js',
+    'messages/message-multitenancy.e2e.js',
+    'messages/message-edge-cases.e2e.js',
+    'i18n/index.e2e.js'
+  ]
 };
 
 const COLORS = {

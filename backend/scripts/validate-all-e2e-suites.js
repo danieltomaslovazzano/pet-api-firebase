@@ -57,16 +57,46 @@ function logError(message) {
 
 // Test suites configuration (matching run-e2e-dev.js)
 const TEST_SUITES = [
-  { name: 'auth', file: 'auth.e2e.js', description: 'Authentication and authorization' },
-  { name: 'users', file: 'users.e2e.js', description: 'User management' },
-  { name: 'organizations', file: 'organizations.e2e.js', description: 'Organization management' },
-  { name: 'organization-types', file: 'organization-types.e2e.js', description: 'Organization types' },
-  { name: 'organization-types-integration', file: 'organization-types-integration.e2e.js', description: 'Organization types integration' },
-  { name: 'memberships', file: 'memberships.e2e.js', description: 'Membership management' },
-  { name: 'pets', file: 'pets.e2e.js', description: 'Pet management' },
-  { name: 'conversations', file: 'conversations.e2e.js', description: 'Conversation system' },
-  { name: 'messages', file: 'messages.e2e.js', description: 'Message system' },
-  { name: 'i18n', file: 'i18n-system.e2e.js', description: 'Internationalization system' }
+  { name: 'auth', file: 'auth/auth.e2e.js', description: 'Authentication and authorization' },
+  { name: 'users', file: 'users/users.e2e.js', description: 'User management' },
+  { name: 'organizations', file: 'organizations/organizations.e2e.js', description: 'Organization management' },
+  { name: 'organization-types', file: 'organization-types/organization-types.e2e.js', description: 'Organization types' },
+  { name: 'organization-types-integration', file: 'organization-types/organization-types-integration.e2e.js', description: 'Organization types integration' },
+  
+  // Memberships modules
+  { name: 'memberships-index', file: 'memberships/index.e2e.js', description: 'Memberships coordinator' },
+  { name: 'membership-invitations', file: 'memberships/membership-invitations.e2e.js', description: 'Membership invitations' },
+  { name: 'membership-retrieval', file: 'memberships/membership-retrieval.e2e.js', description: 'Membership retrieval' },
+  { name: 'membership-details', file: 'memberships/membership-details.e2e.js', description: 'Membership details' },
+  { name: 'membership-roles', file: 'memberships/membership-roles.e2e.js', description: 'Membership roles' },
+  { name: 'membership-removal', file: 'memberships/membership-removal.e2e.js', description: 'Membership removal' },
+  { name: 'membership-access-control', file: 'memberships/membership-access-control.e2e.js', description: 'Membership access control' },
+  
+  // Pets modules
+  { name: 'pets-index', file: 'pets/index.e2e.js', description: 'Pets coordinator' },
+  { name: 'pet-creation', file: 'pets/pet-creation.e2e.js', description: 'Pet creation' },
+  { name: 'pet-permissions', file: 'pets/pet-permissions.e2e.js', description: 'Pet permissions' },
+  { name: 'pet-visibility', file: 'pets/pet-visibility.e2e.js', description: 'Pet visibility' },
+  
+  // Conversations modules
+  { name: 'conversations-index', file: 'conversations/index.e2e.js', description: 'Conversations coordinator' },
+  { name: 'conversation-creation', file: 'conversations/conversation-creation.e2e.js', description: 'Conversation creation' },
+  { name: 'conversation-retrieval', file: 'conversations/conversation-retrieval.e2e.js', description: 'Conversation retrieval' },
+  { name: 'conversation-management', file: 'conversations/conversation-management.e2e.js', description: 'Conversation management' },
+  { name: 'conversation-admin', file: 'conversations/conversation-admin.e2e.js', description: 'Conversation admin' },
+  { name: 'conversation-multitenancy', file: 'conversations/conversation-multitenancy.e2e.js', description: 'Conversation multitenancy' },
+  { name: 'conversation-edge-cases', file: 'conversations/conversation-edge-cases.e2e.js', description: 'Conversation edge cases' },
+  
+  // Messages modules
+  { name: 'messages-index', file: 'messages/index.e2e.js', description: 'Messages coordinator' },
+  { name: 'message-creation', file: 'messages/message-creation.e2e.js', description: 'Message creation' },
+  { name: 'message-retrieval', file: 'messages/message-retrieval.e2e.js', description: 'Message retrieval' },
+  { name: 'message-management', file: 'messages/message-management.e2e.js', description: 'Message management' },
+  { name: 'message-admin', file: 'messages/message-admin.e2e.js', description: 'Message admin' },
+  { name: 'message-multitenancy', file: 'messages/message-multitenancy.e2e.js', description: 'Message multitenancy' },
+  { name: 'message-edge-cases', file: 'messages/message-edge-cases.e2e.js', description: 'Message edge cases' },
+  
+  { name: 'i18n', file: 'i18n/i18n-system.e2e.js', description: 'Internationalization system' }
 ];
 
 class E2ETestValidator {

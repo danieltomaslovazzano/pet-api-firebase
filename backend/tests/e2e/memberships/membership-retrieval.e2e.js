@@ -168,7 +168,7 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
 
     test('Admin should get memberships by user', async () => {
       const response = await axios.get(
-        `http://localhost:3000/api/memberships?userId=${adminUserId}`,
+        `http://localhost:3000/api/memberships?userId=${adminUser.id}`,
         {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
@@ -180,9 +180,9 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
 
     test('User should get their own memberships', async () => {
       const response = await axios.get(
-        `http://localhost:3000/api/memberships?userId=${regularUserId}`,
+        `http://localhost:3000/api/memberships?userId=${regularUser.id}`,
         {
-          headers: { Authorization: `Bearer ${userToken}` }
+          headers: { Authorization: `Bearer ${regularUserToken}` }
         }
       );
 
@@ -215,9 +215,9 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
     test('Regular user should fail to get other user memberships', async () => {
       try {
         await axios.get(
-          `http://localhost:3000/api/memberships?userId=${adminUserId}`,
+          `http://localhost:3000/api/memberships?userId=${adminUser.id}`,
           {
-            headers: { Authorization: `Bearer ${userToken}` }
+            headers: { Authorization: `Bearer ${regularUserToken}` }
           }
         );
         fail('Should have thrown an error');

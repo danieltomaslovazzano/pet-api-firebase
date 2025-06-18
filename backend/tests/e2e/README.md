@@ -31,34 +31,76 @@ This directory contains End-to-End (E2E) tests for the Pet API backend. These te
 tests/e2e/
 ├── README.md                           # This file
 ├── setup.js                            # Global test setup
-├── jest.e2e.config.js                  # Jest configuration for E2E tests
 ├── config/
 │   └── test.env                        # Environment variables for tests
 ├── helpers/
 │   ├── auth.js                         # Authentication helpers
 │   ├── axios-config.js                 # HTTP client configuration
-│   ├── db.js                           # Database helpers
-│   ├── report.js                       # Simplified test reporting
-│   ├── request.js                      # Request utilities
-│   └── tokens.js                       # Token management
-├── pets/                               # Pet-related tests (split from monolithic file)
-│   ├── index.e2e.js                    # Main pets test coordinator
-│   ├── pet-creation.e2e.js             # Pet creation tests
-│   ├── pet-management.e2e.js           # Pet management tests
-│   ├── pet-permissions.e2e.js          # Pet permission tests
-│   └── pet-visibility.e2e.js           # Pet visibility tests
-├── auth.e2e.js                         # Authentication tests
-├── conversations.e2e.js                # Conversation tests
-├── i18n-system.e2e.js                  # Internationalization tests
-├── memberships.e2e.js                  # Membership tests
-├── messages.e2e.js                     # Message tests
-├── organizations.e2e.js                # Organization tests
-├── organization-types.e2e.js           # Organization types tests
-├── organization-types-integration.e2e.js # Organization integration tests
-├── users.e2e.js                       # User tests
-└── reports/                            # Test execution reports
-    ├── analysis/                       # Report analysis
-    └── [various test reports by date]
+│   ├── db.js                          # Database helpers
+│   ├── report.js                      # Enhanced test reporting system
+│   ├── jest-reporter.js               # Custom Jest reporter
+│   └── request.js                     # HTTP request utilities
+├── reports/                           # Generated test reports
+│   ├── junit/                         # JUnit XML reports for CI
+│   ├── coverage/                      # Coverage reports
+│   ├── auth/                          # Auth-specific reports
+│   ├── pets/                          # Pet-specific reports
+│   └── [test-suite]/                  # Reports by test suite
+├── auth/                              # Authentication & Authorization Tests
+│   ├── index.e2e.js                   # Auth suite coordinator
+│   └── auth.e2e.js                    # Core auth functionality
+├── users/                             # User Management Tests
+│   ├── index.e2e.js                   # Users suite coordinator
+│   └── users.e2e.js                   # User CRUD operations
+├── organizations/                     # Organization Management Tests
+│   ├── index.e2e.js                   # Organizations suite coordinator
+│   └── organizations.e2e.js           # Organization CRUD operations
+├── organization-types/                # Organization Types Tests
+│   ├── index.e2e.js                   # Organization types coordinator
+│   ├── organization-types.e2e.js      # Type definitions & validations
+│   └── organization-types-integration.e2e.js # Integration scenarios
+├── memberships/                       # Membership Management Tests
+│   ├── index.e2e.js                   # Memberships coordinator
+│   ├── membership-invitations.e2e.js  # Invitation workflows
+│   ├── membership-retrieval.e2e.js    # Membership queries
+│   ├── membership-details.e2e.js      # Membership information
+│   ├── membership-roles.e2e.js        # Role management
+│   ├── membership-removal.e2e.js      # Removal processes
+│   └── membership-access-control.e2e.js # Access permissions
+├── pets/                              # Pet Management Tests
+│   ├── index.e2e.js                   # Pets coordinator
+│   ├── pet-creation.e2e.js            # Pet creation workflows
+│   ├── pet-management.e2e.js          # Pet updates & management
+│   ├── pet-permissions.e2e.js         # Pet access controls
+│   └── pet-visibility.e2e.js          # Visibility settings
+├── conversations/                     # Conversation System Tests
+│   ├── index.e2e.js                   # Conversations coordinator
+│   ├── conversation-creation.e2e.js   # Conversation creation
+│   ├── conversation-retrieval.e2e.js  # Conversation queries
+│   ├── conversation-management.e2e.js # Conversation updates
+│   ├── conversation-admin.e2e.js      # Admin features
+│   ├── conversation-multitenancy.e2e.js # Multi-org scenarios
+│   └── conversation-edge-cases.e2e.js # Edge cases & error handling
+├── messages/                          # Message System Tests
+│   ├── index.e2e.js                   # Messages coordinator
+│   ├── message-creation.e2e.js        # Message creation
+│   ├── message-retrieval.e2e.js       # Message queries
+│   ├── message-management.e2e.js      # Message updates
+│   ├── message-admin.e2e.js           # Admin features
+│   ├── message-multitenancy.e2e.js    # Multi-org scenarios
+│   └── message-edge-cases.e2e.js      # Edge cases & error handling
+├── i18n/                              # Internationalization Tests
+│   ├── index.e2e.js                   # i18n coordinator
+│   └── i18n-system.e2e.js             # Language detection & translations
+└── legacy/                            # Legacy & Backup Files
+    ├── README.md                      # Legacy documentation
+    ├── conversations.e2e.js           # Original conversations suite
+    ├── messages.e2e.js                # Original messages suite
+    ├── memberships.e2e.js             # Original memberships suite
+    ├── conversations.e2e.js.monolith-backup
+    ├── messages.e2e.js.monolith-backup
+    ├── memberships.e2e.js.monolith-backup
+    └── pets.e2e.js.monolith-backup
 ```
 
 ## 🔧 Setup and Configuration

@@ -1,73 +1,169 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="34" failures="0" errors="0" time="53.56">
-  <testsuite name="Pets E2E Tests - Comprehensive Test Suite (33 tests)" errors="0" failures="0" skipped="0" timestamp="2025-06-15T19:40:54" time="53.439" tests="34">
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Admin should create a pet successfully" time="2.516">
+<testsuites name="jest tests" tests="40" failures="8" errors="0" time="166.393">
+  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="4" skipped="0" timestamp="2025-06-18T18:26:03" time="82.211" tests="20">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.818">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Regular user should create a pet successfully" time="1.347">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.534">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without required fields" time="0.709">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.611">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Creation" name="Should fail without organization context" time="1.242">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.495">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should get pet by ID" time="0.355">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.616">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should list pets for organization" time="0.432">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.751">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by species" time="0.391">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.463">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should filter pets by status" time="0.38">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.483">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Retrieval" name="Should fail with invalid pet ID" time="0.286">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.348">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Admin should update pet successfully" time="0.937">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.532">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Regular user should update pet successfully" time="0.548">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.602">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Updates" name="Should fail with invalid pet ID" time="0.277">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.003">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Admin should delete pet successfully" time="2.518">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.002">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Deletion" name="Should fail with invalid pet ID" time="1.721">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.003">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should only see pets from their organization" time="0.355">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.108">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not access pets from other organizations" time="0.376">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.625">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-removal.e2e.js:219:22)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not update pets from other organizations" time="0.559">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.073">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="User should not delete pets from other organizations" time="0.524">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.532">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Super admin should access pets from any organization" time="0.55">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.564">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Multitenancy &amp; Permissions" name="Public pet browsing - users can view all available pets without organization context" time="0.301">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.245">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with default visibility as visible" time="1.436">
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:27:25" time="27.808" tests="4">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.665">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should create pet with explicit visibility setting" time="1.332">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.622">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should hide a pet successfully" time="0.823">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.483">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should show a hidden pet successfully" time="0.779">
+    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.141">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should feature a pet successfully" time="0.757">
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - Member Removal and Self-Leave" errors="0" failures="1" skipped="0" timestamp="2025-06-18T18:27:53" time="15.985" tests="3">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.354">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should update pet visibility directly via PUT" time="1.135">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.697">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: false
+Received: true
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-removal.e2e.js:219:22)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail with invalid visibility value" time="0.637">
+    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.134">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not access hidden pets in listings" time="1.047">
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - Role Management and Updates" errors="0" failures="3" skipped="0" timestamp="2025-06-18T18:28:09" time="10.947" tests="3">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.003">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Admin should see hidden pets in listings" time="0.3">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.003">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should filter pets by visibility" time="1.477">
+    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.002">
+      <failure>AxiosError: Request failed with status code 400
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships/membership-roles.e2e.js:163:38)</failure>
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should search pets with visibility filtering" time="1.163">
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - Membership Retrieval and Access" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:20" time="12.41" tests="5">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.539">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Regular user should not see hidden pets in search results" time="1.173">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.54">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should demonstrate adopted pet with visible status for 7-day showcase" time="1.718">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.395">
     </testcase>
-    <testcase classname="Pets E2E Tests - Comprehensive Test Suite (33 tests) Pet Visibility Management" name="Should fail visibility actions with invalid pet ID" time="0.236">
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.56">
+    </testcase>
+    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.327">
+    </testcase>
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - Cross-Organization Access Control" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:32" time="10.195" tests="3">
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.576">
+    </testcase>
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.76">
+    </testcase>
+    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.321">
+    </testcase>
+  </testsuite>
+  <testsuite name="Memberships E2E Tests - Membership Details and Information" errors="0" failures="0" skipped="0" timestamp="2025-06-18T18:28:42" time="6.6" tests="2">
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.64">
+    </testcase>
+    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.642">
     </testcase>
   </testsuite>
 </testsuites>

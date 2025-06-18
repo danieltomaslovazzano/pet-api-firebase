@@ -27,6 +27,14 @@ beforeAll(async () => {
 afterAll(async () => {
   // Add any global cleanup here
   console.log('\n🧹 Cleaning up test environment...');
+  
+  // Clear token cache to prevent memory leaks
+  try {
+    const { clearTokenCache } = require('./helpers/auth');
+    clearTokenCache();
+  } catch (error) {
+    console.warn('Warning: Could not clear token cache:', error.message);
+  }
 });
 
 // Global error handling

@@ -1,9 +1,15 @@
 module.exports = {
   testEnvironment: 'node',
-  testMatch: ['**/tests/e2e/**/*.e2e.js'],
+  testMatch: [
+    '**/tests/e2e/**/*.e2e.js',
+    '**/tests/e2e/**/**/*.e2e.js'  // Include subdirectories
+  ],
+  testPathIgnorePatterns: [
+    '/tests/e2e/legacy/'  // Exclude legacy folder
+  ],
   setupFilesAfterEnv: ['<rootDir>/tests/e2e/setup.js'],
   verbose: true,
-  bail: true, // Stop on first failure
+  bail: false, // Continue running all tests even if some fail
   testTimeout: 30000,
   reporters: [
     'default',

@@ -4,24 +4,61 @@ const axios = require('./request');
 
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
+// Token cache to prevent rate limiting during mass test execution
+const tokenCache = new Map();
+const TOKEN_EXPIRY_BUFFER = 5 * 60 * 1000; // 5 minutes buffer before expiry
+
 /**
- * Creates a real user for testing
+ * Clears the token cache (useful for cleanup)
+ */
+const clearTokenCache = () => {
+  tokenCache.clear();
+  console.log('[AUTH CACHE] Token cache cleared');
+};
+
+/**
+ * Checks if a cached token is still valid
+ * @param {Object} cachedEntry - Cached token entry
+ * @returns {boolean} True if token is still valid
+ */
+const isTokenValid = (cachedEntry) => {
+  if (!cachedEntry || !cachedEntry.expiresAt) return false;
+  return Date.now() < (cachedEntry.expiresAt - TOKEN_EXPIRY_BUFFER);
+};
+
+/**
+ * Creates a real user for testing with retry logic for rate limiting
  * @param {Object} userData - User data to create
  * @returns {Promise<Object>} Created user data
  */
 const createTestUser = async (userData) => {
-  try {
-    // Create user through the API
-    const response = await axios.post(`${API_URL}/auth/register`, {
-      email: userData.email,
-      password: userData.password,
-      name: userData.displayName || userData.name
-    });
+  const maxRetries = 3;
+  const baseDelay = 2000; // 2 seconds
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Create user through the API
+      const response = await axios.post(`${API_URL}/auth/register`, {
+        email: userData.email,
+        password: userData.password,
+        name: userData.displayName || userData.name
+      });
 
-    return response.data.data.user;
-  } catch (error) {
-    console.error('Error creating test user:', error.response?.data || error.message);
-    throw error;
+      return response.data.data.user;
+    } catch (error) {
+      const errorData = error.response?.data;
+      
+      // Check if it's a rate limiting error
+      if (errorData?.details?.details === 'TOO_MANY_ATTEMPTS_TRY_LATER' && attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+        console.log(`[USER CREATION] Rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      
+      console.error('Error creating test user:', errorData || error.message);
+      throw error;
+    }
   }
 };
 
@@ -44,22 +81,47 @@ const deleteTestUser = async (userId) => {
 };
 
 /**
- * Gets an authentication token for a user
+ * Gets an authentication token for a user (with caching)
  * @param {string} email - User email
  * @param {string} password - User password
  * @returns {Promise<Object>} User data and token
  */
 const getAuthToken = async (email, password) => {
+  const cacheKey = `${email}:${password}`;
+  
+  // Check cache first
+  const cachedEntry = tokenCache.get(cacheKey);
+  if (cachedEntry && isTokenValid(cachedEntry)) {
+    console.log(`[AUTH CACHE] Using cached token for ${email}`);
+    return {
+      token: cachedEntry.token,
+      user: cachedEntry.user
+    };
+  }
+
   try {
+    console.log(`[AUTH CACHE] Fetching new token for ${email}`);
     const response = await axios.post(`${API_URL}/auth/login`, {
       email,
       password
     });
 
-    return {
+    const result = {
       token: response.data.data.tokens.idToken,
       user: response.data.data.user
     };
+
+    // Cache the token with expiry time (1 hour - 5 min buffer = 55 minutes)
+    const expiresAt = Date.now() + (55 * 60 * 1000);
+    tokenCache.set(cacheKey, {
+      ...result,
+      expiresAt,
+      cachedAt: new Date().toISOString()
+    });
+
+    console.log(`[AUTH CACHE] Token cached for ${email}, expires at ${new Date(expiresAt).toISOString()}`);
+    
+    return result;
   } catch (error) {
     console.error('Error getting auth token:', error.response?.data || error.message);
     throw error;
@@ -190,5 +252,6 @@ module.exports = {
   loginAsAdmin,
   loginAsUser,
   cleanupTestData,
-  cleanupTestUsers
+  cleanupTestUsers,
+  clearTokenCache
 }; 

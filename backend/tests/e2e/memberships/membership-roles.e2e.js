@@ -124,6 +124,14 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
         role: 'admin'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
 
+      // 7. Create test membership for role updates
+      const testMembershipResponse = await axios.post(`${API_BASE_URL}/memberships`, {
+        userId: regularUser.id,
+        organizationId: testOrganization.id,
+        role: 'member'
+      }, { headers: { Authorization: `Bearer ${adminToken}` } });
+      testMemberships.push(testMembershipResponse.data.data);
+
     } catch (error) {
       console.error('❌ Setup failed:', error.message);
       throw error;
@@ -151,8 +159,15 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
     let membershipToUpdate;
 
     beforeAll(async () => {
-      // Find a membership that's not an admin to update
-      membershipToUpdate = testMemberships.find(m => m.role !== 'admin');
+      // Create a membership specifically for testing updates
+      const testMembershipResponse = await axios.post(`${API_BASE_URL}/memberships`, {
+        userId: regularUser.id,
+        organizationId: testOrganization.id,
+        role: 'member'
+      }, { headers: { Authorization: `Bearer ${adminToken}` } });
+      
+      membershipToUpdate = testMembershipResponse.data.data;
+      testMemberships.push(membershipToUpdate);
     });
 
     test('Admin should update member role successfully', async () => {
@@ -182,7 +197,7 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
             headers: { Authorization: `Bearer ${adminToken}` }
           }
         );
-        fail('Should have thrown an error');
+        expect(true).toBe(false); // Should have thrown an error
       } catch (error) {
         // Handle both network errors and HTTP response errors
         if (error.response) {
@@ -202,10 +217,10 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
           `http://localhost:3000/api/memberships/${membershipToUpdate.id}`,
           { role: 'volunteer' },
           {
-            headers: { Authorization: `Bearer ${userToken}` }
+            headers: { Authorization: `Bearer ${regularUserToken}` }
           }
         );
-        fail('Should have thrown an error');
+        expect(true).toBe(false); // Should have thrown an error
       } catch (error) {
         // Handle both network errors and HTTP response errors
         if (error.response) {

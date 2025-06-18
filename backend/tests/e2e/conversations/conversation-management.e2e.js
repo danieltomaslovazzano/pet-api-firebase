@@ -138,6 +138,23 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
         role: 'moderator'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
 
+      // 8. Create test conversations
+      const conv1Response = await axios.post(`${API_BASE_URL}/conversations`, {
+        participants: [adminUser.id, regularUser.id],
+        title: 'conversation-management Test Conversation 1'
+      }, { headers: { Authorization: `Bearer ${adminToken}`, 'X-Organization-Id': testOrganization.id } });
+      
+      testConversation = conv1Response.data.data;
+      testConversations.push(testConversation);
+
+      const conv2Response = await axios.post(`${API_BASE_URL}/conversations`, {
+        participants: [adminUser.id, regularUser.id, moderatorUser.id],
+        title: 'conversation-management Test Conversation 2'
+      }, { headers: { Authorization: `Bearer ${adminToken}`, 'X-Organization-Id': testOrganization.id } });
+      
+      testConversation2 = conv2Response.data.data;
+      testConversations.push(testConversation2);
+
     } catch (error) {
       console.error('❌ Setup failed:', error.message);
       throw error;
