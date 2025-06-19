@@ -7,7 +7,7 @@ exports.createConversation = async (req, res) => {
     
     // Validate participants
     if (!conversationData.participants || !Array.isArray(conversationData.participants) || conversationData.participants.length < 2) {
-      return res.status(400).json({ error: 'Participants must be an array with at least two participants' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "conversations.validation.failed"}], "conversations.validation.error", { error: 'Participants must be an array with at least two participants' });
     }
     
     // Multitenancy: Set organization context for the conversation
@@ -28,13 +28,13 @@ exports.createConversation = async (req, res) => {
           });
           
           if (!isMember) {
-            return res.status(403).json({ 
+            return res.apiForbidden({ 
               error: 'Forbidden: All conversation participants must belong to the organization',
               details: `User ${participantId} is not a member of this organization`
             });
           }
         } catch (error) {
-          return res.status(500).json({ 
+          return res.apiServerError({ 
             error: 'Error verifying organization membership', 
             details: error.message 
           });
@@ -44,11 +44,11 @@ exports.createConversation = async (req, res) => {
     
     // Create the conversation
     const conversation = await conversationModel.createConversation(conversationData);
-    res.status(201).json(conversation);
+    res.apiCreated(conversation);
     
   } catch (error) {
     console.error('Error creating conversation:', error);
-    res.status(500).json({ error: 'Error creating conversation', details: error.message });
+    res.apiServerError({ error: 'Error creating conversation', details: error.message });
   }
 };
 
@@ -58,24 +58,24 @@ exports.getConversationById = async (req, res) => {
     
     // Validate ID format (basic UUID check)
     if (!id || !id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-      return res.status(400).json({ error: 'Invalid conversation ID format' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "conversations.validation.failed"}], "conversations.validation.error", { error: 'Invalid conversation ID format' });
     }
     
     // Get the conversation
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
     // Super admin can access any conversation
     if (req.user.isSuperAdmin) {
-      return res.status(200).json(conversation);
+      return res.apiSuccess(conversation);
     }
     
     // Org context: check if conversation belongs to this organization
     if (req.organizationId && conversation.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
+      return res.apiForbidden({ 
         error: 'Forbidden: Cannot access conversation outside your organization' 
       });
     }
@@ -83,17 +83,17 @@ exports.getConversationById = async (req, res) => {
     // Check if user is participant (participants is now an array of IDs)
     const isParticipant = conversation.participants.includes(req.user.uid);
     if (!isParticipant) {
-      return res.status(403).json({ 
+      return res.apiForbidden({ 
         error: 'Forbidden: You must be a participant to view this conversation' 
       });
     }
     
     // User has access, return the conversation
-    res.status(200).json(conversation);
+    res.apiSuccess(conversation);
     
   } catch (error) {
     console.error('Error getting conversation by ID:', error);
-    res.status(500).json({ error: 'Error retrieving conversation', details: error.message });
+    res.apiServerError({ error: 'Error retrieving conversation', details: error.message });
   }
 };
 
@@ -105,14 +105,14 @@ exports.getConversationsForUser = async (req, res) => {
     if (req.user.isSuperAdmin) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.status(200).json(conversations);
+      return res.apiSuccess(conversations);
     }
     
     // Users can view their own conversations
     if (req.user.uid === userId) {
       const orgFilter = req.organizationId || null;
       const conversations = await conversationModel.getConversationsForUser(userId, orgFilter);
-      return res.status(200).json(conversations);
+      return res.apiSuccess(conversations);
     }
     
     // With organization context, check if target user belongs to this org
@@ -125,7 +125,7 @@ exports.getConversationsForUser = async (req, res) => {
       });
       
       if (!isMember) {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: Cannot access conversations for users outside your organization'
         });
       }
@@ -139,20 +139,20 @@ exports.getConversationsForUser = async (req, res) => {
       });
       
       if (!isAdmin) {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: Only organization admins can view other users\' conversations'
         });
       }
       
       const conversations = await conversationModel.getConversationsForUser(userId, req.organizationId);
-      return res.status(200).json(conversations);
+      return res.apiSuccess(conversations);
     } else {
       // Without organization context, only allow admin users
       if (req.user.role === 'admin') {
         const conversations = await conversationModel.getConversationsForUser(userId, null);
-        return res.status(200).json(conversations);
+        return res.apiSuccess(conversations);
       } else {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: You can only view your own conversations'
         });
       }
@@ -160,7 +160,7 @@ exports.getConversationsForUser = async (req, res) => {
     
   } catch (error) {
     console.error('Error getting conversations for user:', error);
-    res.status(500).json({ error: 'Error retrieving conversations', details: error.message });
+    res.apiServerError({ error: 'Error retrieving conversations', details: error.message });
   }
 };
 
@@ -173,14 +173,14 @@ exports.softDeleteConversation = async (req, res) => {
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
     // Super admin can access any conversation
     if (!req.user.isSuperAdmin) {
       // Org context: check if conversation belongs to this organization
       if (req.organizationId && conversation.organizationId !== req.organizationId) {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: Cannot access conversation outside your organization' 
         });
       }
@@ -188,7 +188,7 @@ exports.softDeleteConversation = async (req, res) => {
       // Check if user is participant (participants is now an array of IDs)
       const isParticipant = conversation.participants.includes(userId);
       if (!isParticipant) {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: You must be a participant to modify this conversation' 
         });
       }
@@ -196,11 +196,11 @@ exports.softDeleteConversation = async (req, res) => {
     
     // Perform soft delete
     const result = await conversationModel.softDeleteConversation(id, userId);
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error soft deleting conversation:', error);
-    res.status(500).json({ error: 'Error soft deleting conversation', details: error.message });
+    res.apiServerError({ error: 'Error soft deleting conversation', details: error.message });
   }
 };
 
@@ -211,19 +211,19 @@ exports.permanentDeleteConversation = async (req, res) => {
     // Super admin can delete any conversation
     if (req.user.isSuperAdmin) {
       const result = await conversationModel.permanentDeleteConversation(id);
-      return res.status(200).json(result);
+      return res.apiSuccess(result);
     }
     
     // Get the conversation to check organization and access
     const conversation = await conversationModel.getConversationById(id);
     
     if (!conversation) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
     // Org context: check if conversation belongs to this organization
     if (req.organizationId && conversation.organizationId !== req.organizationId) {
-      return res.status(403).json({ 
+      return res.apiForbidden({ 
         error: 'Forbidden: Cannot delete conversation outside your organization' 
       });
     }
@@ -238,14 +238,14 @@ exports.permanentDeleteConversation = async (req, res) => {
       });
       
       if (!isAdmin) {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: Insufficient permissions to permanently delete conversations'
         });
       }
     } else {
       // Without organization context, only allow global admin
       if (req.user.role !== 'admin') {
-        return res.status(403).json({ 
+        return res.apiForbidden({ 
           error: 'Forbidden: Insufficient permissions to permanently delete conversations'
         });
       }
@@ -253,11 +253,11 @@ exports.permanentDeleteConversation = async (req, res) => {
     
     // Perform permanent delete
     const result = await conversationModel.permanentDeleteConversation(id);
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error permanently deleting conversation:', error);
-    res.status(500).json({ error: 'Error permanently deleting conversation', details: error.message });
+    res.apiServerError({ error: 'Error permanently deleting conversation', details: error.message });
   }
 };
 
@@ -306,10 +306,10 @@ exports.hideConversation = async (req, res) => {
     const result = await conversationModel.hideConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error hiding conversation:', error);
@@ -330,10 +330,10 @@ exports.unhideConversation = async (req, res) => {
     const result = await conversationModel.unhideConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error unhiding conversation:', error);
@@ -354,10 +354,10 @@ exports.blockConversation = async (req, res) => {
     const result = await conversationModel.blockConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error blocking conversation:', error);
@@ -378,10 +378,10 @@ exports.unblockConversation = async (req, res) => {
     const result = await conversationModel.unblockConversation(id, userId);
     
     if (!result) {
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound({ error: 'Conversation not found' });
     }
     
-    res.status(200).json(result);
+    res.apiSuccess(result);
     
   } catch (error) {
     console.error('Error unblocking conversation:', error);
@@ -406,10 +406,10 @@ exports.getConversations = async (req, res) => {
     }
 
     const conversations = await conversationModel.getConversations(filters);
-    res.status(200).json(conversations);
+    res.apiSuccess(conversations);
     
   } catch (error) {
     console.error('Error getting conversations:', error);
-    res.status(500).json({ error: 'Error retrieving conversations', details: error.message });
+    res.apiServerError({ error: 'Error retrieving conversations', details: error.message });
   }
 };

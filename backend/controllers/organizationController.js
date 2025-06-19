@@ -15,9 +15,12 @@ exports.createOrganization = async (req, res) => {
   
   // Validar tipo de organización si se proporciona
   if (orgData.type && !isValidOrganizationType(orgData.type)) {
-    return res.status(400).json({ 
-      error: 'Invalid organization type', 
-      details: `Type '${orgData.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    return res.apiValidationError([{
+      field: 'type',
+      code: 'INVALID_TYPE',
+      messageKey: 'organizations.type.invalid'
+    }], 'organizations.create.validation_failed', {
+      availableTypes: Object.keys(getAllOrganizationTypes())
     });
   }
   
@@ -26,9 +29,11 @@ exports.createOrganization = async (req, res) => {
   
   try {
     const newOrg = await organizationModel.createOrganization(orgData);
-    res.status(201).json(newOrg);
+    res.apiCreated(newOrg, 'organizations.create.success', {}, { organizationName: orgData.name });
   } catch (err) {
-    return res.status(500).json({ error: 'Error creating organization', details: err.message });
+    return res.apiServerError('organizations.create.internal_error', { 
+      originalError: err.message 
+    });
   }
 };
 
@@ -38,7 +43,7 @@ exports.getOrganizationById = async (req, res) => {
   // Validar formato UUID antes de consultar
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(id)) {
-    return res.status(404).json({ error: 'Organization not found', details: 'Invalid organization ID format' });
+    return res.apiNotFound('organizations.get.invalid_id');
   }
 
   // Multitenancy: ensure only members can view organization details unless super admin
@@ -46,11 +51,11 @@ exports.getOrganizationById = async (req, res) => {
     try {
       const isMember = await membershipModel.checkUserRole(req.user.uid, id, null);
       if (!isMember) {
-        return res.status(403).json({ error: 'Unauthorized. You must be a member to view this organization.' });
+        return res.apiForbidden('organizations.get.member_required');
       }
       await fetchOrganization();
     } catch (err) {
-      return res.status(403).json({ error: 'Unauthorized. You must be a member to view this organization.' });
+      return res.apiForbidden('organizations.get.member_required');
     }
   } else {
     // Super admin o user is requesting their current organization
@@ -61,11 +66,13 @@ exports.getOrganizationById = async (req, res) => {
     try {
       const organization = await organizationModel.getOrganizationById(id);
       if (!organization) {
-        return res.status(404).json({ error: 'Organization not found' });
+        return res.apiNotFound('organizations.get.not_found');
       }
-      res.status(200).json(organization);
+      res.apiSuccess(organization, 'organizations.get.success', {}, { organizationId: id });
     } catch (err) {
-      return res.status(404).json({ error: 'Organization not found', details: err.message });
+      return res.apiNotFound('organizations.get.not_found', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -76,9 +83,12 @@ exports.updateOrganization = async (req, res) => {
   
   // Validar tipo de organización si se está actualizando
   if (orgData.type && !isValidOrganizationType(orgData.type)) {
-    return res.status(400).json({ 
-      error: 'Invalid organization type', 
-      details: `Type '${orgData.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    return res.apiValidationError([{
+      field: 'type',
+      code: 'INVALID_TYPE',
+      messageKey: 'organizations.type.invalid'
+    }], 'organizations.update.validation_failed', {
+      availableTypes: Object.keys(getAllOrganizationTypes())
     });
   }
   
@@ -89,23 +99,25 @@ exports.updateOrganization = async (req, res) => {
     try {
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, id, 'admin');
       if (!isAdmin) {
-        return res.status(403).json({ error: 'Unauthorized. Only admins can update organization details.' });
+        return res.apiForbidden('organizations.update.admin_required');
       }
       await performUpdate();
     } catch (err) {
-      return res.status(403).json({ error: 'Unauthorized. Only admins can update organization details.' });
+      return res.apiForbidden('organizations.update.admin_required');
     }
   }
 
   async function performUpdate() {
     try {
       const updatedOrg = await organizationModel.updateOrganization(id, orgData);
-      res.status(200).json(updatedOrg);
+      res.apiSuccess(updatedOrg, 'organizations.update.success', {}, { organizationId: id });
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
-        return res.status(404).json({ error: 'Organization not found', details: err.message });
+        return res.apiNotFound('organizations.update.not_found');
       }
-      return res.status(500).json({ error: 'Error updating organization', details: err.message });
+      return res.apiServerError('organizations.update.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -120,23 +132,25 @@ exports.deleteOrganization = async (req, res) => {
     try {
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, id, 'admin');
       if (!isAdmin) {
-        return res.status(403).json({ error: 'Unauthorized. Only admins can delete organizations.' });
+        return res.apiForbidden('organizations.delete.admin_required');
       }
       await performDelete();
     } catch (err) {
-      return res.status(403).json({ error: 'Unauthorized. Only admins can delete organizations.' });
+      return res.apiForbidden('organizations.delete.admin_required');
     }
   }
 
   async function performDelete() {
     try {
       await organizationModel.deleteOrganization(id);
-      res.status(200).json({ message: 'Organization deleted successfully' });
+      res.apiDeleted('organizations.delete.success', {}, { organizationId: id });
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
-        return res.status(404).json({ error: 'Organization not found', details: err.message });
+        return res.apiNotFound('organizations.delete.not_found');
       }
-      return res.status(500).json({ error: 'Error deleting organization', details: err.message });
+      return res.apiServerError('organizations.delete.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -149,18 +163,22 @@ exports.getOrganizationMembers = async (req, res) => {
     try {
       const isMember = await membershipModel.checkUserRole(req.user.uid, id, null);
       if (!isMember) {
-        return res.status(403).json({ error: 'Unauthorized. You must be a member to view organization members.' });
+        return res.apiForbidden('organizations.members.member_required');
       }
     } catch (err) {
-      return res.status(403).json({ error: 'Unauthorized. You must be a member to view organization members.' });
+      return res.apiForbidden('organizations.members.member_required');
     }
   }
 
   try {
     const members = await organizationModel.getOrganizationMembers(id);
-    res.status(200).json(members);
+    res.apiList(members, 'organizations.members.success', { 
+      count: members.length 
+    }, { organizationId: id });
   } catch (err) {
-    return res.status(500).json({ error: 'Error retrieving organization members', details: err.message });
+    return res.apiServerError('organizations.members.internal_error', { 
+      originalError: err.message 
+    });
   }
 };
 
@@ -175,9 +193,12 @@ exports.getOrganizations = async (req, res) => {
 
   // Validar tipo si se proporciona en el filtro
   if (filters.type && !isValidOrganizationType(filters.type)) {
-    return res.status(400).json({ 
-      error: 'Invalid organization type filter', 
-      details: `Type '${filters.type}' is not supported. Available types: ${Object.keys(getAllOrganizationTypes()).join(', ')}` 
+    return res.apiValidationError([{
+      field: 'type',
+      code: 'INVALID_TYPE',
+      messageKey: 'organizations.type.invalid'
+    }], 'organizations.list.validation_failed', {
+      availableTypes: Object.keys(getAllOrganizationTypes())
     });
   }
 
@@ -188,16 +209,26 @@ exports.getOrganizations = async (req, res) => {
       const orgIds = memberships.map(m => m.organizationId);
       filters.id = orgIds; // Filter to only include orgs the user belongs to
       const organizations = await organizationModel.getOrganizations(filters);
-      res.status(200).json(organizations);
+      res.apiList(organizations, 'organizations.list.success', { 
+        count: organizations.length,
+        scope: 'user'
+      });
     } catch (err) {
-      return res.status(500).json({ error: 'Error retrieving organizations', details: err.message });
+      return res.apiServerError('organizations.list.internal_error', { 
+        originalError: err.message 
+      });
     }
   } else {
     try {
       const organizations = await organizationModel.getOrganizations(filters);
-      res.status(200).json(organizations);
+      res.apiList(organizations, 'organizations.list.success', { 
+        count: organizations.length,
+        scope: 'admin'
+      });
     } catch (err) {
-      return res.status(500).json({ error: 'Error retrieving organizations', details: err.message });
+      return res.apiServerError('organizations.list.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -208,9 +239,13 @@ exports.getOrganizations = async (req, res) => {
 exports.getOrganizationTypes = async (req, res) => {
   try {
     const types = getAllOrganizationTypes();
-    res.status(200).json(types);
+    res.apiSuccess(types, 'organizations.types.success', { 
+      count: Object.keys(types).length 
+    });
   } catch (err) {
-    return res.status(500).json({ error: 'Error retrieving organization types', details: err.message });
+    return res.apiServerError('organizations.types.internal_error', { 
+      originalError: err.message 
+    });
   }
 };
 
@@ -223,10 +258,12 @@ exports.getOrganizationTypeInfo = async (req, res) => {
   try {
     const orgType = getOrganizationType(type);
     if (!orgType) {
-      return res.status(404).json({ error: 'Organization type not found' });
+      return res.apiNotFound('organizations.type_info.not_found');
     }
-    res.status(200).json(orgType);
+    res.apiSuccess(orgType, 'organizations.type_info.success', {}, { type });
   } catch (err) {
-    return res.status(500).json({ error: 'Error retrieving organization type', details: err.message });
+    return res.apiServerError('organizations.type_info.internal_error', { 
+      originalError: err.message 
+    });
   }
 };

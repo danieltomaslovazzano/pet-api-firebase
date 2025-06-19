@@ -25,34 +25,31 @@ exports.createPet = async (req, res) => {
     const missingFields = requiredFields.filter(field => !petData[field]);
     
     if (missingFields.length > 0) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: missingFields.map(field => ({
+      return res.apiValidationError(
+        missingFields.map(field => ({
           field,
-          message: `${field} is required`
-        }))
-      });
+          code: 'REQUIRED',
+          messageKey: `pets.${field}.required`
+        })),
+        'pets.create.validation_failed'
+      );
     }
     
     // Type validation for critical fields
     if (!Array.isArray(petData.images) || petData.images.length === 0) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'images',
-          message: 'At least one image URL is required'
-        }]
-      });
+      return res.apiValidationError([{
+        field: 'images',
+        code: 'REQUIRED_ARRAY',
+        messageKey: 'pets.images.required'
+      }], 'pets.create.validation_failed');
     }
     
     if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'age',
-          message: 'Age must be a non-negative integer'
-        }]
-      });
+      return res.apiValidationError([{
+        field: 'age',
+        code: 'INVALID_NUMBER',
+        messageKey: 'pets.age.invalid'
+      }], 'pets.create.validation_failed');
     }
     
     // Process each external image URL
@@ -129,10 +126,13 @@ exports.createPet = async (req, res) => {
         processedUrls.push(newUrl);
       } catch (imageError) {
         console.error('Error processing image URL:', imageError);
-        return res.status(400).json({ 
-          error: 'Failed to process image URL', 
-          details: imageError.message,
-          url 
+        return res.apiValidationError([{
+          field: 'images',
+          code: 'INVALID_URL',
+          messageKey: 'pets.images.processing_error'
+        }], 'pets.create.image_processing_failed', { 
+          url,
+          originalError: imageError.message
         });
       }
     }
@@ -149,17 +149,18 @@ exports.createPet = async (req, res) => {
     try {
       const newPet = await petModel.createPet(petData);
       console.log('[createPet] Mascota creada:', newPet);
-      res.status(201).json(newPet);
+      res.apiCreated(newPet, 'pets.create.success', {}, { petName: petData.name });
     } catch (err) {
       console.error('[createPet] Error creando mascota:', err);
-      res.status(500).json({ 
-          error: 'Error creating pet record', 
-          details: err.message || 'Unknown error occurred'
-        });
+      res.apiServerError('pets.create.database_error', { 
+        originalError: err.message || 'Unknown error occurred'
+      });
       }
   } catch (error) {
     console.error('[createPet] Error general:', error);
-    res.status(500).json({ error: 'Failed to create pet', details: error.message });
+    res.apiServerError('pets.create.internal_error', { 
+      originalError: error.message 
+    });
   }
 };
 
@@ -199,10 +200,16 @@ exports.getPets = async (req, res) => {
     // Call the model with filter, pagination and sorting options
     try {
       const pets = await petModel.getPetsWithFilters(filters, pageNumber, pageSize, sort, includeHidden);
-      res.status(200).json(pets);
+      res.apiList(pets, 'pets.list.success', { 
+        count: pets.length,
+        page: pageNumber,
+        limit: pageSize
+      });
     } catch (err) {
       console.error('Error retrieving pets:', err);
-      res.status(500).json({ error: 'Error retrieving pets', details: err.message });
+      res.apiServerError('pets.list.internal_error', { 
+        originalError: err.message 
+      });
         }
 };
 
@@ -217,13 +224,15 @@ exports.getPetById = async (req, res) => {
     try {
       const pet = await petModel.getPetById(id);
       console.log(`[getPetById] Successfully retrieved pet ID ${id}`);
-      res.status(200).json(pet);
+      res.apiSuccess(pet, 'pets.get.success', {}, { petId: id });
     } catch (err) {
             console.error(`[getPetById] Error retrieving pet ID ${id}:`, err);
             if (err.message === 'Pet not found') {
-                return res.status(404).json({ error: 'Pet not found' });
+                return res.apiNotFound('pets.get.not_found');
             }
-      res.status(500).json({ error: 'Error retrieving pet', details: err.message });
+      res.apiServerError('pets.get.internal_error', { 
+        originalError: err.message 
+      });
         }
 };
 
@@ -237,25 +246,21 @@ exports.updatePet = async (req, res) => {
     
     // Validate data types for critical fields if they are being updated
     if (petData.age !== undefined && (isNaN(petData.age) || petData.age < 0)) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: [{
-          field: 'age',
-          message: 'Age must be a non-negative integer'
-        }]
-      });
+      return res.apiValidationError([{
+        field: 'age',
+        code: 'INVALID_NUMBER',
+        messageKey: 'pets.age.invalid'
+      }], 'pets.update.validation_failed');
     }
     
     // Validate images array if it's being updated
     if (petData.images !== undefined) {
       if (!Array.isArray(petData.images) || petData.images.length === 0) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'images',
-            message: 'At least one image URL is required'
-          }]
-        });
+        return res.apiValidationError([{
+          field: 'images',
+          code: 'REQUIRED_ARRAY',
+          messageKey: 'pets.images.required'
+        }], 'pets.update.validation_failed');
       }
     }
     
@@ -263,12 +268,12 @@ exports.updatePet = async (req, res) => {
     if (petData.status !== undefined) {
       const validStatuses = ['available', 'adopted', 'lost', 'found'];
       if (!validStatuses.includes(petData.status)) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'status',
-            message: 'Status must be one of: available, adopted, lost, found'
-          }]
+        return res.apiValidationError([{
+          field: 'status',
+          code: 'INVALID_VALUE',
+          messageKey: 'pets.status.invalid'
+        }], 'pets.update.validation_failed', {
+          validStatuses
         });
       }
     }
@@ -277,22 +282,22 @@ exports.updatePet = async (req, res) => {
     if (petData.visibility !== undefined) {
       const validVisibility = ['visible', 'hidden', 'featured'];
       if (!validVisibility.includes(petData.visibility)) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: [{
-            field: 'visibility',
-            message: 'Visibility must be one of: visible, hidden, featured'
-          }]
+        return res.apiValidationError([{
+          field: 'visibility',
+          code: 'INVALID_VALUE',
+          messageKey: 'pets.visibility.invalid'
+        }], 'pets.update.validation_failed', {
+          validVisibility
         });
       }
     }
     
     try {
       const updatedPet = await petModel.updatePet(id, petData);
-      res.status(200).json(updatedPet);
+      res.apiSuccess(updatedPet, "pets.update.success", {}, { petId: id });
     } catch (err) {
       console.error('Error updating pet:', err);
-      res.status(500).json({ error: 'Error updating pet' });
+      res.apiServerError("pets.update.internal_error");
         }
 };
 
@@ -304,10 +309,10 @@ exports.deletePet = async (req, res) => {
     }
     try {
       await petModel.deletePet(id);
-        res.status(200).json({ message: `Pet ${id} deleted` });
+        res.apiSuccess({ message: `Pet ${id} deleted` });
     } catch (err) {
       console.error('Error deleting pet:', err);
-      res.status(500).json({ error: 'Error deleting pet' });
+      res.apiServerError({ error: 'Error deleting pet' });
     }
 };
 
@@ -343,7 +348,7 @@ exports.searchPets = async (req, res) => {
     // Call the model with search criteria
     try {
       const pets = await petModel.searchPets(searchCriteria, pageNumber, pageSize, sort, includeHidden);
-        res.status(200).json({
+        res.apiSuccess({
             results: pets,
             pagination: {
                 page: pageNumber,
@@ -354,7 +359,7 @@ exports.searchPets = async (req, res) => {
         });
     } catch (err) {
       console.error('Error searching pets:', err);
-      res.status(500).json({ 
+      res.apiServerError({ 
         error: 'Error searching pets', 
         details: err.message 
     });
@@ -368,7 +373,7 @@ exports.updatePetImage = async (req, res) => {
     
     // Ensure a file is provided (via multer)
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
+      return res.apiValidationError([{field: "general", code: "INVALID", messageKey: "pets.validation.error"}], "pets.validation.failed", { error: 'No image file provided' });
     }
     
     // Compress the image using Sharp (our utility function)
@@ -383,18 +388,18 @@ exports.updatePetImage = async (req, res) => {
     // Update the pet record by merging this new image URL with existing ones
     try {
       const updatedPet = await petModel.updatePetImages(petId, [imageUrl]);
-      res.status(200).json({
+      res.apiSuccess({
         message: 'Image uploaded and pet record updated successfully',
         pet: updatedPet,
         imageUrl: imageUrl
       });
     } catch (err) {
       console.error('Error updating pet record:', err);
-      res.status(500).json({ error: 'Error updating pet record', details: err.message });
+      res.apiServerError({ error: 'Error updating pet record', details: err.message });
     }
   } catch (error) {
     console.error('Error in updatePetImage:', error);
-    res.status(500).json({ error: 'Failed to process image upload', details: error.message });
+    res.apiServerError({ error: 'Failed to process image upload', details: error.message });
   }
 };
 
@@ -405,7 +410,7 @@ exports.updatePetMultipleImages = async (req, res) => {
     const pet = req.resourceObj; // Now provided by the loadPetResource middleware
     
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: 'No image files provided' });
+      return res.apiValidationError([{field: "general", code: "INVALID", messageKey: "pets.validation.error"}], "pets.validation.failed", { error: 'No image files provided' });
     }
     
     const uploadedUrls = [];
@@ -420,18 +425,18 @@ exports.updatePetMultipleImages = async (req, res) => {
     // Merge new image URLs with the existing images in the pet record
     try {
       const updatedPet = await petModel.updatePetImages(petId, uploadedUrls);
-      res.status(200).json({
+      res.apiSuccess({
         message: 'Images uploaded and pet record updated successfully',
         pet: updatedPet,
         imageUrls: uploadedUrls
       });
     } catch (err) {
       console.error('Error updating pet images:', err);
-      res.status(500).json({ error: 'Error updating pet images', details: err.message });
+      res.apiServerError({ error: 'Error updating pet images', details: err.message });
     }
   } catch (error) {
     console.error('Error in updatePetMultipleImages:', error);
-    res.status(500).json({ error: 'Failed to process multiple image upload', details: error.message });
+    res.apiServerError({ error: 'Failed to process multiple image upload', details: error.message });
   }
 };
 
@@ -441,18 +446,18 @@ exports.removePetImage = async (req, res) => {
   
   try {
     const updatedPet = await petModel.removePetImage(petId, imageUrl);
-    res.status(200).json({
+    res.apiSuccess({
       message: 'Image removed successfully',
       pet: updatedPet
     });
   } catch (err) {
       if (err.message.includes('A pet record must have at least one image')) {
-        return res.status(400).json({ 
+        return res.apiValidationError([{field: "general", code: "INVALID", messageKey: "pets.validation.error"}], "pets.validation.failed", { 
           error: 'Cannot remove the last image', 
           details: err.message 
         });
       }
-      return res.status(500).json({ 
+      return res.apiServerError({ 
         error: 'Error removing pet image', 
         details: err.message 
       });
@@ -465,7 +470,7 @@ exports.createPetFromUrls = async (req, res) => {
     
     // Validate that an array of external image URLs is provided
     if (!petData.images || !Array.isArray(petData.images) || petData.images.length === 0) {
-      return res.status(400).json({ error: 'At least one image URL must be provided in petData.images' });
+      return res.apiValidationError([{field: "general", code: "INVALID", messageKey: "pets.validation.error"}], "pets.validation.failed", { error: 'At least one image URL must be provided in petData.images' });
     }
     
     const processedUrls = [];
@@ -496,14 +501,14 @@ exports.createPetFromUrls = async (req, res) => {
     // Create the pet record in Firestore
     try {
       const newPet = await petModel.createPet(petData);
-      res.status(201).json(newPet);
+      res.apiCreated(newPet);
     } catch (err) {
       console.error('Error creating pet record:', err);
-      res.status(500).json({ error: 'Error creating pet record', details: err.message });
+      res.apiServerError({ error: 'Error creating pet record', details: err.message });
     }
   } catch (error) {
     console.error('Error in createPetFromUrls:', error);
-    res.status(500).json({ error: 'Failed to create pet from URLs', details: error.message });
+    res.apiServerError({ error: 'Failed to create pet from URLs', details: error.message });
   }
 };
 
@@ -517,16 +522,16 @@ exports.hidePet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'hidden' });
-    res.status(200).json({
+    res.apiSuccess({
       message: 'Pet hidden successfully',
       pet: updatedPet
     });
   } catch (err) {
     console.error('Error hiding pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.apiNotFound({ error: 'Pet not found' });
     }
-    res.status(500).json({ error: 'Error hiding pet', details: err.message });
+    res.apiServerError({ error: 'Error hiding pet', details: err.message });
   }
 };
 
@@ -540,16 +545,16 @@ exports.showPet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'visible' });
-    res.status(200).json({
+    res.apiSuccess({
       message: 'Pet is now visible',
       pet: updatedPet
     });
   } catch (err) {
     console.error('Error showing pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.apiNotFound({ error: 'Pet not found' });
     }
-    res.status(500).json({ error: 'Error showing pet', details: err.message });
+    res.apiServerError({ error: 'Error showing pet', details: err.message });
   }
 };
 
@@ -563,15 +568,15 @@ exports.featurePet = async (req, res) => {
   
   try {
     const updatedPet = await petModel.updatePet(id, { visibility: 'featured' });
-    res.status(200).json({
+    res.apiSuccess({
       message: 'Pet is now featured',
       pet: updatedPet
     });
   } catch (err) {
     console.error('Error featuring pet:', err);
     if (err.message === 'Pet not found') {
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.apiNotFound({ error: 'Pet not found' });
     }
-    res.status(500).json({ error: 'Error featuring pet', details: err.message });
+    res.apiServerError({ error: 'Error featuring pet', details: err.message });
   }
 };

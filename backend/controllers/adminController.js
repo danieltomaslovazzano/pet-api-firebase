@@ -8,11 +8,11 @@ exports.bulkAction = async (req, res) => {
     const { userIds, action } = req.body;
     
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ error: 'Se requiere una lista válida de IDs de usuario' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Se requiere una lista válida de IDs de usuario' });
     }
     
     if (!action) {
-      return res.status(400).json({ error: 'Se requiere especificar una acción' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Se requiere especificar una acción' });
     }
     
     let results = [];
@@ -62,7 +62,7 @@ exports.bulkAction = async (req, res) => {
         // Cambiar rol de usuarios en lote
         const { role } = req.body;
         if (!role) {
-          return res.status(400).json({ error: 'Se requiere especificar un rol' });
+          return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Se requiere especificar un rol' });
         }
         
         for (const userId of userIds) {
@@ -90,17 +90,17 @@ exports.bulkAction = async (req, res) => {
         break;
         
       default:
-        return res.status(400).json({ error: 'Acción no soportada' });
+        return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Acción no soportada' });
     }
     
-    res.status(200).json({
+    res.apiSuccess({
       message: `Acción "${action}" completada para ${results.length} usuarios con ${errors.length} errores`,
       results,
       errors
     });
   } catch (err) {
     console.error('Error en acción masiva:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error en acción masiva', 
       details: err.message 
     });
@@ -113,7 +113,7 @@ exports.inviteUser = async (req, res) => {
     const { email, role } = req.body;
     
     if (!email) {
-      return res.status(400).json({ error: 'Se requiere un correo electrónico' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Se requiere un correo electrónico' });
     }
     
     // Generar un link de invitación con Firebase Auth
@@ -127,13 +127,13 @@ exports.inviteUser = async (req, res) => {
     // Aquí podrías implementar lógica para enviar el correo electrónico con el link
     // O devolver el link para que el frontend lo maneje
     
-    res.status(200).json({ 
+    res.apiSuccess({ 
       message: 'Invitación generada correctamente',
       invitationLink: link
     });
   } catch (err) {
     console.error('Error al generar invitación:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error al generar invitación', 
       details: err.message 
     });
@@ -167,7 +167,7 @@ exports.getAllUsers = async (req, res) => {
       console.log('[DEBUG] userModel.getUsers respondió', { usersCount: users ? users.length : null });
     } catch (err) {
         console.error('Error al recuperar usuarios:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al recuperar usuarios', 
           details: err.message 
         });
@@ -190,7 +190,7 @@ exports.getAllUsers = async (req, res) => {
           } catch (firebaseError) {
             console.warn('[WARN] Error o timeout en getUsers de Firebase Auth:', firebaseError);
             // Devolver usuarios sin enriquecer
-            return res.status(200).json(users);
+            return res.apiSuccess(users);
           }
             // Crear un mapa para búsqueda rápida
             const authUserMap = new Map();
@@ -272,10 +272,10 @@ exports.getAllUsers = async (req, res) => {
         // No enviar datos sensibles como tokens, hashes, etc.
       }));
 
-      res.status(200).json(sanitizedUsers);
+      res.apiSuccess(sanitizedUsers);
   } catch (err) {
     console.error('Error inesperado en getAllUsers:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -305,7 +305,7 @@ exports.getAllPets = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al recuperar mascotas:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al recuperar mascotas', 
           details: err.message 
         });
@@ -322,10 +322,10 @@ exports.getAllPets = async (req, res) => {
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt,
       }));
-      res.status(200).json(sanitizedPets);
+      res.apiSuccess(sanitizedPets);
   } catch (err) {
     console.error('Error inesperado en getAllPets:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -339,7 +339,7 @@ exports.updatePet = async (req, res) => {
     const petData = req.body;
     // Verificar que el usuario tiene permisos
     if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-      return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+      return res.apiForbidden({ error: 'No tienes permiso para realizar esta acción' });
     }
     // Refactor: usar async/await en vez de callback
     let updatedPet;
@@ -352,15 +352,15 @@ exports.updatePet = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al actualizar mascota:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al actualizar mascota', 
           details: err.message 
         });
       }
-      res.status(200).json(updatedPet);
+      res.apiSuccess(updatedPet);
   } catch (err) {
     console.error('Error inesperado en updatePet:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -376,12 +376,12 @@ exports.updateUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to update user in this organization' });
+        return res.apiForbidden({ error: 'No permission to update user in this organization' });
     }
     }
     // Si se está cambiando el rol, verificar que sea admin
     if (updates.role && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Solo los administradores pueden cambiar roles' });
+      return res.apiForbidden({ error: 'Solo los administradores pueden cambiar roles' });
     }
     // Actualizar en Firebase Auth si es necesario
     if (updates.disabled !== undefined) {
@@ -398,15 +398,15 @@ exports.updateUser = async (req, res) => {
       updatedUser = await userModel.updateUser(id, updates);
     } catch (err) {
         console.error('Error al actualizar usuario:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al actualizar usuario', 
           details: err.message 
         });
       }
-      res.status(200).json(updatedUser);
+      res.apiSuccess(updatedUser);
   } catch (err) {
     console.error('Error inesperado en updateUser:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -421,7 +421,7 @@ exports.deleteUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to delete user in this organization' });
+        return res.apiForbidden({ error: 'No permission to delete user in this organization' });
     }
     }
     // Eliminar de Firebase Auth
@@ -437,15 +437,15 @@ exports.deleteUser = async (req, res) => {
       result = await userModel.deleteUser(id);
     } catch (err) {
         console.error('Error al eliminar usuario:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al eliminar usuario', 
           details: err.message 
         });
       }
-      res.status(200).json(result);
+      res.apiSuccess(result);
   } catch (err) {
     console.error('Error inesperado en deleteUser:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -461,18 +461,18 @@ exports.updateUserRole = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.status(403).json({ error: 'No permission to update user role in this organization' });
+        return res.apiForbidden({ error: 'No permission to update user role in this organization' });
       }
     }
     if (!role) {
-      return res.status(400).json({ error: 'Se requiere especificar un rol' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Se requiere especificar un rol' });
     }
     // Actualizar custom claims en Firebase Auth
     try {
       await admin.auth().setCustomUserClaims(id, { role });
     } catch (authError) {
       console.error('Error al actualizar claims en Firebase Auth:', authError);
-      return res.status(500).json({ 
+      return res.apiServerError({ 
         error: 'Error al actualizar rol en autenticación', 
         details: authError.message 
       });
@@ -483,18 +483,18 @@ exports.updateUserRole = async (req, res) => {
       updatedUser = await userModel.updateUser(id, { role });
     } catch (err) {
         console.error('Error al actualizar rol en base de datos:', err);
-        return res.status(500).json({ 
+        return res.apiServerError({ 
           error: 'Error al actualizar rol en base de datos', 
           details: err.message 
         });
       }
-      res.status(200).json({
+      res.apiSuccess({
         message: `Rol actualizado correctamente a "${role}" para el usuario ${id}`,
         user: updatedUser
     });
   } catch (err) {
     console.error('Error inesperado en updateUserRole:', err);
-    res.status(500).json({ 
+    res.apiServerError({ 
       error: 'Error inesperado', 
       details: err.message 
     });
@@ -506,7 +506,7 @@ exports.createUser = async (req, res) => {
   try {
     const { email, password, role, name } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.apiValidationError([{field: "general", code: "VALIDATION_ERROR", messageKey: "admin.validation.failed"}], "admin.validation.error", { error: 'Email and password are required' });
     }
     // Create user in Firebase Auth
     const userRecord = await admin.auth().createUser({
@@ -533,18 +533,18 @@ exports.createUser = async (req, res) => {
       await userModel.createUser(userData);
     } catch (err) {
       console.error('Error al crear usuario en base de datos:', err);
-      return res.status(500).json({
+      return res.apiServerError({
         error: 'Error al crear usuario en base de datos',
         details: err.message
       });
     }
-    res.status(201).json({
+    res.apiCreated({
       message: 'User created successfully',
       user: userData
     });
   } catch (err) {
     console.error('Error creating user:', err);
-    res.status(500).json({
+    res.apiServerError({
       error: 'Error creating user',
       details: err.message
     });
