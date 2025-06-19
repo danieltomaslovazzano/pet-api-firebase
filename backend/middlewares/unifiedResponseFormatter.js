@@ -18,8 +18,44 @@
  *   "errors": array (solo en errores)
  * }
  */
+
+// Función de fallback para traducción cuando req.t no está disponible
+const fallbackTranslate = (key, params = {}) => {
+  // En desarrollo, devolver la clave con parámetros para debug
+  if (process.env.NODE_ENV === 'development') {
+    return Object.keys(params).length > 0 
+      ? `${key} (${JSON.stringify(params)})`
+      : key;
+  }
+  
+  // En producción, devolver mensaje genérico
+  const messages = {
+    'auth.register.success': 'User registered successfully',
+    'auth.login.success': 'Login successful',
+    'auth.register.validation_failed': 'Validation failed',
+    'auth.login.validation_failed': 'Validation failed',
+    'auth.email.required': 'Email is required',
+    'auth.password.required': 'Password is required',
+    'auth.name.required': 'Name is required',
+    'auth.email.invalid_format': 'Invalid email format',
+    'auth.password.too_short': 'Password too short',
+    'common.not_found': 'Resource not found',
+    'common.unauthorized': 'Unauthorized access',
+    'common.forbidden': 'Access forbidden',
+    'common.server_error': 'Internal server error',
+    'validation.failed': 'Validation failed'
+  };
+  
+  return messages[key] || key;
+};
+
 const unifiedResponseFormatter = (req, res, next) => {
   
+  // Asegurar que req.t existe
+  if (!req.t) {
+    req.t = fallbackTranslate;
+  }
+
   /**
    * Método principal unificado para todas las respuestas exitosas
    * @param {any} data - Los datos a devolver

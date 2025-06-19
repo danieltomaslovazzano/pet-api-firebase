@@ -20,24 +20,34 @@ const authController = {
       const { email, password, name } = req.body;
       
       if (!email || !password || !name) {
-        const response = { error: 'Se requieren todos los campos: email, password y name' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { missing_fields: { email: !!email, password: !!password, name: !!name } });
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' },
+          { field: 'password', code: 'REQUIRED', messageKey: 'auth.password.required' },
+          { field: 'name', code: 'REQUIRED', messageKey: 'auth.name.required' }
+        ].filter(error => {
+          if (error.field === 'email' && !email) return true;
+          if (error.field === 'password' && !password) return true;
+          if (error.field === 'name' && !name) return true;
+          return false;
+        }), 'auth.register.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        const response = { error: 'Formato de email inválido' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { email_format: 'invalid' });
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.register.validation_failed');
       }
 
       // Validar fortaleza de contraseña
       if (password.length < 6) {
-        const response = { error: 'La contraseña debe tener al menos 6 caracteres' };
-        logAuthEvent('Register Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Register Validation Failed', { password_length: password.length });
+        return res.apiValidationError([
+          { field: 'password', code: 'TOO_SHORT', messageKey: 'auth.password.too_short', params: { min: 6 } }
+        ], 'auth.register.validation_failed');
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -76,8 +86,7 @@ const authController = {
       // Enviar email de verificación
       await admin.auth().generateEmailVerificationLink(email);
       
-      const successResponse = {
-        message: 'Usuario registrado correctamente',
+      const responseData = {
         user: {
           id: localId,
           email,
@@ -92,7 +101,7 @@ const authController = {
       };
       
       logAuthEvent('Register Success', { email, userId: localId });
-      res.status(201).json(successResponse);
+      res.apiCreated(responseData, 'auth.register.success', {}, { email });
     } catch (error) {
       const errorResponse = error.response?.data?.error || error;
       logAuthEvent('Register Error', errorResponse, true);
@@ -102,22 +111,24 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_EXISTS':
-            return res.status(400).json({ error: 'El email ya está registrado' });
+            return res.apiConflict('auth.register.email_exists', [], {}, { email });
           case 'INVALID_EMAIL':
-            return res.status(400).json({ error: 'Formato de email inválido' });
+            return res.apiValidationError([
+              { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+            ], 'auth.register.validation_failed');
           case 'WEAK_PASSWORD':
-            return res.status(400).json({ error: 'La contraseña es demasiado débil' });
+            return res.apiValidationError([
+              { field: 'password', code: 'WEAK_PASSWORD', messageKey: 'auth.password.weak' }
+            ], 'auth.register.validation_failed');
           default:
-            return res.status(400).json({ 
-              error: 'Error en el registro', 
-              details: firebaseError.message 
+            return res.apiError('auth.register.firebase_error', [], 400, { 
+              firebaseCode: firebaseError.message 
             });
         }
       }
       
-      res.status(500).json({ 
-        error: 'Error en el proceso de registro', 
-        details: error.message 
+      res.apiServerError('auth.register.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -128,24 +139,22 @@ const authController = {
       const { token } = req.body;
       
       if (!token) {
-        const response = { error: 'Se requiere el token de verificación' };
-        logAuthEvent('Email Verification Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Validation Failed', { token: 'missing' });
+        return res.apiValidationError([
+          { field: 'token', code: 'REQUIRED', messageKey: 'auth.token.required' }
+        ], 'auth.verify_email.validation_failed');
       }
       
       // Manejo especial para tokens de prueba
       if (token === 'valid-token-123') {
-        const successResponse = { message: 'Email verificado correctamente' };
         logAuthEvent('Email Verification Success', { userId: 'test-user-id' });
-        return res.status(200).json(successResponse);
+        return res.apiSuccess(null, 'auth.verify_email.success');
       } else if (token === 'invalid-token-123') {
-        const response = { error: 'Token de verificación inválido' };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Error', { token: 'invalid' });
+        return res.apiUnauthorized('auth.verify_email.invalid_token');
       } else if (token === 'expired-token-123') {
-        const response = { error: 'Token de verificación expirado' };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Error', { token: 'expired' });
+        return res.apiUnauthorized('auth.verify_email.expired_token');
       }
       
       // Verificar el token con Firebase Auth para tokens reales
@@ -158,26 +167,25 @@ const authController = {
           emailVerified: true
         });
         
-        const successResponse = { message: 'Email verificado correctamente' };
         logAuthEvent('Email Verification Success', { userId: uid });
-        res.status(200).json(successResponse);
+        res.apiSuccess(null, 'auth.verify_email.success');
       } catch (error) {
-        const response = {
-          error: error.code === 'auth/id-token-expired'
-            ? 'Token de verificación expirado'
-            : error.code === 'auth/invalid-id-token'
-            ? 'Token de verificación inválido'
-            : 'Error en la verificación del email',
-          details: error.message
-        };
-        logAuthEvent('Email Verification Error', response);
-        return res.status(400).json(response);
+        logAuthEvent('Email Verification Error', { code: error.code, message: error.message });
+        
+        if (error.code === 'auth/id-token-expired') {
+          return res.apiUnauthorized('auth.verify_email.expired_token');
+        } else if (error.code === 'auth/invalid-id-token') {
+          return res.apiUnauthorized('auth.verify_email.invalid_token');
+        } else {
+          return res.apiError('auth.verify_email.firebase_error', [], 400, { 
+            firebaseCode: error.code 
+          });
+        }
       }
     } catch (error) {
       logAuthEvent('Email Verification Error', error, true);
-      res.status(500).json({ 
-        error: 'Error en la verificación del email', 
-        details: error.message 
+      res.apiServerError('auth.verify_email.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -187,13 +195,22 @@ const authController = {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(400).json({ error: 'Se requieren email y contraseña' });
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' },
+          { field: 'password', code: 'REQUIRED', messageKey: 'auth.password.required' }
+        ].filter(error => {
+          if (error.field === 'email' && !email) return true;
+          if (error.field === 'password' && !password) return true;
+          return false;
+        }), 'auth.login.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Formato de email inválido' });
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.login.validation_failed');
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -218,23 +235,31 @@ const authController = {
         // ...otros campos que quieras exponer
       };
 
-      res.status(200).json({
+      res.apiSuccess({
         user: userData,
         tokens: { idToken, refreshToken, expiresIn }
-      });
+      }, 'auth.login.success', {}, { email });
     } catch (error) {
       if (error.response?.data?.error) {
         const firebaseError = error.response.data.error;
         switch (firebaseError.message) {
           case 'INVALID_PASSWORD':
-            return res.status(400).json({ error: 'Error de autenticación', details: 'INVALID_PASSWORD' });
+            return res.apiUnauthorized('auth.login.invalid_credentials', { 
+              firebaseCode: 'INVALID_PASSWORD' 
+            });
           case 'EMAIL_NOT_FOUND':
-            return res.status(400).json({ error: 'Usuario no encontrado', details: 'EMAIL_NOT_FOUND' });
+            return res.apiUnauthorized('auth.login.user_not_found', { 
+              firebaseCode: 'EMAIL_NOT_FOUND' 
+            });
           default:
-            return res.status(400).json({ error: 'Error de autenticación', details: firebaseError.message });
+            return res.apiUnauthorized('auth.login.authentication_failed', { 
+              firebaseCode: firebaseError.message 
+            });
         }
       }
-      res.status(500).json({ error: 'Error en el proceso de login', details: error.message });
+      res.apiServerError('auth.login.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 

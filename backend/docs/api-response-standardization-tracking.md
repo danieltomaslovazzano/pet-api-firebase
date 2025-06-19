@@ -41,7 +41,7 @@ ALL endpoints        → response.data.[contenido]       (siempre aquí)
 |-------|--------|--------------|-------|
 | ✏️ Crear `middlewares/unifiedResponseFormatter.js` | ✅ Completado | 17/01/2025 | Middleware principal |
 | ✏️ Escribir tests unitarios del middleware | ✅ Completado | 17/01/2025 | 27 tests - 95.9% cobertura |
-| ✏️ Actualizar `app.js` para incluir nuevo middleware | 🔴 Pendiente | 21/01/2025 | Global setup |
+| ✏️ Actualizar `app.js` para incluir nuevo middleware | ✅ Completado | 17/01/2025 | Global setup - disponible en todas las rutas |
 | ✏️ Crear documentación de uso interno | 🔴 Pendiente | 22/01/2025 | Para el equipo |
 | 🧪 Testing del middleware en entorno dev | 🔴 Pendiente | 24/01/2025 | Validación |
 
@@ -50,7 +50,7 @@ ALL endpoints        → response.data.[contenido]       (siempre aquí)
 
 | Tarea | Estado | Fecha Límite | Notas |
 |-------|--------|--------------|-------|
-| 🔄 Migrar `authController.js` | ⚫ No iniciado | 27/01/2025 | Login, register, refresh |
+| 🔄 Migrar `authController.js` | 🟡 En progreso | 17/01/2025 | **INICIADO** - 45 respuestas a migrar |
 | 🔄 Migrar `userController.js` | ⚫ No iniciado | 29/01/2025 | Profile endpoints |
 | 🧪 Actualizar tests E2E auth | ⚫ No iniciado | 30/01/2025 | Verificar nueva estructura |
 | 📋 Validar no hay breaking changes | ⚫ No iniciado | 31/01/2025 | Compatibility check |
@@ -99,7 +99,10 @@ ALL endpoints        → response.data.[contenido]       (siempre aquí)
 - ✅ **Creado:** Proof of concept script (`scripts/proof-of-concept-unified-responses.js`)
 - ✅ **Creado:** Ejemplo middleware (`middlewares/unifiedResponseFormatter.js`)
 - ✅ **Creado:** Branch limpia `feat/unified-api-responses`
-- 🎯 **Estado:** ⚡ **INICIANDO IMPLEMENTACIÓN** - Semana 1
+- ✅ **Implementado:** Middleware unificado con 13 métodos de respuesta
+- ✅ **Completado:** Tests unitarios (27 tests, 95.9% cobertura)
+- ✅ **Integrado:** Middleware disponible globalmente en app.js
+- 🎯 **Estado:** 🟢 **SEMANA 1 COMPLETADA** - Listo para migración de controladores
 
 ### **Próximas Actualizaciones**
 _Este documento se actualizará semanalmente con el progreso real_
