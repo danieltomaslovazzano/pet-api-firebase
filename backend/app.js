@@ -17,6 +17,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const authRoutes = require('./routes/authRoutes');
 const organizationRoutes = require('./routes/organizationRoutes');
+const publicOrganizationRoutes = require('./routes/publicOrganizationRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
 const languagePreferencesRoutes = require('./routes/languagePreferencesRoutes');
 const publicLanguageRoutes = require('./routes/publicLanguageRoutes');
@@ -47,7 +48,7 @@ app.use('/api/auth', authRoutes);
 // Endpoints públicos de idiomas (sin autenticación)
 app.use('/api/language-preferences', publicLanguageRoutes);
 // Organization types endpoints (public)
-app.use('/api/organizations/types', organizationRoutes);
+app.use('/api/organizations/types', publicOrganizationRoutes);
 
 // Middlewares de autenticación y organización para rutas protegidas
 app.use(verifyToken);
@@ -66,7 +67,7 @@ app.use('/api/language-preferences', languagePreferencesRoutes);
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Full error details:', err);
-  res.serverError('common.internal_server_error', {
+  res.apiServerError('common.internal_server_error', {
     details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 });

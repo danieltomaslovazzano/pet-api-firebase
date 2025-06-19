@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="7" failures="7" errors="0" time="4.004">
-  <testsuite name="E2E: Auth" errors="0" failures="7" skipped="0" timestamp="2025-06-19T13:56:11" time="3.74" tests="7">
-    <testcase classname="E2E: Auth" name="should register a user" time="0.331">
+<testsuites name="jest tests" tests="26" failures="26" errors="0" time="4.817">
+  <testsuite name="Organization Types E2E Tests" errors="0" failures="26" skipped="0" timestamp="2025-06-19T14:41:06" time="4.483" tests="26">
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should get all available organization types" time="0.007">
       <failure>AggregateError: 
     at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
     at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
@@ -17,9 +17,10 @@
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:49:25)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
     </testcase>
-    <testcase classname="E2E: Auth" name="should login user" time="0.068">
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Regular user should also get organization types" time="0.002">
       <failure>AggregateError: 
     at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
     at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
@@ -35,17 +36,10 @@
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:64:22)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
     </testcase>
-    <testcase classname="E2E: Auth" name="should deny login with wrong credentials" time="0.037">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 400
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:86:36)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="E2E: Auth" name="should access profile with token" time="0.023">
+    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should work without authentication (public endpoint)" time="0.001">
       <failure>AggregateError: 
     at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
     at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
@@ -61,17 +55,10 @@ Received: undefined
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:91:24)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
     </testcase>
-    <testcase classname="E2E: Auth" name="should deny access to profile without token" time="0.035">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: 401
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:108:36)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="E2E: Auth" name="should login as superadmin" time="0.028">
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should get shelter type information" time="0.008">
       <failure>AggregateError: 
     at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
     at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
@@ -87,9 +74,10 @@ Received: undefined
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:121:32)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
     </testcase>
-    <testcase classname="E2E: Auth" name="should list users as admin" time="0.016">
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail for invalid organization type" time="0.001">
       <failure>AggregateError: 
     at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
     at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
@@ -105,7 +93,567 @@ Received: undefined
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:132:22)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should work without authentication (public endpoint)" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create shelter organization successfully" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create organization with default type when not specified" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should fail with invalid organization type" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should validate required fields for shelter type" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should handle empty string type" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should update organization type successfully" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:319:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should fail when updating to invalid type" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:319:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should filter organizations by shelter type" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:383:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should fail with invalid type filter" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:383:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should return all organizations when no type filter is applied" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:383:26)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle null type" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle case sensitivity" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types E2E Tests Language Support" name="Should support different languages" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types.e2e.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Shelter Organizations with Pets Integration" name="Shelter should be able to create pets for adoption" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:55:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Shelter Organizations with Pets Integration" name="Should verify shelter organization has correct type and features" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:55:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Shelter Organizations with Pets Integration" name="Should list pets filtered by shelter organization" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:55:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Organization Type Permissions Validation" name="Shelter members should have appropriate permissions" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:172:27)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Organization Type Permissions Validation" name="Should validate required fields for shelter type" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:172:27)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Multi-Organization Type Scenarios" name="Should handle multiple shelter organizations correctly" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
+    </testcase>
+    <testcase classname="Organization Types Integration E2E Tests Multi-Organization Type Scenarios" name="Should maintain data isolation between organizations of same type" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:104:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types/organization-types-integration.e2e.js:19:24)</failure>
     </testcase>
   </testsuite>
 </testsuites>
