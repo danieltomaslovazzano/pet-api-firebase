@@ -8,11 +8,19 @@ exports.bulkAction = async (req, res) => {
     const { userIds, action } = req.body;
     
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
-      return res.error('admin.bulk_action_user_ids_required', 400);
+      return res.apiValidationError([{
+        field: 'userIds',
+        code: 'REQUIRED',
+        messageKey: 'admin.bulk_action_user_ids_required'
+      }]);
     }
     
     if (!action) {
-      return res.error('admin.bulk_action_required', 400);
+      return res.apiValidationError([{
+        field: 'action',
+        code: 'REQUIRED', 
+        messageKey: 'admin.bulk_action_required'
+      }]);
     }
     
     let results = [];
@@ -62,7 +70,11 @@ exports.bulkAction = async (req, res) => {
         // Cambiar rol de usuarios en lote
         const { role } = req.body;
         if (!role) {
-          return res.error('admin.bulk_action_role_required', 400);
+          return res.apiValidationError([{
+            field: 'role',
+            code: 'REQUIRED',
+            messageKey: 'admin.bulk_action_role_required'
+          }]);
         }
         
         for (const userId of userIds) {
@@ -90,10 +102,14 @@ exports.bulkAction = async (req, res) => {
         break;
         
       default:
-        return res.error('admin.bulk_action_unsupported', 400);
+        return res.apiValidationError([{
+          field: 'action',
+          code: 'UNSUPPORTED',
+          messageKey: 'admin.bulk_action_unsupported'
+        }]);
     }
     
-    res.success('admin.bulk_action_completed', {
+    res.apiSuccess(details, 'admin.bulk_action_completed', {
       results,
       errors
     }, {
@@ -103,7 +119,7 @@ exports.bulkAction = async (req, res) => {
     });
   } catch (err) {
     console.error('Error en acción masiva:', err);
-    res.serverError('admin.bulk_action_error', { error: err.message });
+          res.apiServerError('admin.bulk_action_error', { error: err.message });
   }
 };
 
@@ -113,7 +129,11 @@ exports.inviteUser = async (req, res) => {
     const { email, role } = req.body;
     
     if (!email) {
-      return res.error('admin.invite_email_required', 400);
+      return res.apiValidationError([{
+        field: 'email',
+        code: 'REQUIRED',
+        messageKey: 'admin.invite_email_required'
+      }]);
     }
     
     // Generar un link de invitación con Firebase Auth
@@ -127,10 +147,10 @@ exports.inviteUser = async (req, res) => {
     // Aquí podrías implementar lógica para enviar el correo electrónico con el link
     // O devolver el link para que el frontend lo maneje
     
-    res.success('admin.invite_generated', { invitationLink: link });
+    res.apiSuccess({ invitationLink: link }, 'admin.invite_generated');
   } catch (err) {
     console.error('Error al generar invitación:', err);
-    res.serverError('admin.invite_error', { error: err.message });
+          res.apiServerError('admin.invite_error', { error: err.message });
   }
 };
 
@@ -161,7 +181,7 @@ exports.getAllUsers = async (req, res) => {
       console.log('[DEBUG] userModel.getUsers respondió', { usersCount: users ? users.length : null });
     } catch (err) {
         console.error('Error al recuperar usuarios:', err);
-        return res.serverError('admin.users_retrieval_error', { error: err.message });
+        return res.apiServerError('admin.users_retrieval_error', { error: err.message });
       }
 
       // Si hay usuarios, obtener información adicional desde Firebase Auth
@@ -181,7 +201,7 @@ exports.getAllUsers = async (req, res) => {
           } catch (firebaseError) {
             console.warn('[WARN] Error o timeout en getUsers de Firebase Auth:', firebaseError);
             // Devolver usuarios sin enriquecer
-            return res.data(users);
+            return res.apiSuccess(users);
           }
             // Crear un mapa para búsqueda rápida
             const authUserMap = new Map();
@@ -263,10 +283,10 @@ exports.getAllUsers = async (req, res) => {
         // No enviar datos sensibles como tokens, hashes, etc.
       }));
 
-      res.data(sanitizedUsers);
+      res.apiSuccess(sanitizedUsers, 'admin.users_retrieval_success');
   } catch (err) {
     console.error('Error inesperado en getAllUsers:', err);
-    res.serverError('admin.users_unexpected_error', { error: err.message });
+    res.apiServerError('admin.users_unexpected_error', { error: err.message });
   }
 };
 
@@ -293,7 +313,7 @@ exports.getAllPets = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al recuperar mascotas:', err);
-        return res.serverError('admin.pets_retrieval_error', { error: err.message });
+        return res.apiServerError('admin.pets_retrieval_error', { error: err.message });
       }
       // Sanitizar datos y enviar respuesta
       const sanitizedPets = pets.map(pet => ({
@@ -307,10 +327,10 @@ exports.getAllPets = async (req, res) => {
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt,
       }));
-      res.list(sanitizedPets);
+      res.apiList(sanitizedPets);
   } catch (err) {
     console.error('Error inesperado en getAllPets:', err);
-    res.serverError('admin.pets_unexpected_error', { error: err.message });
+    res.apiServerError('admin.pets_unexpected_error', { error: err.message });
   }
 };
 
@@ -321,7 +341,7 @@ exports.updatePet = async (req, res) => {
     const petData = req.body;
     // Verificar que el usuario tiene permisos
     if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-      return res.forbidden('admin.pet_update_permission_denied');
+      return res.apiForbidden('admin.pet_update_permission_denied');
     }
     // Refactor: usar async/await en vez de callback
     let updatedPet;
@@ -334,12 +354,12 @@ exports.updatePet = async (req, res) => {
       });
     } catch (err) {
         console.error('Error al actualizar mascota:', err);
-        return res.serverError('admin.pet_update_error', { error: err.message });
+        return res.apiServerError('admin.pet_update_error', { error: err.message });
       }
-      res.data(updatedPet);
+      res.apiSuccess(updatedPet, 'admin.pet_update_success');
   } catch (err) {
     console.error('Error inesperado en updatePet:', err);
-    res.serverError('admin.pet_update_unexpected_error', { error: err.message });
+    res.apiServerError('admin.pet_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -352,12 +372,12 @@ exports.updateUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.forbidden('admin.user_update_permission_denied_organization');
+        return res.apiForbidden('admin.user_update_permission_denied_organization');
       }
     }
     // Si se está cambiando el rol, verificar que sea admin
     if (updates.role && req.user.role !== 'admin') {
-      return res.forbidden('admin.user_update_role_permission_denied');
+      return res.apiForbidden('admin.user_update_role_permission_denied');
     }
     // Actualizar en Firebase Auth si es necesario
     if (updates.disabled !== undefined) {
@@ -374,12 +394,12 @@ exports.updateUser = async (req, res) => {
       updatedUser = await userModel.updateUser(id, updates);
     } catch (err) {
         console.error('Error al actualizar usuario:', err);
-        return res.serverError('admin.user_update_error', { error: err.message });
+        return res.apiServerError('admin.user_update_error', { error: err.message });
       }
-      res.data(updatedUser);
+      res.apiSuccess(updatedUser, 'admin.user_update_success');
   } catch (err) {
     console.error('Error inesperado en updateUser:', err);
-    res.serverError('admin.user_update_unexpected_error', { error: err.message });
+    res.apiServerError('admin.user_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -391,7 +411,7 @@ exports.deleteUser = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.forbidden('admin.user_delete_permission_denied_organization');
+        return res.apiForbidden('admin.user_delete_permission_denied_organization');
       }
     }
     // Eliminar de Firebase Auth
@@ -407,12 +427,12 @@ exports.deleteUser = async (req, res) => {
       result = await userModel.deleteUser(id);
     } catch (err) {
         console.error('Error al eliminar usuario:', err);
-        return res.serverError('admin.user_delete_error', { error: err.message });
+        return res.apiServerError('admin.user_delete_error', { error: err.message });
       }
-      res.data(result);
+      res.apiSuccess(result, 'admin.user_delete_success');
   } catch (err) {
     console.error('Error inesperado en deleteUser:', err);
-    res.serverError('admin.user_delete_unexpected_error', { error: err.message });
+    res.apiServerError('admin.user_delete_unexpected_error', { error: err.message });
   }
 };
 
@@ -425,18 +445,22 @@ exports.updateUserRole = async (req, res) => {
     if (!req.user.isSuperAdmin && req.organizationId) {
       const user = await userModel.getUserById(id);
       if (!user || user.organizationId !== req.organizationId) {
-        return res.forbidden('admin.user_role_update_permission_denied_organization');
+        return res.apiForbidden('admin.user_role_update_permission_denied_organization');
       }
     }
     if (!role) {
-      return res.error('admin.user_role_required', 400);
+      return res.apiValidationError([{
+        field: 'role',
+        code: 'REQUIRED',
+        messageKey: 'admin.user_role_required'
+      }]);
     }
     // Actualizar custom claims en Firebase Auth
     try {
       await admin.auth().setCustomUserClaims(id, { role });
     } catch (authError) {
       console.error('Error al actualizar claims en Firebase Auth:', authError);
-      return res.serverError('admin.user_role_update_auth_error', { error: authError.message });
+      return res.apiServerError('admin.user_role_update_auth_error', { error: authError.message });
     }
     // Refactor: usar async/await en vez de callback
     let updatedUser;
@@ -444,12 +468,12 @@ exports.updateUserRole = async (req, res) => {
       updatedUser = await userModel.updateUser(id, { role });
     } catch (err) {
         console.error('Error al actualizar rol en base de datos:', err);
-        return res.serverError('admin.user_role_update_db_error', { error: err.message });
+        return res.apiServerError('admin.user_role_update_db_error', { error: err.message });
       }
-      res.success('admin.user_role_update_success', { user: updatedUser }, { role, userId: id });
+      res.apiSuccess({ user: updatedUser }, 'admin.user_role_update_success', {}, { role, userId: id });
   } catch (err) {
     console.error('Error inesperado en updateUserRole:', err);
-    res.serverError('admin.user_role_update_unexpected_error', { error: err.message });
+    res.apiServerError('admin.user_role_update_unexpected_error', { error: err.message });
   }
 };
 
@@ -458,7 +482,11 @@ exports.createUser = async (req, res) => {
   try {
     const { email, password, role, name } = req.body;
     if (!email || !password) {
-      return res.error('admin.user_create_email_password_required', 400);
+      return res.apiValidationError([{
+        field: 'email',
+        code: 'REQUIRED',
+        messageKey: 'admin.user_create_email_password_required'
+      }]);
     }
     // Create user in Firebase Auth
     const userRecord = await admin.auth().createUser({
@@ -485,11 +513,11 @@ exports.createUser = async (req, res) => {
       await userModel.createUser(userData);
     } catch (err) {
       console.error('Error al crear usuario en base de datos:', err);
-      return res.serverError('admin.user_create_db_error', { error: err.message });
+      return res.apiServerError('admin.user_create_db_error', { error: err.message });
     }
-    res.created('admin.user_created_successfully', userData);
+    res.apiCreated(userData, 'admin.user_created_successfully');
   } catch (err) {
     console.error('Error creating user:', err);
-    res.serverError('admin.user_create_error', { error: err.message });
+    res.apiServerError('admin.user_create_error', { error: err.message });
   }
 };

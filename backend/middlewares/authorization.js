@@ -48,7 +48,7 @@ const checkPermission = (resource, action, options = {}) => {
         path: req.path,
         method: req.method
       });
-      return res.unauthorized('Authentication required');
+      return res.apiUnauthorized('Authentication required');
     }
     
     try {

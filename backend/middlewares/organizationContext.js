@@ -26,7 +26,7 @@ module.exports = async function organizationContext(req, res, next) {
     // Assume req.user is set by auth middleware
     const user = req.user;
     if (!user) {
-      return res.unauthorized('auth.authentication_required');
+      return res.apiUnauthorized('auth.authentication_required');
     }
 
     // Super admin can access any org
@@ -49,7 +49,7 @@ module.exports = async function organizationContext(req, res, next) {
       }
     });
     if (!membership) {
-      return res.forbidden('auth.not_organization_member');
+      return res.apiForbidden('auth.not_organization_member');
     }
 
     // Attach org context to request
@@ -57,6 +57,6 @@ module.exports = async function organizationContext(req, res, next) {
     next();
   } catch (err) {
     console.error('Organization context middleware error:', err);
-    res.serverError('common.organization_context_error', { details: err.message });
+    res.apiServerError('common.organization_context_error', { details: err.message });
   }
 }; 

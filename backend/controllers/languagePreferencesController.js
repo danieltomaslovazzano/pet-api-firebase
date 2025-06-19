@@ -11,10 +11,10 @@ exports.getUserLanguagePreference = async (req, res) => {
     const user = await userModel.getUserById(userId);
     
     if (!user) {
-      return res.notFound('users.not_found');
+      return res.apiNotFound('users.not_found');
     }
     
-    res.data({
+    res.apiSuccess({
       userId: user.id,
       preferredLanguage: user.preferredLanguage || 'en',
       availableLanguages: i18nManager.getSupportedLanguages()
@@ -22,7 +22,7 @@ exports.getUserLanguagePreference = async (req, res) => {
     
   } catch (error) {
     console.error('Error getting user language preference:', error);
-    res.serverError('users.error_retrieving', { error: error.message });
+    res.apiServerError('users.error_retrieving', { error: error.message });
   }
 };
 
@@ -36,7 +36,11 @@ exports.updateUserLanguagePreference = async (req, res) => {
     
     // Validar que el idioma esté soportado
     if (!i18nManager.isLanguageSupported(preferredLanguage)) {
-      return res.error('validation.invalid_language', 400, {
+      return res.apiValidationError([{
+        field: 'preferredLanguage',
+        code: 'INVALID_LANGUAGE',
+        messageKey: 'validation.invalid_language'
+      }], 'validation.invalid_language', {
         availableLanguages: i18nManager.getSupportedLanguages()
       });
     }
@@ -46,14 +50,14 @@ exports.updateUserLanguagePreference = async (req, res) => {
       preferredLanguage
     });
     
-    res.updated('users.preference_updated', {
+    res.apiUpdated({
       userId: updatedUser.id,
       preferredLanguage: updatedUser.preferredLanguage
-    });
+    }, 'users.preference_updated');
     
   } catch (error) {
     console.error('Error updating user language preference:', error);
-    res.serverError('users.error_updating', { error: error.message });
+    res.apiServerError('users.error_updating', { error: error.message });
   }
 };
 
@@ -67,23 +71,23 @@ exports.getOrganizationLanguagePreference = async (req, res) => {
     // Verificar permisos: Super admin, o admin de la organización
     if (!req.user.isSuperAdmin) {
       if (req.organizationId && organizationId !== req.organizationId) {
-        return res.forbidden('organizations.forbidden_access_outside_context');
+        return res.apiForbidden('organizations.forbidden_access_outside_context');
       }
       
       // Verificar si es admin de la organización
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, organizationId, 'admin');
       if (!isAdmin) {
-        return res.forbidden('organizations.forbidden_admin_only');
+        return res.apiForbidden('organizations.forbidden_admin_only');
       }
     }
     
     const organization = await organizationModel.getOrganizationById(organizationId);
     
     if (!organization) {
-      return res.notFound('organizations.not_found');
+      return res.apiNotFound('organizations.not_found');
     }
     
-    res.data({
+    res.apiSuccess({
       organizationId: organization.id,
       name: organization.name,
       defaultLanguage: organization.defaultLanguage || 'en',
@@ -92,7 +96,7 @@ exports.getOrganizationLanguagePreference = async (req, res) => {
     
   } catch (error) {
     console.error('Error getting organization language preference:', error);
-    res.serverError('organizations.error_retrieving', { error: error.message });
+    res.apiServerError('organizations.error_retrieving', { error: error.message });
   }
 };
 
@@ -106,7 +110,11 @@ exports.updateOrganizationLanguagePreference = async (req, res) => {
     
     // Validar que el idioma esté soportado
     if (!i18nManager.isLanguageSupported(defaultLanguage)) {
-      return res.error('validation.invalid_language', 400, {
+      return res.apiValidationError([{
+        field: 'defaultLanguage',
+        code: 'INVALID_LANGUAGE',
+        messageKey: 'validation.invalid_language'
+      }], 'validation.invalid_language', {
         availableLanguages: i18nManager.getSupportedLanguages()
       });
     }
@@ -114,13 +122,13 @@ exports.updateOrganizationLanguagePreference = async (req, res) => {
     // Verificar permisos: Super admin, o admin de la organización
     if (!req.user.isSuperAdmin) {
       if (req.organizationId && organizationId !== req.organizationId) {
-        return res.forbidden('organizations.forbidden_access_outside_context');
+        return res.apiForbidden('organizations.forbidden_access_outside_context');
       }
       
       // Verificar si es admin de la organización
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, organizationId, 'admin');
       if (!isAdmin) {
-        return res.forbidden('organizations.forbidden_admin_only');
+        return res.apiForbidden('organizations.forbidden_admin_only');
       }
     }
     
@@ -129,15 +137,15 @@ exports.updateOrganizationLanguagePreference = async (req, res) => {
       defaultLanguage
     });
     
-    res.updated('organizations.language_preference_updated', {
+    res.apiUpdated({
       organizationId: updatedOrganization.id,
       name: updatedOrganization.name,
       defaultLanguage: updatedOrganization.defaultLanguage
-    });
+    }, 'organizations.language_preference_updated');
     
   } catch (error) {
     console.error('Error updating organization language preference:', error);
-    res.serverError('organizations.error_updating', { error: error.message });
+    res.apiServerError('organizations.error_updating', { error: error.message });
   }
 };
 
@@ -158,7 +166,7 @@ exports.getSupportedLanguages = async (req, res) => {
       };
     }
     
-    res.data({
+    res.apiSuccess({
       supportedLanguages,
       defaultLanguage: 'en',
       currentLanguage: req.language,
@@ -168,7 +176,7 @@ exports.getSupportedLanguages = async (req, res) => {
     
   } catch (error) {
     console.error('Error getting supported languages:', error);
-    res.serverError('common.error_retrieving_languages', { error: error.message });
+    res.apiServerError('common.error_retrieving_languages', { error: error.message });
   }
 };
 
@@ -179,7 +187,7 @@ exports.getLanguageStatistics = async (req, res) => {
   try {
     // Solo admins pueden ver estadísticas
     if (req.user.role !== 'admin' && !req.user.isSuperAdmin) {
-      return res.forbidden('errors.permission_denied');
+      return res.apiForbidden('errors.permission_denied');
     }
     
     // Para esta implementación, creamos estadísticas básicas
@@ -199,14 +207,10 @@ exports.getLanguageStatistics = async (req, res) => {
     // Aquí se podrían agregar consultas reales a la base de datos
     // Por ahora devolvemos estadísticas placeholder
     
-    res.data({
-      statistics: stats,
-      generatedAt: new Date().toISOString(),
-      supportedLanguages: i18nManager.getSupportedLanguages()
-    });
+    res.apiSuccess(stats);
     
   } catch (error) {
     console.error('Error getting language statistics:', error);
-    res.serverError('admin.error_retrieving_statistics', { error: error.message });
+    res.apiServerError('admin.error_retrieving_statistics', { error: error.message });
   }
 }; 

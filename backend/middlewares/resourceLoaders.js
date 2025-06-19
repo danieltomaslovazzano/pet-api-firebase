@@ -55,7 +55,7 @@ exports.loadPetResource = async (req, res, next) => {
     const pet = await petModel.getPetById(id);
     if (!pet) {
       logAuthError('Pet resource not found', { id });
-      return res.notFound('Pet not found');
+      return res.apiNotFound('Pet not found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -67,7 +67,7 @@ exports.loadPetResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading pet resource', { id, error: err.message });
-    return res.serverError('Error retrieving pet');
+    return res.apiServerError('Error retrieving pet');
   }
 };
 
@@ -94,7 +94,7 @@ exports.loadUserResource = (req, res, next) => {
     .then(user => {
       if (!user) {
         logAuthError('User resource not found', { id });
-        return res.notFound('User not found');
+        return res.apiNotFound('User not found');
       }
       
       logAuthDebug({
@@ -109,7 +109,7 @@ exports.loadUserResource = (req, res, next) => {
     })
     .catch(err => {
       logAuthError('Error loading user resource', { id, error: err.message });
-      return res.serverError('Error retrieving user');
+      return res.apiServerError('Error retrieving user');
     });
 };
 
@@ -133,7 +133,7 @@ exports.loadOrganizationResource = async (req, res, next) => {
     const organization = await organizationModel.getOrganizationById(id);
     if (!organization) {
       logAuthError('Organization resource not found', { id });
-      return res.notFound('Organization not found');
+      return res.apiNotFound('Organization not found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -145,7 +145,7 @@ exports.loadOrganizationResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading organization resource', { id, error: err.message });
-    return res.serverError('Error retrieving organization');
+    return res.apiServerError('Error retrieving organization');
   }
 };
 
@@ -173,7 +173,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     
     if (!membership) {
       logAuthError('Membership resource not found', { id });
-      return res.notFound('Membership not found');
+      return res.apiNotFound('Membership not found');
     }
     
     logAuthDebug({
@@ -189,7 +189,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     next();
   } catch (error) {
     logAuthError('Error loading membership resource', { id: req.params.id, error: error.message });
-    return res.serverError('Error retrieving membership');
+    return res.apiServerError('Error retrieving membership');
   }
 };
 
@@ -212,7 +212,7 @@ exports.loadConversationResource = async (req, res, next) => {
     const conversation = await conversationModel.getConversationById(id);
     if (!conversation) {
       logAuthError('Conversation resource not found', { id });
-      return res.notFound('Conversation not found');
+      return res.apiNotFound('Conversation not found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -224,7 +224,7 @@ exports.loadConversationResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading conversation resource', { id, error: err.message });
-    return res.serverError('Error retrieving conversation');
+    return res.apiServerError('Error retrieving conversation');
   }
 };
 
@@ -247,7 +247,7 @@ exports.loadMessageResource = async (req, res, next) => {
     const message = await messageModel.getMessageById(id);
     if (!message) {
       logAuthError('Message resource not found', { id });
-      return res.notFound('Message not found');
+      return res.apiNotFound('Message not found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -260,7 +260,7 @@ exports.loadMessageResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading message resource', { id, error: err.message });
-    return res.serverError('Error retrieving message');
+    return res.apiServerError('Error retrieving message');
   }
 };
 
