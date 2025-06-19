@@ -55,13 +55,13 @@ describe('Organization Types E2E Tests', () => {
 
       expect(response.status).toBe(200);
       expect(typeof response.data).toBe('object');
-      expect(response.data.shelter).toBeDefined();
-      expect(response.data.shelter.id).toBe('shelter');
-      expect(response.data.shelter.name).toBe('Protectora de Animales');
-      expect(response.data.shelter.features).toBeDefined();
-      expect(Array.isArray(response.data.shelter.features)).toBe(true);
-      expect(response.data.shelter.permissions).toBeDefined();
-      expect(response.data.shelter.validation).toBeDefined();
+      expect(response.data.data.shelter).toBeDefined();
+      expect(response.data.data.shelter.id).toBe('shelter');
+      expect(response.data.data.shelter.name).toBe('Protectora de Animales');
+      expect(response.data.data.shelter.features).toBeDefined();
+      expect(Array.isArray(response.data.data.shelter.features)).toBe(true);
+      expect(response.data.data.shelter.permissions).toBeDefined();
+      expect(response.data.data.shelter.validation).toBeDefined();
     });
 
     test('Regular user should also get organization types', async () => {
@@ -73,16 +73,16 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.shelter).toBeDefined();
+      expect(response.data.data.shelter).toBeDefined();
     });
 
-    test('Should fail without authentication', async () => {
-      try {
-        await axios.get('http://localhost:3000/api/organizations/types');
-        fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.response.status).toBe(401);
-      }
+    test('Should work without authentication (public endpoint)', async () => {
+      const response = await axios.get('http://localhost:3000/api/organizations/types');
+      
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toBeDefined();
+      expect(response.data.data.shelter).toBeDefined();
     });
   });
 
@@ -96,15 +96,15 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe('shelter');
-      expect(response.data.name).toBe('Protectora de Animales');
-      expect(response.data.description).toContain('rescate');
-      expect(response.data.features).toContain('pet_adoption');
-      expect(response.data.features).toContain('pet_rescue');
-      expect(response.data.permissions.pets).toBeDefined();
-      expect(response.data.permissions.pets.create).toBe(true);
-      expect(response.data.validation.requiredFields).toContain('name');
-      expect(response.data.validation.requiredFields).toContain('email');
+      expect(response.data.data.id).toBe('shelter');
+      expect(response.data.data.name).toBe('Protectora de Animales');
+      expect(response.data.data.description).toContain('rescate');
+      expect(response.data.data.features).toContain('pet_adoption');
+      expect(response.data.data.features).toContain('pet_rescue');
+      expect(response.data.data.permissions.pets).toBeDefined();
+      expect(response.data.data.permissions.pets.create).toBe(true);
+      expect(response.data.data.validation.requiredFields).toContain('name');
+      expect(response.data.data.validation.requiredFields).toContain('email');
     });
 
     test('Should fail for invalid organization type', async () => {
@@ -122,13 +122,13 @@ describe('Organization Types E2E Tests', () => {
       }
     });
 
-    test('Should fail without authentication', async () => {
-      try {
-        await axios.get('http://localhost:3000/api/organizations/types/shelter');
-        fail('Should have thrown an error');
-      } catch (error) {
-        expect(error.response.status).toBe(401);
-      }
+    test('Should work without authentication (public endpoint)', async () => {
+      const response = await axios.get('http://localhost:3000/api/organizations/types/shelter');
+      
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data.id).toBe('shelter');
+      expect(response.data.data.name).toBe('Protectora de Animales');
     });
   });
 
@@ -152,13 +152,14 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(organizationData.name);
-      expect(response.data.type).toBe('shelter');
-      expect(response.data.createdBy).toBe(adminUserId);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.name).toBe(organizationData.name);
+      expect(response.data.data.type).toBe('shelter');
+      expect(response.data.data.createdBy).toBe(adminUserId);
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should create organization with default type when not specified', async () => {
@@ -179,10 +180,10 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.type).toBe('shelter'); // Default type
+      expect(response.data.data.type).toBe('shelter'); // Default type
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should fail with invalid organization type', async () => {
@@ -283,7 +284,7 @@ describe('Organization Types E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       testOrganizations.push(testOrg);
     });
 
@@ -301,8 +302,8 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.type).toBe('shelter'); // Should remain the same
-      expect(response.data.description).toBe(updateData.description);
+      expect(response.data.data.type).toBe('shelter'); // Should remain the same
+      expect(response.data.data.description).toBe(updateData.description);
     });
 
     test('Should fail when updating to invalid type', async () => {
@@ -358,11 +359,12 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // All returned organizations should be of type 'shelter'
-      response.data.forEach(org => {
+      response.data.data.forEach(org => {
         expect(org.type).toBe('shelter');
       });
     });
@@ -391,8 +393,9 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
     });
   });
 

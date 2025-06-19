@@ -102,7 +102,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         email: regularUser.email,
         password: 'TestPassword123!'
       });
-      regularUserToken = regularUserResponse.data.tokens.idToken;
+      regularUserToken = regularUserResponse.data.data.tokens.idToken;
 
       // 5. Create moderator user
       console.log('\n5️⃣ Creating moderator user...');
@@ -118,7 +118,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         email: moderatorUser.email,
         password: 'TestPassword123!'
       });
-      moderatorToken = moderatorUserResponse.data.tokens.idToken;
+      moderatorToken = moderatorUserResponse.data.data.tokens.idToken;
 
       // 6. Update moderator role
       console.log('\n6️⃣ Updating moderator role...');
@@ -292,11 +292,12 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.content).toBe(messageData.content);
-      expect(response.data.senderId).toBe(messageData.senderId);
-      expect(response.data.conversationId).toBe(messageData.conversationId);
-      expect(response.data.organizationId).toBe(testOrganization.id);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.content).toBe(messageData.content);
+      expect(response.data.data.senderId).toBe(messageData.senderId);
+      expect(response.data.data.conversationId).toBe(messageData.conversationId);
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
 
       testMessage = response.data;
       testMessages.push(testMessage);
@@ -324,8 +325,8 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.attachments).toEqual(messageData.attachments);
-      expect(response.data.senderId).toBe(regularUser.id);
+      expect(response.data.data.attachments).toEqual(messageData.attachments);
+      expect(response.data.data.senderId).toBe(regularUser.id);
 
       testMessage2 = response.data;
       testMessages.push(testMessage2);
@@ -461,11 +462,12 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // Check that all messages belong to the conversation
-      response.data.forEach(message => {
+      response.data.data.forEach(message => {
         expect(message.conversationId).toBe(testConversation.id);
       });
     });
@@ -482,8 +484,8 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testMessage.id);
-      expect(response.data.content).toBe(testMessage.content);
+      expect(response.data.data.id).toBe(testMessage.id);
+      expect(response.data.data.content).toBe(testMessage.content);
     });
 
     test('Should fail to get message by invalid ID format', async () => {
@@ -574,10 +576,11 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All messages should belong to the specified conversation
-      response.data.forEach(message => {
+      response.data.data.forEach(message => {
         expect(message.conversationId).toBe(testConversation.id);
       });
     });
@@ -596,7 +599,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.senderId).toBe(adminUser.id);
+      expect(response.data.data.senderId).toBe(adminUser.id);
     });
 
     test('Should allow conversation participant to view message', async () => {
@@ -611,7 +614,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.conversationId).toBe(testConversation.id);
+      expect(response.data.data.conversationId).toBe(testConversation.id);
     });
 
     test('Should fail to view message as non-participant', async () => {
@@ -851,7 +854,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.organizationId).toBe(testOrganization2.id);
+      expect(response.data.data.organizationId).toBe(testOrganization2.id);
 
       testMessages.push(response.data);
     });
@@ -893,14 +896,15 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // Check that we have at least some messages from our organization
-      const orgMessages = response.data.filter(message => message.organizationId === testOrganization.id);
+      const orgMessages = response.data.data.filter(message => message.organizationId === testOrganization.id);
       expect(orgMessages.length).toBeGreaterThan(0);
       
       // All messages should either belong to the specified organization or be null (for super admin access)
-      response.data.forEach(message => {
+      response.data.data.forEach(message => {
         expect(message.organizationId === testOrganization.id || message.organizationId === null || message.organizationId === testOrganization2.id).toBe(true);
       });
     });
@@ -918,7 +922,8 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
   });
 
@@ -996,7 +1001,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.location).toEqual(messageData.location);
+      expect(response.data.data.location).toEqual(messageData.location);
 
       testMessages.push(response.data);
     });

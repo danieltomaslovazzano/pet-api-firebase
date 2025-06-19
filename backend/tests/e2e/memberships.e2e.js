@@ -93,10 +93,11 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.organizationId).toBe(testOrganization.id);
-      expect(response.data.userId).toBe(inviteUser.id);
-      expect(response.data.role).toBe('member');
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
+      expect(response.data.data.userId).toBe(inviteUser.id);
+      expect(response.data.data.role).toBe('member');
       
       // Store for cleanup
       testMemberships.push(response.data);
@@ -192,7 +193,7 @@ describe('Memberships E2E Tests', () => {
         );
 
         expect(response.status).toBe(201);
-        expect(response.data.role).toBe(role);
+        expect(response.data.data.role).toBe(role);
         testMemberships.push(response.data);
       }
     });
@@ -208,11 +209,12 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // Verify all memberships belong to the organization
-      response.data.forEach(membership => {
+      response.data.data.forEach(membership => {
         expect(membership.organizationId).toBe(testOrganization.id);
       });
     });
@@ -226,7 +228,8 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('User should get their own memberships', async () => {
@@ -238,7 +241,8 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('Should fail without userId or organizationId', async () => {
@@ -302,9 +306,9 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testMembership.id);
-      expect(response.data.organizationId).toBe(testMembership.organizationId);
-      expect(response.data.userId).toBe(testMembership.userId);
+      expect(response.data.data.id).toBe(testMembership.id);
+      expect(response.data.data.organizationId).toBe(testMembership.organizationId);
+      expect(response.data.data.userId).toBe(testMembership.userId);
     });
 
     test('Should fail with invalid membership ID', async () => {
@@ -349,7 +353,7 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.role).toBe(newRole);
+      expect(response.data.data.role).toBe(newRole);
       
       // Update our local reference
       membershipToUpdate.role = newRole;
@@ -437,7 +441,8 @@ describe('Memberships E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('message');
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('message');
 
       // Verify membership is deleted
       try {

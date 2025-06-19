@@ -59,7 +59,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         headers: { Authorization: `Bearer ${adminToken}` }
       }
     );
-    testOrganization = orgResponse.data;
+    testOrganization = orgResponse.data.data;
     testOrganizations.push(testOrganization);
     // Verify default type is set
     expect(testOrganization.type).toBe('shelter');
@@ -77,7 +77,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         headers: { Authorization: `Bearer ${adminToken}` }
       }
     );
-    otherOrganization = otherOrgResponse.data;
+    otherOrganization = otherOrgResponse.data.data;
     testOrganizations.push(otherOrganization);
     // Verify default type is set
     expect(otherOrganization.type).toBe('shelter');
@@ -163,12 +163,13 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(petData.name);
-      expect(response.data.species).toBe(petData.species);
-      expect(response.data.organizationId).toBe(testOrganization.id);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.name).toBe(petData.name);
+      expect(response.data.data.species).toBe(petData.species);
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
       
-      createdPets.push(response.data);
+      createdPets.push(response.data.data);
     });
 
     test('Regular user should create a pet successfully', async () => {
@@ -197,11 +198,12 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.name).toBe(petData.name);
-      expect(response.data.organizationId).toBe(testOrganization.id);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.name).toBe(petData.name);
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
       
-      createdPets.push(response.data);
+      createdPets.push(response.data.data);
     });
 
     test('Should fail without required fields', async () => {
@@ -247,9 +249,9 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       
       // API allows this for public pet listings (organizationId will be null)
       expect(response.status).toBe(201);
-      expect(response.data.organizationId).toBeNull();
+      expect(response.data.data.organizationId).toBeNull();
       
-      createdPets.push(response.data);
+      createdPets.push(response.data.data);
     });
   });
 
@@ -292,8 +294,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testPet.id);
-      expect(response.data.name).toBe(testPet.name);
+      expect(response.data.data.id).toBe(testPet.id);
+      expect(response.data.data.name).toBe(testPet.name);
     });
 
     test('Should list pets for organization', async () => {
@@ -308,11 +310,12 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // All pets should belong to the test organization
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.organizationId).toBe(testOrganization.id);
       });
     });
@@ -329,10 +332,11 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All returned pets should be dogs
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.species).toBe('dog');
       });
     });
@@ -349,10 +353,11 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All returned pets should be available
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.status).toBe('available');
       });
     });
@@ -425,9 +430,9 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.name).toBe(updateData.name);
-      expect(response.data.status).toBe(updateData.status);
-      expect(response.data.description).toBe(updateData.description);
+      expect(response.data.data.name).toBe(updateData.name);
+      expect(response.data.data.status).toBe(updateData.status);
+      expect(response.data.data.description).toBe(updateData.description);
     });
 
     test('Regular user should update pet successfully', async () => {
@@ -448,7 +453,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         );
 
         expect(response.status).toBe(200);
-        expect(response.data.description).toBe(updateData.description);
+        expect(response.data.data.description).toBe(updateData.description);
       } catch (error) {
         // Regular users might not have permission to update pets
         if (error.response && error.response.status === 403) {
@@ -625,15 +630,16 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the test organization
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.organizationId).toBe(testOrganization.id);
       });
 
       // Should not contain pets from other organization
-      const otherOrgPets = response.data.filter(pet => pet.organizationId === otherOrganization.id);
+      const otherOrgPets = response.data.data.filter(pet => pet.organizationId === otherOrganization.id);
       expect(otherOrgPets.length).toBe(0);
     });
 
@@ -653,8 +659,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       
       // API correctly allows cross-organization read access for public pet adoption
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(orgBPet.id);
-      expect(response.data.organizationId).toBe(otherOrganization.id);
+      expect(response.data.data.id).toBe(orgBPet.id);
+      expect(response.data.data.organizationId).toBe(otherOrganization.id);
     });
 
     test('User should not update pets from other organizations', async () => {
@@ -714,7 +720,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         }
       );
       expect(responseA.status).toBe(200);
-      expect(responseA.data.id).toBe(orgAPet.id);
+      expect(responseA.data.data.id).toBe(orgAPet.id);
 
       // Test accessing pet from other organization
       try {
@@ -728,7 +734,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
           }
         );
         expect(responseB.status).toBe(200);
-        expect(responseB.data.id).toBe(orgBPet.id);
+        expect(responseB.data.data.id).toBe(orgBPet.id);
       } catch (error) {
         // If admin doesn't have access to other org, that's also valid
         if (error.response && error.response.status === 403) {
@@ -752,15 +758,16 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // Should include pets from multiple organizations for public adoption
-      const orgIds = [...new Set(response.data.map(pet => pet.organizationId))];
+      const orgIds = [...new Set(response.data.data.map(pet => pet.organizationId))];
       expect(orgIds.length).toBeGreaterThan(0);
       
       // Should include both organization pets and public pets (null organizationId)
-      const hasOrgPets = response.data.some(pet => pet.organizationId !== null);
-      const hasPublicPets = response.data.some(pet => pet.organizationId === null);
+      const hasOrgPets = response.data.data.some(pet => pet.organizationId !== null);
+      const hasPublicPets = response.data.data.some(pet => pet.organizationId === null);
       
       expect(hasOrgPets || hasPublicPets).toBe(true);
     });
@@ -815,8 +822,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.visibility).toBe('visible');
-      createdPets.push(response.data);
+      expect(response.data.data.visibility).toBe('visible');
+      createdPets.push(response.data.data);
     });
 
     test('Should create pet with explicit visibility setting', async () => {
@@ -840,8 +847,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.visibility).toBe('featured');
-      createdPets.push(response.data);
+      expect(response.data.data.visibility).toBe('featured');
+      createdPets.push(response.data.data);
     });
 
     test('Should hide a pet successfully', async () => {
@@ -858,7 +865,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
 
       expect(response.status).toBe(200);
       expect(response.data.message).toContain('hidden');
-      expect(response.data.pet.visibility).toBe('hidden');
+      expect(response.data.data.pet.visibility).toBe('hidden');
     });
 
     test('Should show a hidden pet successfully', async () => {
@@ -875,7 +882,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
 
       expect(response.status).toBe(200);
       expect(response.data.message).toContain('visible');
-      expect(response.data.pet.visibility).toBe('visible');
+      expect(response.data.data.pet.visibility).toBe('visible');
     });
 
     test('Should feature a pet successfully', async () => {
@@ -892,7 +899,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
 
       expect(response.status).toBe(200);
       expect(response.data.message).toContain('featured');
-      expect(response.data.pet.visibility).toBe('featured');
+      expect(response.data.data.pet.visibility).toBe('featured');
     });
 
     test('Should update pet visibility directly via PUT', async () => {
@@ -912,7 +919,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.visibility).toBe('hidden');
+      expect(response.data.data.visibility).toBe('hidden');
     });
 
     test('Should fail with invalid visibility value', async () => {
@@ -964,7 +971,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      const hiddenPets = response.data.filter(pet => pet.id === visibilityTestPet.id);
+      const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
       expect(hiddenPets.length).toBe(0);
     });
 
@@ -981,7 +988,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      const hiddenPets = response.data.filter(pet => pet.id === visibilityTestPet.id);
+      const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
       expect(hiddenPets.length).toBe(1);
       expect(hiddenPets[0].visibility).toBe('hidden');
     });
@@ -1011,7 +1018,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(visibleResponse.status).toBe(200);
-      visibleResponse.data.forEach(pet => {
+      visibleResponse.data.data.forEach(pet => {
         expect(pet.visibility).toBe('visible');
       });
 
@@ -1027,7 +1034,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(featuredResponse.status).toBe(200);
-      featuredResponse.data.forEach(pet => {
+      featuredResponse.data.data.forEach(pet => {
         expect(pet.visibility).toBe('featured');
       });
     });
@@ -1057,17 +1064,17 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.results).toBeDefined();
+      expect(response.data.data.results).toBeDefined();
       
       // If there are results, they should all be visible dogs
-      if (response.data.results.length > 0) {
-        response.data.results.forEach(pet => {
+      if (response.data.data.results.length > 0) {
+        response.data.data.results.forEach(pet => {
           expect(pet.species).toBe('dog');
           expect(pet.visibility).toBe('visible');
         });
         
         // At least one result should be found when searching for visible dogs
-        expect(response.data.results.length).toBeGreaterThan(0);
+        expect(response.data.data.results.length).toBeGreaterThan(0);
       } else {
         // If no results, let's create a visible dog for this test
         const testDogData = {
@@ -1103,8 +1110,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         );
         
         expect(retryResponse.status).toBe(200);
-        expect(retryResponse.data.results.length).toBeGreaterThan(0);
-        retryResponse.data.results.forEach(pet => {
+        expect(retryResponse.data.data.results.length).toBeGreaterThan(0);
+        retryResponse.data.data.results.forEach(pet => {
           expect(pet.species).toBe('dog');
           expect(pet.visibility).toBe('visible');
         });
@@ -1136,7 +1143,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(response.status).toBe(200);
-      const hiddenPets = response.data.results.filter(pet => pet.id === visibilityTestPet.id);
+      const hiddenPets = response.data.data.results.filter(pet => pet.id === visibilityTestPet.id);
       expect(hiddenPets.length).toBe(0);
     });
 
@@ -1163,8 +1170,8 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
       );
 
       expect(createResponse.status).toBe(201);
-      expect(createResponse.data.status).toBe('adopted');
-      expect(createResponse.data.visibility).toBe('visible');
+      expect(createResponse.data.data.status).toBe('adopted');
+      expect(createResponse.data.data.visibility).toBe('visible');
       
       createdPets.push(createResponse.data);
 
@@ -1179,7 +1186,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
         }
       );
 
-      const adoptedVisiblePets = listResponse.data.filter(pet => 
+      const adoptedVisiblePets = listResponse.data.data.filter(pet => 
         pet.status === 'adopted' && pet.visibility === 'visible'
       );
       expect(adoptedVisiblePets.length).toBeGreaterThan(0);

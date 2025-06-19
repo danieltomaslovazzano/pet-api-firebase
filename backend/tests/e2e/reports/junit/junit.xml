@@ -1,78 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="18" failures="18" errors="0" time="6.141">
-  <testsuite name="Organization Types E2E Tests" errors="0" failures="18" skipped="0" timestamp="2025-06-19T13:11:02" time="5.883" tests="18">
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should get all available organization types" time="0.009">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+<testsuites name="jest tests" tests="20" failures="20" errors="0" time="25.366">
+  <testsuite name="Memberships E2E Tests" errors="0" failures="20" skipped="0" timestamp="2025-06-19T13:39:17" time="25.172" tests="20">
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Admin should invite user to organization successfully" time="0.025">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Regular user should also get organization types" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should fail to invite same user twice" time="0.006">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Organization Types" name="Should fail without authentication" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="0.006">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should get shelter type information" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should invite user with different roles" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail for invalid organization type" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by organization" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Get Specific Organization Type" name="Should fail without authentication" time="0.003">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by user" time="0">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create shelter organization successfully" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Memberships" name="User should get their own memberships" time="0.005">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should create organization with default type when not specified" time="0.002">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Should fail without userId or organizationId" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should fail with invalid organization type" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Memberships" name="Regular user should fail to get other user memberships" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should validate required fields for shelter type" time="0.005">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Admin should get membership by ID" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Create Organization with Type" name="Should handle empty string type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Should fail with invalid membership ID" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should update organization type successfully" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Admin should update member role successfully" time="0.008">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Should fail with invalid role" time="0.003">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Memberships E2E Tests Update Member Role" name="Regular user should fail to update role without permissions" time="0">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Memberships E2E Tests Remove Member" name="Admin should remove member successfully" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -81,14 +129,16 @@
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:421:34)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Update Organization Type" name="Should fail when updating to invalid type" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
+    <testcase classname="Memberships E2E Tests Remove Member" name="Regular user should fail to remove member without permissions" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -97,14 +147,16 @@
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:272:24)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:421:34)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should filter organizations by shelter type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
+    <testcase classname="Memberships E2E Tests Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="0.003">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -113,51 +165,31 @@
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:530:34)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should fail with invalid type filter" time="0">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Filter Organizations by Type" name="Should return all organizations when no type filter is applied" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-      <failure>AxiosError: Request failed with status code 401
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
-    at processTicksAndRejections (node:internal/process/task_queues:90:21)
-    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:334:26)</failure>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle null type" time="0.001">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
-    </testcase>
-    <testcase classname="Organization Types E2E Tests Organization Type Validation Edge Cases" name="Should handle case sensitivity" time="0.007">
-      <failure>TypeError: Cannot read properties of undefined (reading &apos;idToken&apos;)
-    at idToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:60:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/organization-types.e2e.js:16:24)</failure>
+    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Super admin should access all organizations" time="0.001">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;shelter&quot;
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
   </testsuite>
 </testsuites>

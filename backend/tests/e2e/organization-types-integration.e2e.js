@@ -103,8 +103,8 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.organizationId).toBe(shelterOrg.id);
-      expect(response.data.name).toBe(petData.name);
+      expect(response.data.data.organizationId).toBe(shelterOrg.id);
+      expect(response.data.data.name).toBe(petData.name);
       
       createdPets.push(response.data);
     });
@@ -119,7 +119,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      expect(orgResponse.data.type).toBe('shelter');
+      expect(orgResponse.data.data.type).toBe('shelter');
 
       // Get shelter type features
       const typeResponse = await axios.get(
@@ -129,10 +129,10 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      expect(typeResponse.data.features).toContain('pet_adoption');
-      expect(typeResponse.data.features).toContain('pet_rescue');
-      expect(typeResponse.data.permissions.pets.create).toBe(true);
-      expect(typeResponse.data.permissions.pets.manage_adoption_status).toBe(true);
+      expect(typeResponse.data.data.features).toContain('pet_adoption');
+      expect(typeResponse.data.data.features).toContain('pet_rescue');
+      expect(typeResponse.data.data.permissions.pets.create).toBe(true);
+      expect(typeResponse.data.data.permissions.pets.manage_adoption_status).toBe(true);
     });
 
     test('Should list pets filtered by shelter organization', async () => {
@@ -147,10 +147,11 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the shelter organization
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.organizationId).toBe(shelterOrg.id);
       });
     });
@@ -210,7 +211,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      const permissions = typeResponse.data.permissions;
+      const permissions = typeResponse.data.data.permissions;
       
       // Verify shelter-specific permissions
       expect(permissions.pets.create).toBe(true);
@@ -231,7 +232,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      const validation = typeResponse.data.validation;
+      const validation = typeResponse.data.data.validation;
       
       expect(validation.requiredFields).toContain('name');
       expect(validation.requiredFields).toContain('email');
@@ -280,11 +281,12 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(filterResponse.status).toBe(200);
-      expect(Array.isArray(filterResponse.data)).toBe(true);
+      expect(filterResponse.data).toHaveProperty('success', true);
+      expect(Array.isArray(filterResponse.data.data)).toBe(true);
       
       // Should include our created shelters
       const shelterIds = shelters.map(s => s.id);
-      const returnedShelters = filterResponse.data.filter(org => shelterIds.includes(org.id));
+      const returnedShelters = filterResponse.data.data.filter(org => shelterIds.includes(org.id));
       expect(returnedShelters.length).toBe(3);
     });
 
@@ -387,9 +389,9 @@ describe('Organization Types Integration E2E Tests', () => {
       createdPets.push(pet2Response.data);
 
       // Verify pets are isolated to their respective shelters
-      expect(pet1Response.data.organizationId).toBe(shelter1.id);
-      expect(pet2Response.data.organizationId).toBe(shelter2.id);
-      expect(pet1Response.data.organizationId).not.toBe(pet2Response.data.organizationId);
+      expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
+      expect(pet2Response.data.data.organizationId).toBe(shelter2.id);
+      expect(pet1Response.data.data.organizationId).not.toBe(pet2Response.data.data.organizationId);
     });
     */
   });
@@ -415,7 +417,7 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.type).toBe('shelter'); // Should default to shelter
+      expect(response.data.data.type).toBe('shelter'); // Should default to shelter
       
       testOrganizations.push(response.data);
     });
@@ -451,8 +453,8 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(updateResponse.status).toBe(200);
-      expect(updateResponse.data.type).toBe('shelter'); // Type should remain unchanged
-      expect(updateResponse.data.description).toBe('Updated description');
+      expect(updateResponse.data.data.type).toBe('shelter'); // Type should remain unchanged
+      expect(updateResponse.data.data.description).toBe('Updated description');
     });
   });
 }); 

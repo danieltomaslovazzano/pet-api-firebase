@@ -97,7 +97,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         email: regularUser.email,
         password: 'TestPassword123!'
       });
-      regularUserToken = regularUserResponse.data.tokens.idToken;
+      regularUserToken = regularUserResponse.data.data.tokens.idToken;
 
       // 5. Create moderator user
       console.log('\n5️⃣ Creating moderator user...');
@@ -113,7 +113,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         email: moderatorUser.email,
         password: 'TestPassword123!'
       });
-      moderatorToken = moderatorUserResponse.data.tokens.idToken;
+      moderatorToken = moderatorUserResponse.data.data.tokens.idToken;
 
       // 6. Update moderator role
       console.log('\n6️⃣ Updating moderator role...');
@@ -241,10 +241,11 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('id');
-      expect(response.data.participants).toEqual(expect.arrayContaining(conversationData.participants));
-      expect(response.data.title).toBe(conversationData.title);
-      expect(response.data.organizationId).toBe(testOrganization.id);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('id');
+      expect(response.data.data.participants).toEqual(expect.arrayContaining(conversationData.participants));
+      expect(response.data.data.title).toBe(conversationData.title);
+      expect(response.data.data.organizationId).toBe(testOrganization.id);
 
       testConversation = response.data;
     });
@@ -316,9 +317,9 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.participants).toHaveLength(3);
-      expect(response.data.type).toBe('group');
-      expect(response.data.title).toBe(conversationData.title);
+      expect(response.data.data.participants).toHaveLength(3);
+      expect(response.data.data.type).toBe('group');
+      expect(response.data.data.title).toBe(conversationData.title);
 
       testConversation2 = response.data;
     });
@@ -337,8 +338,8 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.id).toBe(testConversation.id);
-      expect(response.data.participants).toContain(regularUser.id);
+      expect(response.data.data.id).toBe(testConversation.id);
+      expect(response.data.data.participants).toContain(regularUser.id);
     });
 
     test('Should fail to get conversation by ID for non-participant', async () => {
@@ -361,7 +362,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
 
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/conversations/${createResponse.data.id}`,
+          `${API_BASE_URL}/conversations/${createResponse.data.data.id}`,
           {
             headers: { 
               Authorization: `Bearer ${moderatorToken}`,
@@ -389,11 +390,12 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // Check that user is participant in all returned conversations
-      response.data.forEach(conversation => {
+      response.data.data.forEach(conversation => {
         expect(conversation.participants).toContain(regularUser.id);
       });
     });
@@ -623,7 +625,8 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('Should fail to get all conversations as regular user', async () => {
@@ -665,7 +668,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.organizationId).toBe(testOrganization2.id);
+      expect(response.data.data.organizationId).toBe(testOrganization2.id);
     });
 
     test('Should not access conversation from different organization', async () => {
@@ -730,10 +733,11 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All conversations should belong to the specified organization
-      response.data.forEach(conversation => {
+      response.data.data.forEach(conversation => {
         expect(conversation.organizationId).toBe(testOrganization.id);
       });
     });
@@ -751,7 +755,8 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
     });
   });
 
