@@ -7,7 +7,7 @@ const cors = require('cors');
 const { verifyToken } = require('./middlewares/auth');
 const organizationContext = require('./middlewares/organizationContext');
 const { languageDetection, addLanguageHeaders } = require('./middlewares/languageDetection');
-const { responseFormatter } = require('./middlewares/responseFormatter');
+const { unifiedResponseFormatter } = require('./middlewares/unifiedResponseFormatter');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -35,15 +35,19 @@ app.use(cors({
 // Middleware for parsing JSON
 app.use(express.json());
 
+// Unified response formatter middleware
+app.use(unifiedResponseFormatter);
+
 // i18n middlewares - detectar idioma y formatear respuestas
 app.use(languageDetection);
-app.use(responseFormatter);
 app.use(addLanguageHeaders);
 
 // Rutas públicas
 app.use('/api/auth', authRoutes);
 // Endpoints públicos de idiomas (sin autenticación)
 app.use('/api/language-preferences', publicLanguageRoutes);
+// Organization types endpoints (public)
+app.use('/api/organizations/types', organizationRoutes);
 
 // Middlewares de autenticación y organización para rutas protegidas
 app.use(verifyToken);

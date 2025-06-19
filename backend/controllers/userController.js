@@ -15,9 +15,14 @@ exports.createUser = async (req, res) => {
   try {
     // 1. Create user in Firebase Auth
     if (!userData.email || !userData.password) {
-      return res.validationError([
-        { field: 'email', messageKey: 'users.email_and_password_are_required' }
-      ]);
+      return res.apiValidationError([
+        { field: 'email', code: 'REQUIRED', messageKey: 'users.email.required' },
+        { field: 'password', code: 'REQUIRED', messageKey: 'users.password.required' }
+      ].filter(error => {
+        if (error.field === 'email' && !userData.email) return true;
+        if (error.field === 'password' && !userData.password) return true;
+        return false;
+      }), 'users.create.validation_failed');
     }
     let userRecord;
     try {
@@ -27,7 +32,9 @@ exports.createUser = async (req, res) => {
         displayName: userData.name
       });
     } catch (firebaseError) {
-      return res.serverError('common.error_creating', { details: firebaseError.message });
+      return res.apiServerError('users.create.firebase_error', { 
+        originalError: firebaseError.message 
+      });
     }
 
     // 2. Set custom claims for role
@@ -36,7 +43,9 @@ exports.createUser = async (req, res) => {
     } catch (claimsError) {
       // If setting claims fails, delete the Firebase user to avoid orphaned records
       await admin.auth().deleteUser(userRecord.uid);
-      return res.serverError('users.error_setting_user_role_in_firebase', { details: claimsError.message });
+      return res.apiServerError('users.create.claims_error', { 
+        originalError: claimsError.message 
+      });
     }
 
     // 3. Create user in DB with Firebase UID as id
@@ -58,7 +67,9 @@ exports.createUser = async (req, res) => {
     } catch (dbError) {
       // If DB creation fails, delete the Firebase user to avoid orphaned records
       await admin.auth().deleteUser(userRecord.uid);
-      return res.serverError('common.error_creating', { details: dbError.message });
+      return res.apiServerError('users.create.database_error', { 
+        originalError: dbError.message 
+      });
     }
 
     // 4. If organization context is present, create membership
@@ -78,9 +89,11 @@ exports.createUser = async (req, res) => {
     // 5. Return created user (without password)
     const responseUser = { ...dbUserData };
     delete responseUser.password;
-    res.created('users.created', responseUser);
+    res.apiCreated(responseUser, 'users.create.success', {}, { email: userData.email });
   } catch (err) {
-    res.serverError('common.error_creating', { details: err.message });
+    res.apiServerError('users.create.internal_error', { 
+      originalError: err.message 
+    });
   }
 };
 
@@ -103,7 +116,7 @@ exports.getUserById = async (req, res) => {
     if (req.organizationId) {
       const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
       if (!targetUserIsMember) {
-        return res.forbidden('users.cannot_access_user_outside_organization');
+        return res.apiForbidden('users.get.organization_access_denied');
       }
       fetchUser();
     } else {
@@ -111,7 +124,7 @@ exports.getUserById = async (req, res) => {
       if (req.user.role === 'admin' || req.user.role === 'moderator') {
         fetchUser();
       } else {
-        return res.forbidden('users.can_only_access_own_information');
+        return res.apiForbidden('users.get.self_access_only');
       }
     }
   };
@@ -120,11 +133,13 @@ exports.getUserById = async (req, res) => {
     try {
       const user = await userModel.getUserById(id);
       if (!user) {
-        return res.notFound('users.not_found');
+        return res.apiNotFound('users.get.not_found');
       }
-      res.data(user);
+      res.apiSuccess(user, 'users.get.success', {}, { userId: id });
     } catch (err) {
-      res.serverError('common.error_retrieving', { details: err.message });
+      res.apiServerError('users.get.internal_error', { 
+        originalError: err.message 
+      });
     }
   };
   
@@ -152,13 +167,13 @@ exports.updateUser = async (req, res) => {
       // Check if target user belongs to this org
       const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
       if (!targetUserIsMember) {
-        return res.forbidden('users.cannot_update_user_outside_organization');
+        return res.apiForbidden('users.update.organization_access_denied');
       }
       
       // Check if current user is admin in this org
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
       if (!isAdmin) {
-        return res.forbidden('users.only_organization_admins_can_update_other_users');
+        return res.apiForbidden('users.update.admin_required');
       }
       performUpdate();
     } else {
@@ -166,7 +181,7 @@ exports.updateUser = async (req, res) => {
       if (req.user.role === 'admin' || req.user.role === 'moderator') {
         performUpdate();
       } else {
-        return res.forbidden('users.can_only_update_own_information');
+        return res.apiForbidden('users.update.self_access_only');
       }
     }
   };
@@ -174,9 +189,11 @@ exports.updateUser = async (req, res) => {
   const performUpdate = async () => {
     try {
       const updatedUser = await userModel.updateUser(id, userData);
-      res.updated('users.updated', updatedUser);
+      res.apiSuccess(updatedUser, 'users.update.success', {}, { userId: id });
     } catch (err) {
-      res.serverError('common.error_updating', { details: err.message });
+      res.apiServerError('users.update.internal_error', { 
+        originalError: err.message 
+      });
     }
   };
   
@@ -198,13 +215,13 @@ exports.deleteUser = async (req, res) => {
       // Check if target user belongs to this org
       const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
       if (!targetUserIsMember) {
-        return res.forbidden('users.cannot_delete_user_outside_organization');
+              return res.apiForbidden('users.delete.organization_access_denied');
       }
       
       // Check if current user is admin in this org
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
       if (!isAdmin) {
-        return res.forbidden('users.only_organization_admins_can_delete_users');
+        return res.apiForbidden('users.delete.admin_required');
       }
       performDelete();
     } else {
@@ -212,7 +229,7 @@ exports.deleteUser = async (req, res) => {
       if (req.user.role === 'admin') {
         performDelete();
       } else {
-        return res.forbidden('users.only_admins_can_delete_users');
+        return res.apiForbidden('users.delete.admin_only');
       }
     }
   };
@@ -220,9 +237,11 @@ exports.deleteUser = async (req, res) => {
   const performDelete = async () => {
     try {
       const result = await userModel.deleteUser(id);
-      res.deleted('users.deleted', result);
+      res.apiSuccess(result, 'users.delete.success', {}, { userId: id });
     } catch (err) {
-      res.serverError('common.error_deleting', { details: err.message });
+      res.apiServerError('users.delete.internal_error', { 
+        originalError: err.message 
+      });
     }
   };
   
@@ -255,11 +274,17 @@ exports.getUsers = async (req, res) => {
     
     // Get users with filters applied
     const users = await userModel.getUsers(filters);
-    res.list(users);
+    res.apiList(users, 'users.list.success', { 
+      count: users.length, 
+      organizationId: req.organizationId 
+    });
   } else {
     // Super admin or no org context, get all users with filters
     const users = await userModel.getUsers(filters);
-    res.list(users);
+    res.apiList(users, 'users.list.success', { 
+      count: users.length, 
+      scope: 'global' 
+    });
   }
 };
 
@@ -273,7 +298,7 @@ exports.blockUser = async (req, res) => {
     // Check if target user is in the same organization
     const targetUserIsMember = await membershipModel.checkUserRole(blockedUserId, req.organizationId, null);
     if (!targetUserIsMember) {
-      return res.forbidden('users.cannot_block_user_outside_organization');
+      return res.apiForbidden('users.block.organization_access_denied');
     }
     
     // Proceed with block
@@ -285,9 +310,11 @@ exports.blockUser = async (req, res) => {
   async function performBlock() {
     try {
       const result = await userModel.blockUser(id, blockedUserId);
-      res.success('users.blocked_user', result);
+      res.apiSuccess(result, 'users.block.success', {}, { userId: id, blockedUserId });
     } catch (err) {
-      res.serverError('users.error_blocking_user', { details: err.message });
+      res.apiServerError('users.block.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -302,7 +329,7 @@ exports.unblockUser = async (req, res) => {
     // Check if target user is in the same organization
     const targetUserIsMember = await membershipModel.checkUserRole(blockedUserId, req.organizationId, null);
     if (!targetUserIsMember) {
-      return res.forbidden('users.cannot_unblock_user_outside_organization');
+      return res.apiForbidden('users.unblock.organization_access_denied');
     }
     
     // Proceed with unblock
@@ -314,9 +341,11 @@ exports.unblockUser = async (req, res) => {
   async function performUnblock() {
     try {
       const result = await userModel.unblockUser(id, blockedUserId);
-      res.success('users.unblocked_user', result);
+      res.apiSuccess(result, 'users.unblock.success', {}, { userId: id, blockedUserId });
     } catch (err) {
-      res.serverError('users.error_unblocking_user', { details: err.message });
+      res.apiServerError('users.unblock.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -331,11 +360,11 @@ exports.getUserOrganizations = async (req, res) => {
     if (req.organizationId) {
       const isAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
       if (!isAdmin) {
-        return res.forbidden('users.only_organization_admins_can_view_other_users_organizations');
+        return res.apiForbidden('users.organizations.admin_required');
       }
       fetchOrganizations();
     } else {
-      return res.forbidden('users.can_only_view_own_organizations');
+      return res.apiForbidden('users.organizations.self_access_only');
     }
   } else {
     fetchOrganizations();
@@ -344,9 +373,13 @@ exports.getUserOrganizations = async (req, res) => {
   async function fetchOrganizations() {
     try {
       const organizations = await userModel.getUserOrganizations(id);
-      res.data(organizations);
+      res.apiList(organizations, 'users.organizations.success', { 
+        count: organizations.length 
+      }, { userId: id });
     } catch (err) {
-      res.serverError('common.error_retrieving', { details: err.message });
+      res.apiServerError('users.organizations.internal_error', { 
+        originalError: err.message 
+      });
     }
   }
 };
@@ -361,17 +394,17 @@ exports.getAdminUserById = async (req, res) => {
         const isOrgAdmin = await membershipModel.checkUserRole(req.user.uid, req.organizationId, 'admin');
         
         if (!isOrgAdmin) {
-          return res.forbidden('users.only_organization_admins_can_access_detailed_user_information');
+          return res.apiForbidden('users.admin_get.organization_admin_required');
         }
         
         // Check if target user belongs to this org
         const targetUserIsMember = await membershipModel.checkUserRole(id, req.organizationId, null);
         
         if (!targetUserIsMember) {
-          return res.forbidden('users.cannot_access_user_outside_organization_context');
+          return res.apiForbidden('users.admin_get.organization_access_denied');
         }
       } else if (req.user.uid !== id && req.user.role !== 'admin') {
-        return res.forbidden('users.only_admins_can_access_detailed_user_information');
+        return res.apiForbidden('users.admin_get.admin_required');
       }
     }
     
@@ -382,7 +415,7 @@ exports.getAdminUserById = async (req, res) => {
     const user = await userModel.getUserById(id);
     
     if (!user) {
-      return res.notFound('users.not_found_in_database');
+      return res.apiNotFound('users.admin_get.not_found');
     }
 
     // Combine data from both sources
@@ -394,10 +427,12 @@ exports.getAdminUserById = async (req, res) => {
       creationTime: userRecord.metadata.creationTime
     };
 
-    res.data(userData);
+    res.apiSuccess(userData, 'users.admin_get.success', {}, { userId: id });
   } catch (err) {
     console.error('Error in getAdminUserById:', err);
-    res.serverError('common.error_retrieving', { details: err.message });
+    res.apiServerError('users.admin_get.internal_error', { 
+      originalError: err.message 
+    });
   }
 };
 
@@ -406,17 +441,20 @@ exports.me = async (req, res) => {
     // req.user debe estar poblado por el middleware de autenticación
     const userId = req.user.sub || req.user.uid; // Firebase uses 'sub' for user ID in JWT
     if (!userId) {
-      return res.unauthorized('users.not_authenticated');
+      return res.apiUnauthorized('users.me.not_authenticated');
     }
     // Buscar el usuario en la base de datos por id/uid
     const user = await userModel.getUserById(userId);
     if (!user) {
-      return res.notFound('users.not_found');
+      return res.apiNotFound('users.me.not_found');
     }
     // Puedes filtrar los campos que quieras exponer
     const { id, email, name, role, status, createdAt, updatedAt } = user;
-    res.data({ id, email, name, role, status, createdAt, updatedAt });
+    const userData = { id, email, name, role, status, createdAt, updatedAt };
+    res.apiSuccess(userData, 'users.me.success');
   } catch (error) {
-    res.serverError('common.server_error', { details: error.message });
+    res.apiServerError('users.me.internal_error', { 
+      originalError: error.message 
+    });
   }
 };

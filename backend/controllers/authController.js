@@ -20,29 +20,34 @@ const authController = {
       const { email, password, name } = req.body;
       
       if (!email || !password || !name) {
-        logAuthEvent('Register Validation Failed', { missingFields: { email: !email, password: !password, name: !name } });
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } },
-          { field: 'password', messageKey: 'validation.required', params: { field: 'Password' } },
-          { field: 'name', messageKey: 'validation.required', params: { field: 'Name' } }
-        ].filter((error, index) => [!email, !password, !name][index]));
+        logAuthEvent('Register Validation Failed', { missing_fields: { email: !!email, password: !!password, name: !!name } });
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' },
+          { field: 'password', code: 'REQUIRED', messageKey: 'auth.password.required' },
+          { field: 'name', code: 'REQUIRED', messageKey: 'auth.name.required' }
+        ].filter(error => {
+          if (error.field === 'email' && !email) return true;
+          if (error.field === 'password' && !password) return true;
+          if (error.field === 'name' && !name) return true;
+          return false;
+        }), 'auth.register.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        logAuthEvent('Register Validation Failed', { invalidEmail: email });
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.invalid_email' }
-        ]);
+        logAuthEvent('Register Validation Failed', { email_format: 'invalid' });
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.register.validation_failed');
       }
 
       // Validar fortaleza de contraseña
       if (password.length < 6) {
-        logAuthEvent('Register Validation Failed', { weakPassword: true });
-        return res.validationError([
-          { field: 'password', messageKey: 'validation.min_length', params: { field: 'Password', min: 6 } }
-        ]);
+        logAuthEvent('Register Validation Failed', { password_length: password.length });
+        return res.apiValidationError([
+          { field: 'password', code: 'TOO_SHORT', messageKey: 'auth.password.too_short', params: { min: 6 } }
+        ], 'auth.register.validation_failed');
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -81,15 +86,13 @@ const authController = {
       // Enviar email de verificación
       await admin.auth().generateEmailVerificationLink(email);
       
-      const userData = {
-        id: localId,
-        email,
-        name,
-        role: 'user'
-      };
-      
       const responseData = {
-        user: userData,
+        user: {
+          id: localId,
+          email,
+          name,
+          role: 'user'
+        },
         tokens: {
           idToken,
           refreshToken,
@@ -98,7 +101,7 @@ const authController = {
       };
       
       logAuthEvent('Register Success', { email, userId: localId });
-      res.created('auth.user_registered_successfully', responseData);
+      res.apiCreated(responseData, 'auth.register.success', {}, { email });
     } catch (error) {
       const errorResponse = error.response?.data?.error || error;
       logAuthEvent('Register Error', errorResponse, true);
@@ -108,17 +111,25 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_EXISTS':
-            return res.error('auth.email_already_exists', 400);
+            return res.apiConflict('auth.register.email_exists', [], {}, { email });
           case 'INVALID_EMAIL':
-            return res.error('auth.invalid_email_format', 400);
+            return res.apiValidationError([
+              { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+            ], 'auth.register.validation_failed');
           case 'WEAK_PASSWORD':
-            return res.error('auth.weak_password', 400);
+            return res.apiValidationError([
+              { field: 'password', code: 'WEAK_PASSWORD', messageKey: 'auth.password.weak' }
+            ], 'auth.register.validation_failed');
           default:
-            return res.error('auth.registration_error', 400, { details: firebaseError.message });
+            return res.apiError('auth.register.firebase_error', [], 400, { 
+              firebaseCode: firebaseError.message 
+            });
         }
       }
       
-      res.serverError('auth.registration_process_error', { details: error.message });
+      res.apiServerError('auth.register.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -128,20 +139,22 @@ const authController = {
       const { token } = req.body;
       
       if (!token) {
-        logAuthEvent('Email Verification Validation Failed', { missingToken: true });
-        return res.error('auth.verification_token_required', 400);
+        logAuthEvent('Email Verification Validation Failed', { token: 'missing' });
+        return res.apiValidationError([
+          { field: 'token', code: 'REQUIRED', messageKey: 'auth.token.required' }
+        ], 'auth.verify_email.validation_failed');
       }
       
       // Manejo especial para tokens de prueba
       if (token === 'valid-token-123') {
         logAuthEvent('Email Verification Success', { userId: 'test-user-id' });
-        return res.success('auth.email_verified_successfully');
+        return res.apiSuccess(null, 'auth.verify_email.success');
       } else if (token === 'invalid-token-123') {
-        logAuthEvent('Email Verification Error', { invalidTestToken: true });
-        return res.error('auth.invalid_verification_token', 400);
+        logAuthEvent('Email Verification Error', { token: 'invalid' });
+        return res.apiUnauthorized('auth.verify_email.invalid_token');
       } else if (token === 'expired-token-123') {
-        logAuthEvent('Email Verification Error', { expiredTestToken: true });
-        return res.error('auth.expired_verification_token', 400);
+        logAuthEvent('Email Verification Error', { token: 'expired' });
+        return res.apiUnauthorized('auth.verify_email.expired_token');
       }
       
       // Verificar el token con Firebase Auth para tokens reales
@@ -155,22 +168,25 @@ const authController = {
         });
         
         logAuthEvent('Email Verification Success', { userId: uid });
-        res.success('auth.email_verified_successfully');
+        res.apiSuccess(null, 'auth.verify_email.success');
       } catch (error) {
-        let errorKey = 'auth.email_verification_error';
+        logAuthEvent('Email Verification Error', { code: error.code, message: error.message });
         
         if (error.code === 'auth/id-token-expired') {
-          errorKey = 'auth.expired_verification_token';
+          return res.apiUnauthorized('auth.verify_email.expired_token');
         } else if (error.code === 'auth/invalid-id-token') {
-          errorKey = 'auth.invalid_verification_token';
+          return res.apiUnauthorized('auth.verify_email.invalid_token');
+        } else {
+          return res.apiError('auth.verify_email.firebase_error', [], 400, { 
+            firebaseCode: error.code 
+          });
         }
-        
-        logAuthEvent('Email Verification Error', { firebaseError: error.code });
-        return res.error(errorKey, 400, { details: error.message });
       }
     } catch (error) {
       logAuthEvent('Email Verification Error', error, true);
-      res.serverError('auth.email_verification_error', { details: error.message });
+      res.apiServerError('auth.verify_email.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -179,23 +195,27 @@ const authController = {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } },
-          { field: 'password', messageKey: 'validation.required', params: { field: 'Password' } }
-        ].filter((error, index) => [!email, !password][index]));
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' },
+          { field: 'password', code: 'REQUIRED', messageKey: 'auth.password.required' }
+        ].filter(error => {
+          if (error.field === 'email' && !email) return true;
+          if (error.field === 'password' && !password) return true;
+          return false;
+        }), 'auth.login.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.invalid_email' }
-        ]);
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.login.validation_failed');
       }
       
       const apiKey = process.env.FIREBASE_API_KEY;
       
-      // Hacer login con Firebase Auth
+      // Login con Firebase Auth REST API
       const response = await axios.post(
         `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`,
         { email, password, returnSecureToken: true }
@@ -215,25 +235,31 @@ const authController = {
         // ...otros campos que quieras exponer
       };
 
-      const responseData = {
+      res.apiSuccess({
         user: userData,
         tokens: { idToken, refreshToken, expiresIn }
-      };
-
-      res.success('auth.login_successful', responseData);
+      }, 'auth.login.success', {}, { email });
     } catch (error) {
       if (error.response?.data?.error) {
         const firebaseError = error.response.data.error;
         switch (firebaseError.message) {
           case 'INVALID_PASSWORD':
-            return res.error('auth.invalid_password', 400, { details: 'INVALID_PASSWORD' });
+            return res.apiUnauthorized('auth.login.invalid_credentials', { 
+              firebaseCode: 'INVALID_PASSWORD' 
+            });
           case 'EMAIL_NOT_FOUND':
-            return res.error('auth.user_not_found', 400, { details: 'EMAIL_NOT_FOUND' });
+            return res.apiUnauthorized('auth.login.user_not_found', { 
+              firebaseCode: 'EMAIL_NOT_FOUND' 
+            });
           default:
-            return res.error('auth.authentication_error', 400, { details: firebaseError.message });
+            return res.apiUnauthorized('auth.login.authentication_failed', { 
+              firebaseCode: firebaseError.message 
+            });
         }
       }
-      res.serverError('auth.login_process_error', { details: error.message });
+      res.apiServerError('auth.login.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -243,19 +269,19 @@ const authController = {
       const { email } = req.body;
       
       if (!email) {
-        logAuthEvent('Password Reset Validation Failed', { missingEmail: true });
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } }
-        ]);
+        logAuthEvent('Password Reset Validation Failed', { email: 'missing' });
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' }
+        ], 'auth.password_reset.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        logAuthEvent('Password Reset Validation Failed', { invalidEmail: email });
-        return res.validationError([
-          { field: 'email', messageKey: 'validation.invalid_email' }
-        ]);
+        logAuthEvent('Password Reset Validation Failed', { email_format: 'invalid' });
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.password_reset.validation_failed');
       }
 
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -267,7 +293,7 @@ const authController = {
       });
       
       logAuthEvent('Password Reset Success', { email });
-      res.success('auth.password_reset_email_sent');
+      res.apiSuccess(null, 'auth.password_reset.success', {}, { email });
     } catch (error) {
       logAuthEvent('Password Reset Error', error, true);
       
@@ -276,15 +302,21 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_NOT_FOUND':
-            return res.error('auth.email_not_found', 400);
+            return res.apiNotFound('auth.password_reset.email_not_found', {}, { email });
           case 'INVALID_EMAIL':
-            return res.error('auth.invalid_email_format', 400);
+            return res.apiValidationError([
+              { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+            ], 'auth.password_reset.validation_failed');
           default:
-            return res.error('auth.password_reset_send_error', 400, { details: firebaseError.message });
+            return res.apiError('auth.password_reset.firebase_error', [], 400, { 
+              firebaseCode: firebaseError.message 
+            });
         }
       }
       
-      res.serverError('auth.password_reset_send_error', { details: error.message });
+      res.apiServerError('auth.password_reset.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -293,9 +325,9 @@ const authController = {
     const { email } = req.body;
     
     if (!email) {
-      return res.validationError([
-        { field: 'email', messageKey: 'validation.required', params: { field: 'Email' } }
-      ]);
+      return res.apiValidationError([
+        { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' }
+      ], 'auth.send_password_reset.validation_failed');
     }
     
     try {
@@ -307,11 +339,11 @@ const authController = {
         email
       });
       
-      res.success('auth.password_reset_email_sent');
+      res.apiSuccess(null, 'auth.send_password_reset.success', {}, { email });
     } catch (error) {
       console.error('Error enviando correo de recuperación:', error.response?.data || error);
-      res.serverError('auth.password_reset_send_error', { 
-        details: error.response?.data || error.message 
+      res.apiError('auth.send_password_reset.firebase_error', [], 400, { 
+        originalError: error.response?.data || error.message 
       });
     }
   },
@@ -323,16 +355,18 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.forbidden('auth.insufficient_permissions');
+        return res.apiForbidden('auth.force_logout.insufficient_permissions');
       }
       
       // Revocar todos los tokens de actualización para el usuario
       await admin.auth().revokeRefreshTokens(id);
       
-      res.success('auth.force_logout_successful', { userId: id });
+      res.apiSuccess(null, 'auth.force_logout.success', {}, { userId: id });
     } catch (error) {
       console.error('Error al forzar cierre de sesión:', error);
-      res.serverError('auth.force_logout_error', { details: error.message });
+      res.apiServerError('auth.force_logout.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -343,16 +377,18 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.forbidden('auth.insufficient_permissions');
+        return res.apiForbidden('auth.get_user_info.insufficient_permissions');
       }
       
       // Obtener información del usuario desde Firebase Auth
       const userRecord = await admin.auth().getUser(uid);
       
-      res.data(userRecord);
+      res.apiSuccess(userRecord, 'auth.get_user_info.success', {}, { uid });
     } catch (error) {
       console.error('Error al obtener información del usuario:', error);
-      res.serverError('auth.get_user_info_error', { details: error.message });
+      res.apiServerError('auth.get_user_info.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -364,16 +400,18 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin
       if (req.user.role !== 'admin') {
-        return res.forbidden('auth.insufficient_permissions');
+        return res.apiForbidden('auth.update_user_status.insufficient_permissions');
       }
       
       // Actualizar estado de la cuenta
       await admin.auth().updateUser(id, { disabled });
       
-      res.success('auth.user_status_updated', { userId: id, disabled });
+      res.apiSuccess(null, 'auth.update_user_status.success', {}, { userId: id, disabled });
     } catch (error) {
       console.error('Error al actualizar estado de cuenta:', error);
-      res.serverError('auth.update_user_status_error', { details: error.message });
+      res.apiServerError('auth.update_user_status.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -382,24 +420,26 @@ const authController = {
     try {
       const token = req.headers.authorization?.split(' ')[1];
       
-      if (!token) {
-        logAuthEvent('Logout Validation Failed', { missingToken: true });
-        return res.unauthorized('auth.token_not_provided');
+            if (!token) {
+        logAuthEvent('Logout Validation Failed', { token: 'missing' });
+        return res.apiUnauthorized('auth.logout.token_missing');
       }
-      
+        
       // Verificar el token
       try {
         await admin.auth().verifyIdToken(token);
       } catch (error) {
-        logAuthEvent('Logout Error', { invalidToken: true });
-        return res.unauthorized('auth.invalid_token');
+        logAuthEvent('Logout Error', { error: error.message });
+        return res.apiUnauthorized('auth.logout.invalid_token');
       }
       
-      logAuthEvent('Logout Success', { token });
-      res.success('auth.logout_successful');
+      logAuthEvent('Logout Success', { token: 'valid' });
+      res.apiSuccess(null, 'auth.logout.success');
     } catch (error) {
       logAuthEvent('Logout Error', error, true);
-      res.serverError('auth.logout_error', { details: error.message });
+      res.apiServerError('auth.logout.internal_error', { 
+        originalError: error.message 
+      });
     }
   },
 
@@ -408,7 +448,9 @@ const authController = {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {
-        return res.error('Refresh token requerido', 400);
+        return res.apiValidationError([
+          { field: 'refreshToken', code: 'REQUIRED', messageKey: 'auth.refresh_token.required' }
+        ], 'auth.refresh_token.validation_failed');
       }
       // Usando Firebase Admin SDK para verificar y refrescar el token
       const admin = require('../config/firebase');
@@ -418,13 +460,15 @@ const authController = {
       // (En producción, deberías usar el flujo recomendado por Firebase)
       const decoded = await admin.auth().verifySessionCookie(refreshToken, true).catch(() => null);
       if (!decoded) {
-        return res.unauthorized('Refresh token inválido o expirado');
+        return res.apiUnauthorized('auth.refresh_token.invalid_or_expired');
       }
       // Emitir un nuevo custom token
       const customToken = await admin.auth().createCustomToken(decoded.uid);
-      res.data({ accessToken: customToken });
+      res.apiSuccess({ accessToken: customToken }, 'auth.refresh_token.success');
     } catch (error) {
-      res.serverError('auth.refresh_token_error', { details: error.message });
+      res.apiServerError('auth.refresh_token.internal_error', { 
+        originalError: error.message 
+      });
     }
   }
 };

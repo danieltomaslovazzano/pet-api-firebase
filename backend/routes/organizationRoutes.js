@@ -15,10 +15,6 @@ const {
 // Aplicar middleware de autenticación a todas las rutas
 router.use(requireAuth);
 
-// Rutas para tipos de organización (públicas para usuarios autenticados)
-router.get('/types', organizationController.getOrganizationTypes);
-router.get('/types/:type', validateOrganizationType, organizationController.getOrganizationTypeInfo);
-
 // Rutas para listar organizaciones con filtros
 router.get('/', validateOrganizationQuery, organizationController.getOrganizations);
 
