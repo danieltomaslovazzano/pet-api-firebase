@@ -6,6 +6,7 @@ const app = express();
 const cors = require('cors');
 const { verifyToken } = require('./middlewares/auth');
 const organizationContext = require('./middlewares/organizationContext');
+const { unifiedResponseFormatter } = require('./middlewares/unifiedResponseFormatter');
 
 // Import routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -30,6 +31,9 @@ app.use(cors({
 
 // Middleware for parsing JSON
 app.use(express.json());
+
+// Unified API Response Formatter - Available in all routes
+app.use(unifiedResponseFormatter);
 
 // Rutas públicas
 app.use('/api/auth', authRoutes);

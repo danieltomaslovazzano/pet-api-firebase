@@ -1,5 +1,3 @@
-const { translate } = require('../utils/i18n');
-
 /**
  * Unified Response Formatter Middleware
  * 
@@ -195,7 +193,8 @@ const unifiedResponseFormatter = (req, res, next) => {
     const formattedErrors = validationErrors.map(error => ({
       field: error.field,
       code: error.code || 'VALIDATION_ERROR',
-      message: req.t(error.messageKey || error.message, error.params || {})
+      messageKey: error.messageKey || error.message,
+      params: error.params || {}
     }));
 
     res.apiError(message, formattedErrors, 400, meta);
