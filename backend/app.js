@@ -38,6 +38,16 @@ app.use(unifiedResponseFormatter);
 // Rutas públicas
 app.use('/api/auth', authRoutes);
 
+// Rutas públicas específicas de organizaciones  
+const publicOrgRouter = express.Router();
+const organizationController = require('./controllers/organizationController');
+const { validateOrganizationType } = require('./middlewares/validation/organizationValidation');
+
+publicOrgRouter.get('/', organizationController.getOrganizationTypes);
+publicOrgRouter.get('/:type', validateOrganizationType, organizationController.getOrganizationTypeInfo);
+
+app.use('/api/organizations/types', publicOrgRouter);
+
 // Middlewares de autenticación y organización para rutas protegidas
 app.use(verifyToken);
 app.use(organizationContext);
@@ -46,7 +56,7 @@ app.use(organizationContext);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/pets', petRoutes);
-app.use('/api/organizations', organizationRoutes);
+app.use('/api/organizations', organizationRoutes); // Todas las demás rutas de organizaciones
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/memberships', membershipRoutes);
