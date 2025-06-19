@@ -30,15 +30,75 @@ const fallbackTranslate = (key, params = {}) => {
   
   // En producción, devolver mensaje genérico
   const messages = {
+    // Auth Register
     'auth.register.success': 'User registered successfully',
+    'auth.register.validation_failed': 'Registration validation failed',
+    'auth.register.email_exists': 'Email already registered',
+    'auth.register.firebase_error': 'Registration error',
+    'auth.register.internal_error': 'Internal registration error',
+    
+    // Auth Login
     'auth.login.success': 'Login successful',
-    'auth.register.validation_failed': 'Validation failed',
-    'auth.login.validation_failed': 'Validation failed',
+    'auth.login.validation_failed': 'Login validation failed',
+    'auth.login.invalid_credentials': 'Invalid credentials',
+    'auth.login.user_not_found': 'User not found',
+    'auth.login.authentication_failed': 'Authentication failed',
+    'auth.login.internal_error': 'Internal login error',
+    
+    // Auth Email Verification
+    'auth.verify_email.success': 'Email verified successfully',
+    'auth.verify_email.validation_failed': 'Verification validation failed',
+    'auth.verify_email.invalid_token': 'Invalid verification token',
+    'auth.verify_email.expired_token': 'Expired verification token',
+    'auth.verify_email.firebase_error': 'Verification error',
+    'auth.verify_email.internal_error': 'Internal verification error',
+    
+    // Auth Password Reset
+    'auth.password_reset.success': 'Password reset email sent',
+    'auth.password_reset.validation_failed': 'Password reset validation failed',
+    'auth.password_reset.email_not_found': 'Email not found',
+    'auth.password_reset.firebase_error': 'Password reset error',
+    'auth.password_reset.internal_error': 'Internal password reset error',
+    
+    // Auth Admin Functions
+    'auth.force_logout.success': 'User logged out successfully',
+    'auth.force_logout.insufficient_permissions': 'Insufficient permissions',
+    'auth.force_logout.internal_error': 'Internal logout error',
+    'auth.get_user_info.success': 'User info retrieved',
+    'auth.get_user_info.insufficient_permissions': 'Insufficient permissions',
+    'auth.get_user_info.internal_error': 'Internal user info error',
+    'auth.update_user_status.success': 'User status updated',
+    'auth.update_user_status.insufficient_permissions': 'Insufficient permissions',
+    'auth.update_user_status.internal_error': 'Internal status update error',
+    
+    // Auth Logout
+    'auth.logout.success': 'Logged out successfully',
+    'auth.logout.token_missing': 'Token not provided',
+    'auth.logout.invalid_token': 'Invalid token',
+    'auth.logout.internal_error': 'Internal logout error',
+    
+    // Auth Refresh Token
+    'auth.refresh_token.success': 'Token refreshed successfully',
+    'auth.refresh_token.validation_failed': 'Refresh token validation failed',
+    'auth.refresh_token.required': 'Refresh token is required',
+    'auth.refresh_token.invalid_or_expired': 'Invalid or expired refresh token',
+    'auth.refresh_token.internal_error': 'Internal refresh token error',
+    
+    // Common Field Validations
     'auth.email.required': 'Email is required',
     'auth.password.required': 'Password is required',
     'auth.name.required': 'Name is required',
+    'auth.token.required': 'Token is required',
     'auth.email.invalid_format': 'Invalid email format',
     'auth.password.too_short': 'Password too short',
+    'auth.password.weak': 'Password too weak',
+    
+    // Send Password Reset (separate method)
+    'auth.send_password_reset.success': 'Recovery email sent',
+    'auth.send_password_reset.validation_failed': 'Send password reset validation failed',
+    'auth.send_password_reset.firebase_error': 'Send password reset error',
+    
+    // Common Messages
     'common.not_found': 'Resource not found',
     'common.unauthorized': 'Unauthorized access',
     'common.forbidden': 'Access forbidden',

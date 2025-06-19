@@ -269,17 +269,19 @@ const authController = {
       const { email } = req.body;
       
       if (!email) {
-        const response = { error: 'Se requiere el email' };
-        logAuthEvent('Password Reset Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Password Reset Validation Failed', { email: 'missing' });
+        return res.apiValidationError([
+          { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' }
+        ], 'auth.password_reset.validation_failed');
       }
 
       // Validar formato de email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        const response = { error: 'Formato de email inválido' };
-        logAuthEvent('Password Reset Validation Failed', response);
-        return res.status(400).json(response);
+        logAuthEvent('Password Reset Validation Failed', { email_format: 'invalid' });
+        return res.apiValidationError([
+          { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+        ], 'auth.password_reset.validation_failed');
       }
 
       const apiKey = process.env.FIREBASE_API_KEY;
@@ -290,9 +292,8 @@ const authController = {
         email
       });
       
-      const successResponse = { message: 'Correo de recuperación enviado correctamente' };
       logAuthEvent('Password Reset Success', { email });
-      res.status(200).json(successResponse);
+      res.apiSuccess(null, 'auth.password_reset.success', {}, { email });
     } catch (error) {
       logAuthEvent('Password Reset Error', error, true);
       
@@ -301,20 +302,20 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_NOT_FOUND':
-            return res.status(400).json({ error: 'Email no encontrado' });
+            return res.apiNotFound('auth.password_reset.email_not_found', {}, { email });
           case 'INVALID_EMAIL':
-            return res.status(400).json({ error: 'Formato de email inválido' });
+            return res.apiValidationError([
+              { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }
+            ], 'auth.password_reset.validation_failed');
           default:
-            return res.status(400).json({ 
-              error: 'Error al enviar correo de recuperación', 
-              details: firebaseError.message 
+            return res.apiError('auth.password_reset.firebase_error', [], 400, { 
+              firebaseCode: firebaseError.message 
             });
         }
       }
       
-      res.status(500).json({ 
-        error: 'Error al enviar correo de recuperación', 
-        details: error.message 
+      res.apiServerError('auth.password_reset.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -324,7 +325,9 @@ const authController = {
     const { email } = req.body;
     
     if (!email) {
-      return res.status(400).json({ error: 'Se requiere una dirección de correo electrónico' });
+      return res.apiValidationError([
+        { field: 'email', code: 'REQUIRED', messageKey: 'auth.email.required' }
+      ], 'auth.send_password_reset.validation_failed');
     }
     
     try {
@@ -336,12 +339,11 @@ const authController = {
         email
       });
       
-      res.status(200).json({ message: 'Correo de recuperación enviado correctamente' });
+      res.apiSuccess(null, 'auth.send_password_reset.success', {}, { email });
     } catch (error) {
       console.error('Error enviando correo de recuperación:', error.response?.data || error);
-      res.status(400).json({ 
-        error: 'Error al enviar correo de recuperación', 
-        details: error.response?.data || error.message 
+      res.apiError('auth.send_password_reset.firebase_error', [], 400, { 
+        originalError: error.response?.data || error.message 
       });
     }
   },
@@ -353,20 +355,17 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.apiForbidden('auth.force_logout.insufficient_permissions');
       }
       
       // Revocar todos los tokens de actualización para el usuario
       await admin.auth().revokeRefreshTokens(id);
       
-      res.status(200).json({ 
-        message: `Se ha forzado el cierre de sesión para el usuario ${id}` 
-      });
+      res.apiSuccess(null, 'auth.force_logout.success', {}, { userId: id });
     } catch (error) {
       console.error('Error al forzar cierre de sesión:', error);
-      res.status(500).json({ 
-        error: 'Error al forzar cierre de sesión', 
-        details: error.message 
+      res.apiServerError('auth.force_logout.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -378,18 +377,17 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin o moderador
       if (req.user.role !== 'admin' && req.user.role !== 'moderator') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.apiForbidden('auth.get_user_info.insufficient_permissions');
       }
       
       // Obtener información del usuario desde Firebase Auth
       const userRecord = await admin.auth().getUser(uid);
       
-      res.status(200).json(userRecord);
+      res.apiSuccess(userRecord, 'auth.get_user_info.success', {}, { uid });
     } catch (error) {
       console.error('Error al obtener información del usuario:', error);
-      res.status(500).json({ 
-        error: 'Error al obtener información del usuario', 
-        details: error.message 
+      res.apiServerError('auth.get_user_info.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -402,20 +400,17 @@ const authController = {
     try {
       // Verificar que el solicitante tiene permisos de admin
       if (req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'No tienes permiso para realizar esta acción' });
+        return res.apiForbidden('auth.update_user_status.insufficient_permissions');
       }
       
       // Actualizar estado de la cuenta
       await admin.auth().updateUser(id, { disabled });
       
-      res.status(200).json({ 
-        message: `Estado de cuenta actualizado para el usuario ${id}` 
-      });
+      res.apiSuccess(null, 'auth.update_user_status.success', {}, { userId: id, disabled });
     } catch (error) {
       console.error('Error al actualizar estado de cuenta:', error);
-      res.status(500).json({ 
-        error: 'Error al actualizar estado de cuenta', 
-        details: error.message 
+      res.apiServerError('auth.update_user_status.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -425,29 +420,25 @@ const authController = {
     try {
       const token = req.headers.authorization?.split(' ')[1];
       
-      if (!token) {
-        const response = { error: 'Token no proporcionado' };
-        logAuthEvent('Logout Validation Failed', response);
-        return res.status(401).json(response);
+            if (!token) {
+        logAuthEvent('Logout Validation Failed', { token: 'missing' });
+        return res.apiUnauthorized('auth.logout.token_missing');
       }
-      
+        
       // Verificar el token
       try {
         await admin.auth().verifyIdToken(token);
       } catch (error) {
-        const response = { error: 'Token inválido' };
-        logAuthEvent('Logout Error', response);
-        return res.status(401).json(response);
+        logAuthEvent('Logout Error', { error: error.message });
+        return res.apiUnauthorized('auth.logout.invalid_token');
       }
       
-      const successResponse = { message: 'Sesión cerrada correctamente' };
-      logAuthEvent('Logout Success', { token });
-      res.status(200).json(successResponse);
+      logAuthEvent('Logout Success', { token: 'valid' });
+      res.apiSuccess(null, 'auth.logout.success');
     } catch (error) {
       logAuthEvent('Logout Error', error, true);
-      res.status(500).json({ 
-        error: 'Error al cerrar sesión', 
-        details: error.message 
+      res.apiServerError('auth.logout.internal_error', { 
+        originalError: error.message 
       });
     }
   },
@@ -457,7 +448,9 @@ const authController = {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken) {
-        return res.status(400).json({ error: 'Refresh token requerido' });
+        return res.apiValidationError([
+          { field: 'refreshToken', code: 'REQUIRED', messageKey: 'auth.refresh_token.required' }
+        ], 'auth.refresh_token.validation_failed');
       }
       // Usando Firebase Admin SDK para verificar y refrescar el token
       const admin = require('../config/firebase');
@@ -467,13 +460,15 @@ const authController = {
       // (En producción, deberías usar el flujo recomendado por Firebase)
       const decoded = await admin.auth().verifySessionCookie(refreshToken, true).catch(() => null);
       if (!decoded) {
-        return res.status(401).json({ error: 'Refresh token inválido o expirado' });
+        return res.apiUnauthorized('auth.refresh_token.invalid_or_expired');
       }
       // Emitir un nuevo custom token
       const customToken = await admin.auth().createCustomToken(decoded.uid);
-      res.json({ accessToken: customToken });
+      res.apiSuccess({ accessToken: customToken }, 'auth.refresh_token.success');
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.apiServerError('auth.refresh_token.internal_error', { 
+        originalError: error.message 
+      });
     }
   }
 };

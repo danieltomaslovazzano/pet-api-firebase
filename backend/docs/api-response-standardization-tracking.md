@@ -50,7 +50,7 @@ ALL endpoints        → response.data.[contenido]       (siempre aquí)
 
 | Tarea | Estado | Fecha Límite | Notas |
 |-------|--------|--------------|-------|
-| 🔄 Migrar `authController.js` | 🟡 En progreso | 17/01/2025 | **INICIADO** - 45 respuestas a migrar |
+| 🔄 Migrar `authController.js` | 🟡 En progreso | 17/01/2025 | **50% COMPLETADO** - 3/6 métodos migrados |
 | 🔄 Migrar `userController.js` | ⚫ No iniciado | 29/01/2025 | Profile endpoints |
 | 🧪 Actualizar tests E2E auth | ⚫ No iniciado | 30/01/2025 | Verificar nueva estructura |
 | 📋 Validar no hay breaking changes | ⚫ No iniciado | 31/01/2025 | Compatibility check |
@@ -102,7 +102,8 @@ ALL endpoints        → response.data.[contenido]       (siempre aquí)
 - ✅ **Implementado:** Middleware unificado con 13 métodos de respuesta
 - ✅ **Completado:** Tests unitarios (27 tests, 95.9% cobertura)
 - ✅ **Integrado:** Middleware disponible globalmente en app.js
-- 🎯 **Estado:** 🟢 **SEMANA 1 COMPLETADA** - Listo para migración de controladores
+- 🟡 **Migrando:** authController - register, login, verifyEmail completados
+- 🎯 **Estado:** 🟡 **SEMANA 2 EN PROGRESO** - Migración de controladores 50%
 
 ### **Próximas Actualizaciones**
 _Este documento se actualizará semanalmente con el progreso real_
