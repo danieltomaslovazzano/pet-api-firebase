@@ -45,7 +45,7 @@ describe('Memberships E2E Tests', () => {
         headers: { Authorization: `Bearer ${adminToken}` }
       }
     );
-    testOrganization = orgResponse.data;
+    testOrganization = orgResponse.data.data;
     // Verify default type is set
     expect(testOrganization.type).toBe('shelter');
   });
@@ -485,7 +485,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      const anotherMembership = membershipResponse.data;
+      const anotherMembership = membershipResponse.data.data;
       testMemberships.push(anotherMembership);
 
       try {
@@ -538,7 +538,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      selfLeaveMembership = membershipResponse.data;
+      selfLeaveMembership = membershipResponse.data.data;
     });
 
     test('User should be able to leave organization (remove own membership)', async () => {
@@ -605,7 +605,7 @@ describe('Memberships E2E Tests', () => {
           headers: { Authorization: `Bearer ${otherOrgAdminToken}` }
         }
       );
-      otherOrganization = orgResponse.data;
+      otherOrganization = orgResponse.data.data;
     });
 
     afterAll(async () => {

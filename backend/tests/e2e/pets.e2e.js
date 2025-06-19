@@ -278,7 +278,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
           }
         }
       );
-      testPet = response.data;
+      testPet = response.data.data;
       createdPets.push(testPet);
     });
 
@@ -407,7 +407,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
           }
         }
       );
-      petToUpdate = response.data;
+      petToUpdate = response.data.data;
       createdPets.push(petToUpdate);
     });
 
@@ -510,7 +510,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
           }
         }
       );
-      petToDelete = response.data;
+      petToDelete = response.data.data;
     });
 
     test('Admin should delete pet successfully', async () => {
@@ -798,7 +798,7 @@ describe('Pets E2E Tests - Comprehensive Test Suite (33 tests)', () => {
           }
         }
       );
-      visibilityTestPet = response.data;
+      visibilityTestPet = response.data.data;
       createdPets.push(visibilityTestPet);
     });
 

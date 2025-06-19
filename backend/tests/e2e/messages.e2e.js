@@ -64,7 +64,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
       
-      testOrganization = orgResponse.data;
+      testOrganization = orgResponse.data.data;
       testOrganizations.push(testOrganization);
       // Verify default type is set
       expect(testOrganization.type).toBe('shelter');
@@ -194,7 +194,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
       
-      testConversation = conversationResponse1.data;
+      testConversation = conversationResponse1.data.data;
       testConversations.push(testConversation);
 
       // Create conversation 2 (group conversation)
@@ -299,7 +299,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
       expect(response.data.data.conversationId).toBe(messageData.conversationId);
       expect(response.data.data.organizationId).toBe(testOrganization.id);
 
-      testMessage = response.data;
+      testMessage = response.data.data;
       testMessages.push(testMessage);
     });
 
@@ -422,7 +422,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const privateConversation = privateConversationResponse.data;
+      const privateConversation = privateConversationResponse.data.data;
       testConversations.push(privateConversation);
 
       const messageData = {
@@ -544,7 +544,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const privateConversation = privateConversationResponse.data;
+      const privateConversation = privateConversationResponse.data.data;
       testConversations.push(privateConversation);
 
       try {
@@ -635,7 +635,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const privateConversation = privateConversationResponse.data;
+      const privateConversation = privateConversationResponse.data.data;
       testConversations.push(privateConversation);
 
       const messageData = {
@@ -654,7 +654,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const privateMessage = messageResponse.data;
+      const privateMessage = messageResponse.data.data;
       testMessages.push(privateMessage);
 
       try {
@@ -763,7 +763,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const protectedMessage = messageResponse.data;
+      const protectedMessage = messageResponse.data.data;
       testMessages.push(protectedMessage);
 
       try {
@@ -834,7 +834,7 @@ describe('Messages E2E Tests - Comprehensive Test Suite (28 tests)', () => {
         }
       );
 
-      const org2Conversation = conversationResponse.data;
+      const org2Conversation = conversationResponse.data.data;
       testConversations.push(org2Conversation);
 
       const messageData = {

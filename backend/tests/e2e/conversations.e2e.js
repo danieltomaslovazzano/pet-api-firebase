@@ -59,7 +59,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
       
-      testOrganization = orgResponse.data;
+      testOrganization = orgResponse.data.data;
       testOrganizations.push(testOrganization);
       // Verify default type is set
       expect(testOrganization.type).toBe('shelter');
@@ -247,7 +247,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
       expect(response.data.data.title).toBe(conversationData.title);
       expect(response.data.data.organizationId).toBe(testOrganization.id);
 
-      testConversation = response.data;
+      testConversation = response.data.data;
     });
 
     test('Should fail to create conversation with insufficient participants', async () => {
@@ -689,7 +689,7 @@ describe('Conversations E2E Tests - Comprehensive Test Suite (25 tests)', () => 
         }
       );
 
-      const org1Conversation = createResponse.data;
+      const org1Conversation = createResponse.data.data;
 
       // Try to access from org2 context
       try {

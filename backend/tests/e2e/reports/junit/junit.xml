@@ -1,195 +1,499 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="20" failures="20" errors="0" time="25.366">
-  <testsuite name="Memberships E2E Tests" errors="0" failures="20" skipped="0" timestamp="2025-06-19T13:39:17" time="25.172" tests="20">
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Admin should invite user to organization successfully" time="0.025">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should fail to invite same user twice" time="0.006">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="0.006">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Invite User to Organization" name="Should invite user with different roles" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by organization" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Admin should get memberships by user" time="0">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="User should get their own memberships" time="0.005">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Should fail without userId or organizationId" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Memberships" name="Regular user should fail to get other user memberships" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Admin should get membership by ID" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Get Membership by ID" name="Should fail with invalid membership ID" time="0.002">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Admin should update member role successfully" time="0.008">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Should fail with invalid role" time="0.003">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Update Member Role" name="Regular user should fail to update role without permissions" time="0">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-    </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Admin should remove member successfully" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-      <failure>AxiosError: Request failed with status code 500
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
+<testsuites name="jest tests" tests="26" failures="26" errors="0" time="3.348">
+  <testsuite name="Conversations E2E Tests - Comprehensive Test Suite (25 tests)" errors="0" failures="26" skipped="0" timestamp="2025-06-19T13:45:28" time="3.2" tests="26">
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create a conversation with valid participants" time="0.003">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:421:34)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests Remove Member" name="Regular user should fail to remove member without permissions" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-      <failure>AxiosError: Request failed with status code 500
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation with insufficient participants" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:421:34)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="0.003">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
-      <failure>AxiosError: Request failed with status code 500
-    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
-    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
-    at IncomingMessage.emit (node:events:519:35)
-    at endReadableNT (node:internal/streams/readable:1696:12)
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should fail to create conversation without participants array" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:530:34)</failure>
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Creation" name="Should create group conversation with multiple participants" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation by ID for participant" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests Cross-Organization Access Validation" name="Super admin should access all organizations" time="0.001">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: &quot;shelter&quot;
-Received: undefined
-    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/memberships.e2e.js:50:35)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversation by ID for non-participant" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversations for user" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should fail to get conversations for other user without permission" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Retrieval" name="Should get conversation with invalid ID format" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should soft delete conversation for user" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should hide conversation for user" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unhide conversation for user" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should block conversation (moderator)" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should unblock conversation (moderator)" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Conversation Management" name="Should fail to block conversation as regular user" time="0.007">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should permanently delete conversation (admin)" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to permanently delete conversation as regular user" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should get all conversations (admin)" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Admin Operations" name="Should fail to get all conversations as regular user" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should create conversation in specific organization" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should not access conversation from different organization" time="0.005">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Should filter conversations by organization" time="0.001">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Multitenancy &amp; Organization Isolation" name="Super admin should access conversations across organizations" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle non-existent conversation ID" time="0.002">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Comprehensive Test Suite (25 tests) Error Handling &amp; Edge Cases" name="Should handle malformed request data" time="0.002">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:59:19)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:54:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations.e2e.js:44:25)</failure>
     </testcase>
   </testsuite>
 </testsuites>

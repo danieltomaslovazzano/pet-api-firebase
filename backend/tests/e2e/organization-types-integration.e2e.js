@@ -64,7 +64,7 @@ describe('Organization Types Integration E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      shelterOrg = response.data;
+      shelterOrg = response.data.data;
       testOrganizations.push(shelterOrg);
 
       // Add admin user to shelter as admin
@@ -106,7 +106,7 @@ describe('Organization Types Integration E2E Tests', () => {
       expect(response.data.data.organizationId).toBe(shelterOrg.id);
       expect(response.data.data.name).toBe(petData.name);
       
-      createdPets.push(response.data);
+      createdPets.push(response.data.data);
     });
     */
 
@@ -264,7 +264,7 @@ describe('Organization Types Integration E2E Tests', () => {
           }
         );
         shelters.push(response.data);
-        testOrganizations.push(response.data);
+        testOrganizations.push(response.data.data);
       }
 
       // Verify all are shelter type
@@ -369,7 +369,7 @@ describe('Organization Types Integration E2E Tests', () => {
           }
         }
       );
-      createdPets.push(pet1Response.data);
+      createdPets.push(pet1Response.data.data);
 
       const pet2Response = await axios.post(
         'http://localhost:3000/api/pets',
@@ -386,7 +386,7 @@ describe('Organization Types Integration E2E Tests', () => {
           }
         }
       );
-      createdPets.push(pet2Response.data);
+      createdPets.push(pet2Response.data.data);
 
       // Verify pets are isolated to their respective shelters
       expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
@@ -419,7 +419,7 @@ describe('Organization Types Integration E2E Tests', () => {
       expect(response.status).toBe(201);
       expect(response.data.data.type).toBe('shelter'); // Should default to shelter
       
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should handle organization updates without breaking type field', async () => {
