@@ -1,97 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="40" failures="0" errors="0" time="170.519">
-  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:22:12" time="86.79" tests="20">
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.778">
+<testsuites name="jest tests" tests="7" failures="7" errors="0" time="4.004">
+  <testsuite name="E2E: Auth" errors="0" failures="7" skipped="0" timestamp="2025-06-19T13:56:11" time="3.74" tests="7">
+    <testcase classname="E2E: Auth" name="should register a user" time="0.331">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:49:25)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.655">
+    <testcase classname="E2E: Auth" name="should login user" time="0.068">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:64:22)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.61">
+    <testcase classname="E2E: Auth" name="should deny login with wrong credentials" time="0.037">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 400
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:86:36)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="8.897">
+    <testcase classname="E2E: Auth" name="should access profile with token" time="0.023">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:91:24)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.691">
+    <testcase classname="E2E: Auth" name="should deny access to profile without token" time="0.035">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 401
+Received: undefined
+    at Object.toBe (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:108:36)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.585">
+    <testcase classname="E2E: Auth" name="should login as superadmin" time="0.028">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:121:32)</failure>
     </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.391">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.491">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.373">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.698">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.542">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.63">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.52">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.587">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.148">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.421">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="1.077">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.608">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.561">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.221">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - Member Removal and Self-Leave" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:23:39" time="16.812" tests="3">
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Admin should remove member successfully" time="1.171">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Remove Member" name="Regular user should fail to remove member without permissions" time="2.292">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Member Removal and Self-Leave Self-Leave Organization" name="User should be able to leave organization (remove own membership)" time="0.992">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - Role Management and Updates" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:23:55" time="12.13" tests="3">
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Admin should update member role successfully" time="0.538">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Should fail with invalid role" time="0.496">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Role Management and Updates Update Member Role" name="Regular user should fail to update role without permissions" time="0.591">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - User Invitations and Onboarding" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:08" time="26.699" tests="4">
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Admin should invite user to organization successfully" time="0.76">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should fail to invite same user twice" time="0.541">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Regular user should fail to invite without admin permissions" time="1.489">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - User Invitations and Onboarding Invite User to Organization" name="Should invite user with different roles" time="9.935">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - Membership Retrieval and Access" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:34" time="12.764" tests="5">
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by organization" time="0.594">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Admin should get memberships by user" time="0.63">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="User should get their own memberships" time="0.397">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Should fail without userId or organizationId" time="0.515">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Retrieval and Access Get Memberships" name="Regular user should fail to get other user memberships" time="0.432">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - Cross-Organization Access Control" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:47" time="8.978" tests="3">
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not access memberships from other organizations" time="0.576">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Organization admin should not invite users to other organizations" time="0.639">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Cross-Organization Access Control Cross-Organization Access Validation" name="Super admin should access all organizations" time="1.094">
-    </testcase>
-  </testsuite>
-  <testsuite name="Memberships E2E Tests - Membership Details and Information" errors="0" failures="0" skipped="0" timestamp="2025-06-18T19:24:56" time="6.149" tests="2">
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Admin should get membership by ID" time="0.611">
-    </testcase>
-    <testcase classname="Memberships E2E Tests - Membership Details and Information Get Membership by ID" name="Should fail with invalid membership ID" time="0.675">
+    <testcase classname="E2E: Auth" name="should list users as admin" time="0.016">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:507:28)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/auth/auth.e2e.js:132:22)</failure>
     </testcase>
   </testsuite>
 </testsuites>

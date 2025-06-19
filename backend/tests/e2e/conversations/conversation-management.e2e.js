@@ -192,8 +192,9 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('deleted');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('deleted');
     });
 
     test('Should hide conversation for user', async () => {
@@ -209,8 +210,9 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('hidden');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('hidden');
     });
 
     test('Should unhide conversation for user', async () => {
@@ -226,8 +228,9 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('unhidden');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('unhidden');
     });
 
     test('Should block conversation (moderator)', async () => {
@@ -243,8 +246,9 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('blocked');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('blocked');
     });
 
     test('Should unblock conversation (moderator)', async () => {
@@ -260,8 +264,9 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('unblocked');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('unblocked');
     });
 
     test('Should fail to block conversation as regular user', async () => {

@@ -75,7 +75,7 @@ describe('E2E: Users', () => {
   it('should get user by ID', async () => {
     const getUserResponse = await axios.get(`${API_URL}/users/${createdUserId}`, { headers });
     
-    expect(getUserResponse.data).toHaveProperty('success', true);
+    expect(getUserResponse.data.data).toHaveProperty('success',true);
     expect(getUserResponse.data).toHaveProperty('data');
     expect(getUserResponse.data.data).toHaveProperty('id', createdUserId);
     expect(getUserResponse.data.data).toHaveProperty('email');
@@ -92,7 +92,7 @@ describe('E2E: Users', () => {
     const updateData = { name: 'Updated Test User', phone: '+1234567890' };
     const updateResponse = await axios.put(`${API_URL}/users/${createdUserId}`, updateData, { headers });
     
-    expect(updateResponse.data).toHaveProperty('success', true);
+    expect(updateResponse.data.data).toHaveProperty('success',true);
     expect(updateResponse.data).toHaveProperty('data');
     expect(updateResponse.data.data).toHaveProperty('name', updateData.name);
     expect(updateResponse.data.data).toHaveProperty('phone', updateData.phone);
@@ -102,7 +102,7 @@ describe('E2E: Users', () => {
     const roleData = { role: 'moderator' };
     const roleResponse = await axios.put(`${API_URL}/users/${createdUserId}`, roleData, { headers });
     
-    expect(roleResponse.data).toHaveProperty('success', true);
+    expect(roleResponse.data.data).toHaveProperty('success',true);
     expect(roleResponse.data).toHaveProperty('data');
     expect(roleResponse.data.data).toHaveProperty('role', 'moderator');
   });
@@ -112,7 +112,8 @@ describe('E2E: Users', () => {
     
     expect(deleteResponse.data).toHaveProperty('message');
     expect(deleteResponse.status).toBe(200);
-  });
+  
+      expect(deleteResponse.data).toHaveProperty('success', true);});
 
   afterAll(async () => {
     // Cleanup test data

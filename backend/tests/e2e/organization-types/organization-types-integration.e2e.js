@@ -66,7 +66,7 @@ describe('Organization Types Integration E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      shelterOrg = response.data;
+      shelterOrg = response.data.data;
       testOrganizations.push(shelterOrg);
 
       // Add admin user to shelter as admin
@@ -109,7 +109,8 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.data.organizationId).toBe(shelterOrg.id);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.organizationId).toBe(shelterOrg.id);
       expect(response.data.data.name).toBe(petData.name);
       
       createdPets.push(response.data.data);
@@ -124,7 +125,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      expect(orgResponse.data.type).toBe('shelter');
+      expect(orgResponse.data.data.type).toBe('shelter');
 
       // Get shelter type features
       const typeResponse = await axios.get(
@@ -134,10 +135,10 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      expect(typeResponse.data.features).toContain('pet_adoption');
-      expect(typeResponse.data.features).toContain('pet_rescue');
-      expect(typeResponse.data.permissions.pets.create).toBe(true);
-      expect(typeResponse.data.permissions.pets.manage_adoption_status).toBe(true);
+      expect(typeResponse.data.data.features).toContain('pet_adoption');
+      expect(typeResponse.data.data.features).toContain('pet_rescue');
+      expect(typeResponse.data.data.permissions.pets.create).toBe(true);
+      expect(typeResponse.data.data.permissions.pets.manage_adoption_status).toBe(true);
     });
 
     test('Should list pets filtered by shelter organization', async () => {
@@ -152,7 +153,8 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the shelter organization
       response.data.forEach(pet => {
@@ -181,7 +183,7 @@ describe('Organization Types Integration E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      shelterOrg = orgResponse.data;
+      shelterOrg = orgResponse.data.data;
       testOrganizations.push(shelterOrg);
 
       // Create a shelter member
@@ -268,7 +270,7 @@ describe('Organization Types Integration E2E Tests', () => {
           }
         );
         shelters.push(response.data);
-        testOrganizations.push(response.data);
+        testOrganizations.push(response.data.data);
       }
 
       // Verify all are shelter type
@@ -285,7 +287,8 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(filterResponse.status).toBe(200);
-      expect(Array.isArray(filterResponse.data.data)).toBe(true);
+      
+      expect(filterResponse.data).toHaveProperty('success', true);expect(Array.isArray(filterResponse.data.data)).toBe(true);
       
       // Should include our created shelters
       const shelterIds = shelters.map(s => s.id);
@@ -404,8 +407,10 @@ describe('Organization Types Integration E2E Tests', () => {
       );
 
       expect(pet1Response.status).toBe(201);
-      expect(pet2Response.status).toBe(201);
-      expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
+      
+      expect(pet1Response.data).toHaveProperty('success', true);expect(pet2Response.status).toBe(201);
+      
+      expect(pet2Response.data).toHaveProperty('success', true);expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
       expect(pet2Response.data.data.organizationId).toBe(shelter2.id);
 
       // Verify data isolation - shelter1 should not see shelter2's pets

@@ -181,7 +181,8 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('message');
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
@@ -263,7 +264,8 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.participants).toHaveLength(3);
       expect(response.data.data.type).toBe('group');

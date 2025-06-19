@@ -49,7 +49,7 @@ describe('E2E: Auth', () => {
     const resRegister = await axios.post(`${API_URL}/auth/register`, registerPayload);
     
     // AUTH operations use res.created() format: {success, message, data}
-    expect(resRegister.data).toHaveProperty('success', true);
+    expect(resRegister.data.data).toHaveProperty('success',true);
     expect(resRegister.data).toHaveProperty('message');
     expect(resRegister.data).toHaveProperty('data');
     expect(resRegister.data.data).toHaveProperty('user');
@@ -68,7 +68,7 @@ describe('E2E: Auth', () => {
     refreshToken = resLogin.data.data.tokens.refreshToken;
     
     // AUTH operations use res.created() format: {success, message, data}
-    expect(resLogin.data).toHaveProperty('success', true);
+    expect(resLogin.data.data).toHaveProperty('success',true);
     expect(resLogin.data).toHaveProperty('message');
     expect(resLogin.data).toHaveProperty('data');
     expect(resLogin.data.data).toHaveProperty('user');
@@ -93,7 +93,7 @@ describe('E2E: Auth', () => {
     });
     
     // Profile endpoint uses res.data() format: {success, data} (no message)
-    expect(resProfile.data).toHaveProperty('success', true);
+    expect(resProfile.data.data).toHaveProperty('success',true);
     expect(resProfile.data).toHaveProperty('data');
     expect(resProfile.data.data).toHaveProperty('email', email);
     expect(resProfile.data.data).toHaveProperty('id');
@@ -134,7 +134,7 @@ describe('E2E: Auth', () => {
     });
     
     // Admin list users uses res.list() format: {success, data} (no message)
-    expect(usersRes.data).toHaveProperty('success', true);
+    expect(usersRes.data.data).toHaveProperty('success',true);
     expect(usersRes.data).toHaveProperty('data');
     expect(Array.isArray(usersRes.data.data)).toBe(true);
     expect(usersRes.data.data.length).toBeGreaterThan(0);

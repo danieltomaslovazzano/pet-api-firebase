@@ -193,8 +193,9 @@ describe('Conversations E2E Tests - Admin Operations and Oversight', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.message).toContain('deleted');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data.data.message).toContain('deleted');
     });
 
     test('Should fail to permanently delete conversation as regular user', async () => {
@@ -228,7 +229,8 @@ describe('Conversations E2E Tests - Admin Operations and Oversight', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
     });

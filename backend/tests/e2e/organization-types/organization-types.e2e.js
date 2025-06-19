@@ -67,10 +67,11 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(typeof response.data).toBe('object');
+      
+      expect(response.data).toHaveProperty('success', true);expect(typeof response.data).toBe('object');
       expect(response.data.shelter).toBeDefined();
-      expect(response.data.shelter.id).toBe('shelter');
-      expect(response.data.shelter.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+      expect(response.data.data.shelter.id).toBe('shelter');
+      expect(response.data.data.shelter.name).toBe(t('organizations.types.shelter.name', currentLanguage));
       expect(response.data.shelter.features).toBeDefined();
       expect(Array.isArray(response.data.shelter.features)).toBe(true);
       expect(response.data.shelter.permissions).toBeDefined();
@@ -89,7 +90,8 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.shelter).toBeDefined();
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.shelter).toBeDefined();
     });
 
     test('Should fail without authentication', async () => {
@@ -118,15 +120,16 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.data.data.id).toBe('shelter');
-      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
-      expect(response.data.description).toContain(t('organizations.types.shelter.description', currentLanguage));
-      expect(response.data.features).toContain('pet_adoption');
-      expect(response.data.features).toContain('pet_rescue');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.id).toBe('shelter');
+      expect(response.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+      expect(response.data.data.description).toContain(t('organizations.types.shelter.description', currentLanguage));
+      expect(response.data.data.features).toContain('pet_adoption');
+      expect(response.data.data.features).toContain('pet_rescue');
       expect(response.data.permissions.pets).toBeDefined();
-      expect(response.data.permissions.pets.create).toBe(true);
-      expect(response.data.validation.requiredFields).toContain('name');
-      expect(response.data.validation.requiredFields).toContain('email');
+      expect(response.data.data.permissions.pets.create).toBe(true);
+      expect(response.data.data.validation.requiredFields).toContain('name');
+      expect(response.data.data.validation.requiredFields).toContain('email');
     });
 
     test('Should fail for invalid organization type', async () => {
@@ -183,20 +186,21 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('success', true);
-      expect(response.data).toHaveProperty('success', true);
+      expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
-      expect(response.data.data.data.name).toBe(organizationData.name);
-      expect(response.data.type).toBe('shelter');
-      expect(response.data.createdBy).toBe(adminUserId);
-      expect(response.data.message).toBe(t('organizations.created', currentLanguage));
+      expect(response.data.data.name).toBe(organizationData.name);
+      expect(response.data.data.type).toBe('shelter');
+      expect(response.data.data.createdBy).toBe(adminUserId);
+      expect(response.data.data.message).toBe(t('organizations.created', currentLanguage));
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should create organization with default type when not specified', async () => {
@@ -220,11 +224,12 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.type).toBe('shelter'); // Default type
-      expect(response.data.message).toBe(t('organizations.created', currentLanguage));
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.type).toBe('shelter'); // Default type
+      expect(response.data.data.message).toBe(t('organizations.created', currentLanguage));
       
       // Store for cleanup
-      testOrganizations.push(response.data);
+      testOrganizations.push(response.data.data);
     });
 
     test('Should fail with invalid organization type', async () => {
@@ -331,7 +336,7 @@ describe('Organization Types E2E Tests', () => {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
-      testOrg = response.data;
+      testOrg = response.data.data;
       testOrganizations.push(testOrg);
     });
 
@@ -349,8 +354,9 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.type).toBe('shelter'); // Should remain the same
-      expect(response.data.description).toBe(updateData.description);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.type).toBe('shelter'); // Should remain the same
+      expect(response.data.data.description).toBe(updateData.description);
     });
 
     test('Should fail when updating to invalid type', async () => {
@@ -393,7 +399,7 @@ describe('Organization Types E2E Tests', () => {
             headers: { Authorization: `Bearer ${adminToken}` }
           }
         );
-        testOrganizations.push(response.data);
+        testOrganizations.push(response.data.data);
       }
     });
 
@@ -406,8 +412,9 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
-      expect(response.data.data.data.length).toBeGreaterThan(0);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
       
       // All returned organizations should be of type 'shelter'
       response.data.forEach(org => {
@@ -439,8 +446,9 @@ describe('Organization Types E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
-      expect(response.data.data.data.length).toBeGreaterThan(0);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data.data.length).toBeGreaterThan(0);
     });
   });
 
@@ -506,7 +514,7 @@ describe('Organization Types E2E Tests', () => {
           }
         }
       );
-      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+      expect(response.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
 
       // Test in Spanish
       currentLanguage = 'es';
@@ -519,7 +527,7 @@ describe('Organization Types E2E Tests', () => {
           }
         }
       );
-      expect(response.data.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
+      expect(response.data.data.name).toBe(t('organizations.types.shelter.name', currentLanguage));
     });
   });
 }); 

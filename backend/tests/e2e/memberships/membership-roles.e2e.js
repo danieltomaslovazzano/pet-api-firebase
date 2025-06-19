@@ -175,7 +175,8 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.data.role).toBe(newRole);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.role).toBe(newRole);
       
       // Update our local reference
       membershipToUpdate.role = newRole;

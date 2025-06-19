@@ -146,7 +146,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.data).toHaveProperty('id');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('id');
       expect(response.data.data).toHaveProperty('name', petData.name);
       expect(response.data.data).toHaveProperty('species', petData.species);
       expect(response.data.data).toHaveProperty('organizationId', testOrganization.id);
@@ -176,7 +177,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.data).toHaveProperty('id');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('id');
       expect(response.data.data).toHaveProperty('name', petData.name);
       expect(response.data.data).toHaveProperty('species', petData.species);
       expect(response.data.data).toHaveProperty('organizationId', testOrganization.id);
@@ -198,7 +200,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.message).toContain('hidden');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.message).toContain('hidden');
       expect(response.data.data.pet.visibility).toBe('hidden');
     });
 
@@ -215,7 +218,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.message).toContain('visible');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.message).toContain('visible');
       expect(response.data.data.pet.visibility).toBe('visible');
     });
 
@@ -232,7 +236,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.message).toContain('featured');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.message).toContain('featured');
       expect(response.data.data.pet.visibility).toBe('featured');
     });
 
@@ -253,7 +258,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.data.visibility).toBe('hidden');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.visibility).toBe('hidden');
     });
 
     test('Should fail with invalid visibility value', async () => {
@@ -305,7 +311,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
+      
+      expect(response.data).toHaveProperty('success', true);const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
       expect(hiddenPets.length).toBe(0);
     });
 
@@ -322,7 +329,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
+      
+      expect(response.data).toHaveProperty('success', true);const hiddenPets = response.data.data.filter(pet => pet.id === visibilityTestPet.id);
       expect(hiddenPets.length).toBe(1);
       expect(hiddenPets[0].visibility).toBe('hidden');
     });
@@ -352,7 +360,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(visibleResponse.status).toBe(200);
-      visibleResponse.data.data.forEach(pet => {
+      
+      expect(visibleResponse.data).toHaveProperty('success', true);visibleResponse.data.data.forEach(pet => {
         expect(pet.visibility).toBe('visible');
       });
 
@@ -368,7 +377,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(featuredResponse.status).toBe(200);
-      featuredResponse.data.data.forEach(pet => {
+      
+      expect(featuredResponse.data).toHaveProperty('success', true);featuredResponse.data.data.forEach(pet => {
         expect(pet.visibility).toBe('featured');
       });
     });
@@ -396,7 +406,8 @@ describe('Pet Visibility Management E2E Tests', () => {
       );
 
       expect(createResponse.status).toBe(201);
-      expect(createResponse.data.data.status).toBe('adopted');
+      
+      expect(createResponse.data).toHaveProperty('success', true);expect(createResponse.data.data.status).toBe('adopted');
       expect(createResponse.data.data.visibility).toBe('visible');
       
       createdPets.push(createResponse.data.data);

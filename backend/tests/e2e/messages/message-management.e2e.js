@@ -217,7 +217,8 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.content).toBe(updateData.content);
       expect(response.data.data.id).toBe(testMessage.id);
@@ -280,7 +281,8 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.status).toBe('deleted');
       expect(response.data.data.content).toBe('[Message deleted]');
@@ -317,8 +319,9 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
-      expect(response.data.message).toContain('deleted');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data.data.message).toContain('deleted');
     });
 
     test('Should fail to permanently delete message as regular user', async () => {

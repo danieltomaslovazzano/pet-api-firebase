@@ -125,7 +125,8 @@ describe('Pet Creation E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.data).toHaveProperty('id');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('id');
       expect(response.data.data).toHaveProperty('name', petData.name);
       expect(response.data.data).toHaveProperty('species', petData.species);
       expect(response.data.data).toHaveProperty('organizationId', testOrganization.id);
@@ -159,7 +160,8 @@ describe('Pet Creation E2E Tests', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data.data).toHaveProperty('id');
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('id');
       expect(response.data.data).toHaveProperty('name', petData.name);
       expect(response.data.data).toHaveProperty('species', petData.species);
       expect(response.data.data).toHaveProperty('organizationId', testOrganization.id);
@@ -216,7 +218,8 @@ describe('Pet Creation E2E Tests', () => {
 
         // If creation succeeds, verify it doesn't have organizationId
         expect(response.status).toBe(201);
-        expect(response.data.data.organizationId).toBeNull();
+        
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.organizationId).toBeNull();
         
         createdPets.push(response.data.data);
       } catch (error) {

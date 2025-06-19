@@ -217,7 +217,8 @@ describe('Messages E2E Tests - Organization Isolation and Multitenancy', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.organizationId).toBe(testOrganization2.id);
     });
@@ -285,7 +286,8 @@ describe('Messages E2E Tests - Organization Isolation and Multitenancy', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
       
@@ -307,7 +309,8 @@ describe('Messages E2E Tests - Organization Isolation and Multitenancy', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
     });

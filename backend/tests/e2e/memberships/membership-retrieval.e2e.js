@@ -157,7 +157,8 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
       expect(response.data.data.length).toBeGreaterThan(0);
       
       // Verify all memberships belong to the organization
@@ -175,7 +176,8 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('User should get their own memberships', async () => {
@@ -187,7 +189,8 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
     });
 
     test('Should fail without userId or organizationId', async () => {

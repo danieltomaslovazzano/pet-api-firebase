@@ -211,7 +211,8 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.id).toBe(testMessage.id);
       expect(response.data.data.content).toBe(testMessage.content);
@@ -281,7 +282,8 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
       expect(response.data.data.length).toBeGreaterThan(0);

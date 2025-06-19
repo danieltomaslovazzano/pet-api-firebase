@@ -195,7 +195,8 @@ describe('Pet Permissions & Multitenancy E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the test organization
       response.data.data.forEach(pet => {
@@ -223,7 +224,8 @@ describe('Pet Permissions & Multitenancy E2E Tests', () => {
       
       // API correctly allows cross-organization read access for public pet adoption
       expect(response.status).toBe(200);
-      expect(response.data.data.id).toBe(orgBPet.id);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.id).toBe(orgBPet.id);
       expect(response.data.data.organizationId).toBe(otherOrganization.id);
     });
 
@@ -284,7 +286,8 @@ describe('Pet Permissions & Multitenancy E2E Tests', () => {
         }
       );
       expect(responseA.status).toBe(200);
-      expect(responseA.data.data.id).toBe(orgAPet.id);
+      
+      expect(responseA.data).toHaveProperty('success', true);expect(responseA.data.data.id).toBe(orgAPet.id);
 
       // Test accessing pet from other organization
       try {
@@ -298,7 +301,8 @@ describe('Pet Permissions & Multitenancy E2E Tests', () => {
           }
         );
         expect(responseB.status).toBe(200);
-        expect(responseB.data.data.data.id).toBe(orgBPet.id);
+        
+      expect(responseB.data).toHaveProperty('success', true);expect(responseB.data.data.id).toBe(orgBPet.id);
       } catch (error) {
         // If admin doesn't have access to other org, that's also valid
         if (error.response && error.response.status === 403) {
@@ -322,7 +326,8 @@ describe('Pet Permissions & Multitenancy E2E Tests', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.data.data)).toBe(true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
       
       // Should include pets from multiple organizations for public adoption
       const orgIds = [...new Set(response.data.data.map(pet => pet.organizationId))];

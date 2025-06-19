@@ -150,7 +150,8 @@ describe('Memberships E2E Tests - Membership Details and Information', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data.data.id).toBe(testMembership.id);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.id).toBe(testMembership.id);
       expect(response.data.data.organizationId).toBe(testMembership.organizationId);
       expect(response.data.data.userId).toBe(testMembership.userId);
     });

@@ -180,7 +180,8 @@ describe('Memberships E2E Tests - Cross-Organization Access Control', () => {
       
       // Super admin should be able to access - this is correct behavior
       expect(response.status).toBe(200);
-    });
+    
+      expect(response.data).toHaveProperty('success', true);});
 
     test('Organization admin should not invite users to other organizations', async () => {
       // For rate limiting avoidance, use admin user instead of creating new user
@@ -223,13 +224,15 @@ describe('Memberships E2E Tests - Cross-Organization Access Control', () => {
       );
       expect(response1.status).toBe(200);
 
-      const response2 = await axios.get(
+      
+      expect(response1.data).toHaveProperty('success', true);const response2 = await axios.get(
         `http://localhost:3000/api/memberships?organizationId=${otherOrganization.id}`,
         {
           headers: { Authorization: `Bearer ${adminToken}` }
         }
       );
       expect(response2.status).toBe(200);
-    });
+    
+      expect(response2.data).toHaveProperty('success', true);});
   });
 });

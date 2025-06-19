@@ -176,7 +176,8 @@ describe('Memberships E2E Tests - User Invitations and Onboarding', () => {
       );
 
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
       expect(response.data.data.organizationId).toBe(testOrganization.id);
@@ -278,7 +279,8 @@ describe('Memberships E2E Tests - User Invitations and Onboarding', () => {
         );
 
         expect(response.status).toBe(201);
-        expect(response.data.data.role).toBe(role);
+        
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data.role).toBe(role);
         testMemberships.push(response.data.data);
       }
     });

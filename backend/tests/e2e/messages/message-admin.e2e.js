@@ -147,7 +147,8 @@ describe('Messages E2E Tests - Admin Operations and Moderation', () => {
       );
 
       expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
     });
 
@@ -166,7 +167,8 @@ describe('Messages E2E Tests - Admin Operations and Moderation', () => {
         
         // Regular user should be able to list organizations they have access to
         expect(response.status).toBe(200);
-        expect(true).toBe(true);
+        
+      expect(response.data).toHaveProperty('success', true);expect(true).toBe(true);
       } catch (error) {
         // Handle different error types - both success and failure are acceptable
         if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {

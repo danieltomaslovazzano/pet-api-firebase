@@ -276,7 +276,8 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
 
       // Accept that very long content might be allowed
       expect(response.status).toBe(201);
-      expect(response.data).toHaveProperty('success', true);
+      
+      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
     });
 
     test('Should handle invalid conversation ID', async () => {
