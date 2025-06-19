@@ -147,7 +147,7 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.message).toBe('Validation failed');
       }
     });
 
@@ -248,10 +248,10 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
-        expect(error.response.data.details).toBeDefined();
-        // Check that the details contain information about valid types including 'shelter'
-        const detailsString = JSON.stringify(error.response.data.details);
+        expect(error.response.data.message).toBe('Validation failed');
+        expect(error.response.data.errors).toBeDefined();
+        // Check that the errors contain information about valid types including 'shelter'
+        const detailsString = JSON.stringify(error.response.data.errors);
         expect(detailsString).toContain('shelter');
       }
     });
@@ -277,10 +277,10 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
-        expect(error.response.data.details).toBeDefined();
-        // Check that the details contain information about required email field
-        const detailsString = JSON.stringify(error.response.data.details);
+        expect(error.response.data.message).toBe('Validation failed');
+        expect(error.response.data.errors).toBeDefined();
+        // Check that the errors contain information about required email field
+        const detailsString = JSON.stringify(error.response.data.errors);
         expect(detailsString).toContain('email');
       }
     });
@@ -306,7 +306,7 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
+        expect(error.response.data.message).toBe('Validation failed');
       }
     });
   });
@@ -370,8 +370,8 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
-        expect(error.response.data.details).toBeDefined();
+        expect(error.response.data.message).toBe('Validation failed');
+        expect(error.response.data.errors).toBeDefined();
       }
     });
   });
@@ -429,7 +429,8 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Invalid query parameters');
+        expect(error.response.data.message).toBe('Validation failed');
+        expect(error.response.data.errors).toBeDefined();
       }
     });
 
@@ -491,8 +492,8 @@ describe('Organization Types E2E Tests', () => {
         fail('Should have thrown an error');
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toBe('Validation failed');
-        expect(error.response.data.details).toBeDefined();
+        expect(error.response.data.message).toBe('Validation failed');
+        expect(error.response.data.errors).toBeDefined();
       }
     });
   });
