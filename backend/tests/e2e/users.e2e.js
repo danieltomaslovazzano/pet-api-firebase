@@ -24,7 +24,7 @@ describe('E2E: Users', () => {
       email: process.env.ADMIN_EMAIL,
       password: process.env.ADMIN_PASSWORD
     });
-    adminToken = loginResponse.data.tokens.idToken;
+    adminToken = loginResponse.data.data.tokens.idToken;
     headers = { Authorization: `Bearer ${adminToken}` };
   });
 
@@ -46,38 +46,44 @@ describe('E2E: Users', () => {
       role: 'user'
     };
     const createResponse = await axios.post(`${API_URL}/users`, newUser, { headers });
-    createdUserId = createResponse.data.id;
-    expect(createResponse.data).toHaveProperty('id');
-    expect(createResponse.data.email).toBe(newUser.email);
+    createdUserId = createResponse.data.data.id;
+    expect(createResponse.data).toHaveProperty('success', true);
+    expect(createResponse.data.data).toHaveProperty('id');
+    expect(createResponse.data.data.email).toBe(newUser.email);
   });
 
   it('should get user by ID', async () => {
     const getUserResponse = await axios.get(`${API_URL}/users/${createdUserId}`, { headers });
-    expect(getUserResponse.data).toHaveProperty('id', createdUserId);
-    expect(getUserResponse.data).toHaveProperty('email', newUser.email);
+    expect(getUserResponse.data).toHaveProperty('success', true);
+    expect(getUserResponse.data.data).toHaveProperty('id', createdUserId);
+    expect(getUserResponse.data.data).toHaveProperty('email', newUser.email);
   });
 
   it('should list users', async () => {
     const listResponse = await axios.get(`${API_URL}/users`, { headers });
-    expect(Array.isArray(listResponse.data)).toBe(true);
-    expect(listResponse.data.find(u => u.id === createdUserId)).toBeTruthy();
+    expect(listResponse.data).toHaveProperty('success', true);
+    expect(Array.isArray(listResponse.data.data)).toBe(true);
+    expect(listResponse.data.data.find(u => u.id === createdUserId)).toBeTruthy();
   });
 
   it('should update user', async () => {
     const updateData = { name: 'Updated Test User', phone: '+1234567890' };
     const updateResponse = await axios.put(`${API_URL}/users/${createdUserId}`, updateData, { headers });
-    expect(updateResponse.data).toHaveProperty('name', updateData.name);
-    expect(updateResponse.data).toHaveProperty('phone', updateData.phone);
+    expect(updateResponse.data).toHaveProperty('success', true);
+    expect(updateResponse.data.data).toHaveProperty('name', updateData.name);
+    expect(updateResponse.data.data).toHaveProperty('phone', updateData.phone);
   });
 
   it('should change user role', async () => {
     const roleData = { role: 'moderator' };
     const roleResponse = await axios.put(`${API_URL}/users/${createdUserId}`, roleData, { headers });
-    expect(roleResponse.data).toHaveProperty('role', 'moderator');
+    expect(roleResponse.data).toHaveProperty('success', true);
+    expect(roleResponse.data.data).toHaveProperty('role', 'moderator');
   });
 
   it('should delete user', async () => {
     const deleteResponse = await axios.delete(`${API_URL}/users/${createdUserId}`, { headers });
+    expect(deleteResponse.data).toHaveProperty('success', true);
     expect(deleteResponse.data).toHaveProperty('message');
   });
 

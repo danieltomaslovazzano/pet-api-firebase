@@ -32,17 +32,20 @@ describe('E2E: Auth', () => {
   it('should register a user', async () => {
     const registerPayload = { email, password, name };
     const resRegister = await axios.post(`${API_URL}/auth/register`, registerPayload);
-    expect(resRegister.data).toHaveProperty('user');
-    expect(resRegister.data.user).toHaveProperty('email', email);
+    expect(resRegister.data).toHaveProperty('success', true);
+    expect(resRegister.data).toHaveProperty('data');
+    expect(resRegister.data.data).toHaveProperty('user');
+    expect(resRegister.data.data.user).toHaveProperty('email', email);
   });
 
   it('should login user', async () => {
     const loginPayload = { email, password };
     const resLogin = await axios.post(`${API_URL}/auth/login`, loginPayload);
-    idToken = resLogin.data.tokens.idToken;
-    refreshToken = resLogin.data.tokens.refreshToken;
-    expect(resLogin.data).toHaveProperty('tokens');
-    expect(resLogin.data.tokens).toHaveProperty('idToken');
+    idToken = resLogin.data.data.tokens.idToken;
+    refreshToken = resLogin.data.data.tokens.refreshToken;
+    expect(resLogin.data).toHaveProperty('success', true);
+    expect(resLogin.data.data).toHaveProperty('tokens');
+    expect(resLogin.data.data.tokens).toHaveProperty('idToken');
   });
 
   it('should deny login with wrong credentials', async () => {
@@ -51,7 +54,8 @@ describe('E2E: Auth', () => {
       await axios.post(`${API_URL}/auth/login`, wrongLoginPayload);
       throw new Error('Login with wrong credentials should fail');
     } catch (err) {
-      expect(err.response?.status).toBe(400);
+      expect(err.response?.status).toBe(401);
+      expect(err.response.data).toHaveProperty('success', false);
     }
   });
 
@@ -59,7 +63,8 @@ describe('E2E: Auth', () => {
     const resProfile = await axios.get(`${API_URL}/users/me`, {
       headers: { Authorization: `Bearer ${idToken}` }
     });
-    expect(resProfile.data).toHaveProperty('email', email);
+    expect(resProfile.data).toHaveProperty('success', true);
+    expect(resProfile.data.data).toHaveProperty('email', email);
   });
 
   it('should deny access to profile without token', async () => {
@@ -76,8 +81,8 @@ describe('E2E: Auth', () => {
     const superadminPassword = 'PC.103638dl';
     const superadminLoginPayload = { email: superadminEmail, password: superadminPassword };
     const resSuperadminLogin = await axios.post(`${API_URL}/auth/login`, superadminLoginPayload);
-    const userRole = resSuperadminLogin.data?.user?.role || resSuperadminLogin.data?.role;
-    adminToken = resSuperadminLogin.data.tokens?.idToken;
+    const userRole = resSuperadminLogin.data.data?.user?.role;
+    adminToken = resSuperadminLogin.data.data.tokens?.idToken;
     expect(userRole).toBe('superadmin');
   });
 
@@ -85,7 +90,8 @@ describe('E2E: Auth', () => {
     const usersRes = await axios.get(`${API_URL}/admin/users`, {
       headers: { Authorization: `Bearer ${adminToken}` }
     });
-    expect(Array.isArray(usersRes.data)).toBe(true);
+    expect(usersRes.data).toHaveProperty('success', true);
+    expect(Array.isArray(usersRes.data.data)).toBe(true);
   });
 
   afterAll(() => {
