@@ -74,8 +74,11 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
         `${API_BASE_URL}/organizations`,
         {
           name: `Test Org Conversation Creation ${Date.now()}`,
+          email: `testorg1-${Date.now()}@example.com`,
           description: 'Test organization for conversation creation tests',
-          organizationType: 'business'
+          type: 'shelter',
+          address: '123 Test Street, Test City',
+          phone: '+1234567890'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -87,8 +90,11 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
         `${API_BASE_URL}/organizations`,
         {
           name: `Test Org 2 Conversation Creation ${Date.now()}`,
+          email: `testorg2-${Date.now()}@example.com`,
           description: 'Second test organization for conversation creation tests',
-          organizationType: 'business'
+          type: 'shelter',
+          address: '456 Test Avenue, Test City',
+          phone: '+1234567891'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );

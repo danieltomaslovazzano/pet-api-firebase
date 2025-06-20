@@ -104,6 +104,7 @@ const authController = {
       res.apiCreated(responseData, 'auth.register.success', {}, { email });
     } catch (error) {
       const errorResponse = error.response?.data?.error || error;
+      const { email: requestEmail } = req.body; // Extract email from request for error handling
       logAuthEvent('Register Error', errorResponse, true);
       
       if (error.response?.data?.error) {
@@ -111,7 +112,7 @@ const authController = {
         
         switch(firebaseError.message) {
           case 'EMAIL_EXISTS':
-            return res.apiConflict('auth.register.email_exists', [], {}, { email });
+            return res.apiConflict('auth.register.email_exists', [], {}, { email: requestEmail });
           case 'INVALID_EMAIL':
             return res.apiValidationError([
               { field: 'email', code: 'INVALID_FORMAT', messageKey: 'auth.email.invalid_format' }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="4" failures="4" errors="0" time="4.508">
-  <testsuite name="Conversations E2E Tests - Conversation Creation and Validation" errors="0" failures="4" skipped="0" timestamp="2025-06-20T13:58:14" time="4.394" tests="4">
+<testsuites name="jest tests" tests="52" failures="52" errors="0" time="59.409">
+  <testsuite name="Conversations E2E Tests - Conversation Creation and Validation" errors="0" failures="26" skipped="0" timestamp="2025-06-20T16:56:30" time="33.291" tests="26">
     <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should create a conversation with valid participants" time="0.002">
-      <failure>AxiosError: Request failed with status code 400
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -10,10 +10,10 @@
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:73:27)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:106:7)</failure>
     </testcase>
     <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should fail to create conversation with insufficient participants" time="0.001">
-      <failure>AxiosError: Request failed with status code 400
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -21,10 +21,10 @@
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:73:27)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:106:7)</failure>
     </testcase>
     <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should fail to create conversation without participants array" time="0">
-      <failure>AxiosError: Request failed with status code 400
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -32,10 +32,10 @@
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:73:27)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:106:7)</failure>
     </testcase>
     <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should create group conversation with multiple participants" time="0">
-      <failure>AxiosError: Request failed with status code 400
+      <failure>AxiosError: Request failed with status code 500
     at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
     at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
     at IncomingMessage.emit (node:events:519:35)
@@ -43,7 +43,595 @@
     at processTicksAndRejections (node:internal/process/task_queues:90:21)
     at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:73:27)</failure>
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:106:7)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversation by ID for participant" time="0.008">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should fail to get conversation by ID for non-participant" time="0.012">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversations for user" time="0.005">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should fail to get conversations for other user without permission" time="0.008">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversation with invalid ID format" time="0.012">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should soft delete conversation for user" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should hide conversation for user" time="0.006">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should unhide conversation for user" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should block conversation (moderator)" time="0.005">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should unblock conversation (moderator)" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should fail to block conversation as regular user" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should permanently delete conversation (admin)" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should fail to permanently delete conversation as regular user" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should get all conversations (admin)" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should fail to get all conversations as regular user" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should create conversation in specific organization" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should not access conversation from different organization" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should filter conversations by organization" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Super admin should access conversations across organizations" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle non-existent conversation ID" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle malformed request data" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Conversation Retrieval and Access" errors="0" failures="5" skipped="0" timestamp="2025-06-20T16:57:03" time="5.278" tests="5">
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversation by ID for participant" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should fail to get conversation by ID for non-participant" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversations for user" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should fail to get conversations for other user without permission" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Retrieval and Access Conversation Retrieval" name="Should get conversation with invalid ID format" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-retrieval.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Error Handling and Edge Cases" errors="0" failures="3" skipped="0" timestamp="2025-06-20T16:57:08" time="4.895" tests="3">
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle non-existent conversation ID" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle unauthorized access" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Error Handling and Edge Cases Error Handling &amp; Edge Cases" name="Should handle malformed request data" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-edge-cases.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Organization Isolation and Multitenancy" errors="0" failures="4" skipped="0" timestamp="2025-06-20T16:57:13" time="5.064" tests="4">
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should create conversation in specific organization" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should not access conversation from different organization" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Should filter conversations by organization" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Organization Isolation and Multitenancy Multitenancy &amp; Organization Isolation" name="Super admin should access conversations across organizations" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-multitenancy.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Admin Operations and Oversight" errors="0" failures="4" skipped="0" timestamp="2025-06-20T16:57:18" time="5.024" tests="4">
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should permanently delete conversation (admin)" time="0.004">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should fail to permanently delete conversation as regular user" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should get all conversations (admin)" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Admin Operations and Oversight Admin Operations" name="Should fail to get all conversations as regular user" time="0.01">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-admin.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Conversation Management and Moderation" errors="0" failures="6" skipped="0" timestamp="2025-06-20T16:57:23" time="4.914" tests="6">
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should soft delete conversation for user" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should hide conversation for user" time="0.003">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should unhide conversation for user" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should block conversation (moderator)" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should unblock conversation (moderator)" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Management and Moderation Conversation Management" name="Should fail to block conversation as regular user" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Proxy.requestWrapper.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/request.js:69:19)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-management.e2e.js:95:35)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests - Conversation Creation and Validation" errors="0" failures="4" skipped="0" timestamp="2025-06-20T16:57:28" time="0.695" tests="4">
+    <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should create a conversation with valid participants" time="0.002">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:198:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:44:31)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should fail to create conversation with insufficient participants" time="0.001">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:198:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:44:31)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should fail to create conversation without participants array" time="0.001">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:198:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:44:31)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests - Conversation Creation and Validation Conversation Creation" name="Should create group conversation with multiple participants" time="0">
+      <failure>AxiosError: Request failed with status code 401
+    at settle (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/settle.js:19:12)
+    at IncomingMessage.handleStreamEnd (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:599:11)
+    at IncomingMessage.emit (node:events:519:35)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at getAuthToken (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/helpers/auth.js:198:22)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e/conversations/conversation-creation.e2e.js:44:31)</failure>
     </testcase>
   </testsuite>
 </testsuites>
