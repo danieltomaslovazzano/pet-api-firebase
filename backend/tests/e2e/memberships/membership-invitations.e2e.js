@@ -177,7 +177,7 @@ describe('Memberships E2E Tests - User Invitations and Onboarding', () => {
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
       expect(response.data.data.organizationId).toBe(testOrganization.id);
@@ -209,7 +209,7 @@ describe('Memberships E2E Tests - User Invitations and Onboarding', () => {
         if (error.response) {
           expect(error.response.status).toBe(400);
           // Check for i18n key or translated message
-          expect(error.response.data.error).toMatch(/already a member|user_already_member/);
+          expect(error.response.data.message).toMatch(/already a member|user_already_member/);
         } else {
           // Network error - log and fail the test appropriately
           console.error('Network error in test:', error.message);

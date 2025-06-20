@@ -176,5 +176,68 @@
   "error_hiding": "Error ocultando conversación",
   "error_unhiding": "Error mostrando conversación",
   "error_blocking": "Error bloqueando conversación",
-  "error_unblocking": "Error desbloqueando conversación"
+  "error_unblocking": "Error desbloqueando conversación",
+  "validation": {
+    "failed": "Error de validación en conversación",
+    "error": "Error de validación en conversación",
+    "invalid_id": "Formato de ID de conversación inválido",
+    "participants_required": "Se requiere un array de participantes para crear conversaciones",
+    "participants_array": "Los participantes deben ser proporcionados como un array",
+    "insufficient_participants": "Se requieren al menos dos participantes para las conversaciones"
+  },
+  "create": {
+    "success": "Conversación creada exitosamente",
+    "error": "Error creando conversación",
+    "forbidden_participant": "Todos los participantes de la conversación deben pertenecer a la organización",
+    "membership_check_error": "Error verificando la membresía de la organización"
+  },
+  "get": {
+    "success": "Conversación obtenida exitosamente",
+    "error": "Error obteniendo conversación",
+    "forbidden_organization": "No se puede acceder a conversaciones fuera de tu organización",
+    "forbidden_participant": "Debes ser un participante para ver esta conversación"
+  },
+  "get_user": {
+    "success": "Conversaciones de usuario obtenidas exitosamente",
+    "error": "Error obteniendo conversaciones de usuario",
+    "forbidden_organization": "No se puede acceder a conversaciones de usuarios fuera de tu organización",
+    "forbidden_admin": "Solo los administradores de la organización pueden ver las conversaciones de otros usuarios",
+    "forbidden_self_only": "Solo puedes ver tus propias conversaciones"
+  },
+  "soft_delete": {
+    "success": "Conversación eliminada temporalmente exitosamente",
+    "error": "Error eliminando conversación temporalmente",
+    "forbidden_organization": "No se puede acceder a conversaciones fuera de tu organización",
+    "forbidden_participant": "Debes ser un participante para modificar esta conversación"
+  },
+  "permanent_delete": {
+    "success": "Conversación eliminada permanentemente exitosamente",
+    "error": "Error eliminando conversación permanentemente",
+    "forbidden_organization": "No se puede eliminar conversaciones fuera de tu organización",
+    "forbidden_permissions": "Permisos insuficientes para eliminar conversaciones permanentemente"
+  },
+  "hide": {
+    "success": "Conversación ocultada exitosamente",
+    "error": "Error ocultando conversación",
+    "forbidden": "Prohibido: No se puede ocultar esta conversación"
+  },
+  "unhide": {
+    "success": "Conversación mostrada exitosamente",
+    "error": "Error mostrando conversación",
+    "forbidden": "Prohibido: No se puede mostrar esta conversación"
+  },
+  "block": {
+    "success": "Conversación bloqueada exitosamente",
+    "error": "Error bloqueando conversación",
+    "forbidden": "Prohibido: No se puede bloquear esta conversación"
+  },
+  "unblock": {
+    "success": "Conversación desbloqueada exitosamente",
+    "error": "Error desbloqueando conversación",
+    "forbidden": "Prohibido: No se puede desbloquear esta conversación"
+  },
+  "get_all": {
+    "success": "Conversaciones obtenidas exitosamente",
+    "error": "Error obteniendo conversaciones"
+  }
 } 

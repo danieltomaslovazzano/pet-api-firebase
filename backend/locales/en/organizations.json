@@ -110,5 +110,25 @@
   "unauthorized_view_members": "Unauthorized. You must be a member to view organization members.",
   "unauthorized_list_organizations": "Unauthorized. Only members can list organizations.",
   "forbidden_admin_only": "Only organization administrators can perform this action",
-  "language_preference_updated": "Organization language preference updated successfully"
+  "language_preference_updated": "Organization language preference updated successfully",
+  "types": {
+    "success": "Organization types retrieved successfully"
+  },
+  "type_info": {
+    "success": "Organization type information retrieved successfully"  
+  },
+  "create": {
+    "success": "Organization created successfully",
+    "internal_error": "Internal error occurred while creating organization"
+  },
+  "delete": {
+    "success": "Organization deleted successfully",
+    "internal_error": "Internal error deleting organization"
+  },
+  "get": {
+    "success": "Organizations retrieved successfully"
+  },
+  "update": {
+    "success": "Organization updated successfully"
+  }
 } 

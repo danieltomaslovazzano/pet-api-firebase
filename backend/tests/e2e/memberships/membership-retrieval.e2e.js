@@ -206,7 +206,7 @@ describe('Memberships E2E Tests - Membership Retrieval and Access', () => {
         // Handle both network errors and HTTP response errors
         if (error.response) {
           expect(error.response.status).toBe(400);
-          expect(error.response.data.error).toContain('userId or organizationId must be provided');
+          expect(error.response.data.message).toContain('userId or organizationId must be provided');
         } else {
           // Network error - log and fail the test appropriately
           console.error('Network error in test:', error.message);

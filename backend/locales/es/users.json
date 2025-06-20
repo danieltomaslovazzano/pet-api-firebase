@@ -175,5 +175,20 @@
   "forbidden_access_outside_organization": "Prohibido: No puedes acceder a usuarios fuera del contexto de tu organización",
   "forbidden_view_user": "No tienes permiso para ver este usuario",
   "preference_updated": "Preferencia de idioma actualizada exitosamente",
-  "missing_id": "Falta el ID de usuario en los parámetros de la solicitud"
-} 
+  "missing_id": "Falta el ID de usuario en los parámetros de la solicitud",
+  "get": {
+    "success": "Usuario obtenido exitosamente",
+    "internal_error": "Error interno obteniendo usuario"
+  },
+  "update": {
+    "success": "Usuario actualizado exitosamente",
+    "internal_error": "Error interno actualizando usuario"
+  },
+  "delete": {
+    "success": "Usuario eliminado exitosamente",
+    "internal_error": "Error interno eliminando usuario"
+  },
+  "me": {
+    "success": "Perfil de usuario obtenido exitosamente"
+  }
+}

@@ -75,8 +75,10 @@ describe('E2E: Users', () => {
   it('should get user by ID', async () => {
     const getUserResponse = await axios.get(`${API_URL}/users/${createdUserId}`, { headers });
     
-    expect(getUserResponse.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, data, meta}
+    expect(getUserResponse.data).toHaveProperty('success', true);
     expect(getUserResponse.data).toHaveProperty('data');
+    expect(getUserResponse.data).toHaveProperty('meta');
     expect(getUserResponse.data.data).toHaveProperty('id', createdUserId);
     expect(getUserResponse.data.data).toHaveProperty('email');
     expect(getUserResponse.data.data.email).toContain('@example.com');
@@ -84,6 +86,11 @@ describe('E2E: Users', () => {
 
   it('should list users', async () => {
     const listResponse = await axios.get(`${API_URL}/users`, { headers });
+    
+    // Unified API format: {success, data, meta}
+    expect(listResponse.data).toHaveProperty('success', true);
+    expect(listResponse.data).toHaveProperty('data');
+    expect(listResponse.data).toHaveProperty('meta');
     expect(Array.isArray(listResponse.data.data)).toBe(true);
     expect(listResponse.data.data.find(u => u.id === createdUserId)).toBeTruthy();
   });
@@ -92,8 +99,10 @@ describe('E2E: Users', () => {
     const updateData = { name: 'Updated Test User', phone: '+1234567890' };
     const updateResponse = await axios.put(`${API_URL}/users/${createdUserId}`, updateData, { headers });
     
-    expect(updateResponse.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, data, meta}
+    expect(updateResponse.data).toHaveProperty('success', true);
     expect(updateResponse.data).toHaveProperty('data');
+    expect(updateResponse.data).toHaveProperty('meta');
     expect(updateResponse.data.data).toHaveProperty('name', updateData.name);
     expect(updateResponse.data.data).toHaveProperty('phone', updateData.phone);
   });
@@ -102,18 +111,22 @@ describe('E2E: Users', () => {
     const roleData = { role: 'moderator' };
     const roleResponse = await axios.put(`${API_URL}/users/${createdUserId}`, roleData, { headers });
     
-    expect(roleResponse.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, data, meta}
+    expect(roleResponse.data).toHaveProperty('success', true);
     expect(roleResponse.data).toHaveProperty('data');
+    expect(roleResponse.data).toHaveProperty('meta');
     expect(roleResponse.data.data).toHaveProperty('role', 'moderator');
   });
 
   it('should delete user', async () => {
     const deleteResponse = await axios.delete(`${API_URL}/users/${createdUserId}`, { headers });
     
+    // Unified API format: {success, message, meta}
+    expect(deleteResponse.data).toHaveProperty('success', true);
     expect(deleteResponse.data).toHaveProperty('message');
+    expect(deleteResponse.data).toHaveProperty('meta');
     expect(deleteResponse.status).toBe(200);
-  
-      expect(deleteResponse.data).toHaveProperty('success', true);});
+  });
 
   afterAll(async () => {
     // Cleanup test data

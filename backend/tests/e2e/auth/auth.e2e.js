@@ -48,10 +48,11 @@ describe('E2E: Auth', () => {
     const registerPayload = { email, password, name };
     const resRegister = await axios.post(`${API_URL}/auth/register`, registerPayload);
     
-    // AUTH operations use res.created() format: {success, message, data}
-    expect(resRegister.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, message, data, meta}
+    expect(resRegister.data).toHaveProperty('success', true);
     expect(resRegister.data).toHaveProperty('message');
     expect(resRegister.data).toHaveProperty('data');
+    expect(resRegister.data).toHaveProperty('meta');
     expect(resRegister.data.data).toHaveProperty('user');
     expect(resRegister.data.data).toHaveProperty('tokens');
     expect(resRegister.data.data.user).toHaveProperty('email', email);
@@ -67,10 +68,11 @@ describe('E2E: Auth', () => {
     idToken = resLogin.data.data.tokens.idToken;
     refreshToken = resLogin.data.data.tokens.refreshToken;
     
-    // AUTH operations use res.created() format: {success, message, data}
-    expect(resLogin.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, message, data, meta}
+    expect(resLogin.data).toHaveProperty('success', true);
     expect(resLogin.data).toHaveProperty('message');
     expect(resLogin.data).toHaveProperty('data');
+    expect(resLogin.data).toHaveProperty('meta');
     expect(resLogin.data.data).toHaveProperty('user');
     expect(resLogin.data.data).toHaveProperty('tokens');
     expect(resLogin.data.data.tokens).toHaveProperty('idToken');
@@ -83,7 +85,7 @@ describe('E2E: Auth', () => {
       await axios.post(`${API_URL}/auth/login`, wrongLoginPayload);
       throw new Error('Login with wrong credentials should fail');
     } catch (err) {
-      expect(err.response?.status).toBe(400);
+      expect(err.response?.status).toBe(401); // Correct status for invalid credentials
     }
   });
 
@@ -92,9 +94,10 @@ describe('E2E: Auth', () => {
       headers: { Authorization: `Bearer ${idToken}` }
     });
     
-    // Profile endpoint uses res.data() format: {success, data} (no message)
-    expect(resProfile.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, data, meta}
+    expect(resProfile.data).toHaveProperty('success', true);
     expect(resProfile.data).toHaveProperty('data');
+    expect(resProfile.data).toHaveProperty('meta');
     expect(resProfile.data.data).toHaveProperty('email', email);
     expect(resProfile.data.data).toHaveProperty('id');
     expect(resProfile.data.data).toHaveProperty('name', name);
@@ -133,9 +136,10 @@ describe('E2E: Auth', () => {
       headers: { Authorization: `Bearer ${adminToken}` }
     });
     
-    // Admin list users uses res.list() format: {success, data} (no message)
-    expect(usersRes.data.data).toHaveProperty('success',true);
+    // Unified API format: {success, data, meta}
+    expect(usersRes.data).toHaveProperty('success', true);
     expect(usersRes.data).toHaveProperty('data');
+    expect(usersRes.data).toHaveProperty('meta');
     expect(Array.isArray(usersRes.data.data)).toBe(true);
     expect(usersRes.data.data.length).toBeGreaterThan(0);
   });

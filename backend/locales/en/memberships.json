@@ -180,5 +180,40 @@
   "unauthorized_remove": "Unauthorized. Only admins can remove members.",
   "forbidden_view_other_memberships": "Forbidden: Only organization admins can view other users' memberships",
   "forbidden_access_user_outside_organization": "Forbidden: Cannot access memberships for users outside your organization",
-  "view_own_memberships_only": "You can only view your own memberships"
+  "view_own_memberships_only": "You can only view your own memberships",
+  "access": {
+    "forbidden_organization": "Access denied: Cannot access memberships outside your organization",
+    "forbidden_own_only": "Access denied: You can only view your own memberships",
+    "admin_only": "Access denied: Only organization administrators can perform this action",
+    "permission_denied": "Permission denied: You do not have access to this membership"
+  },
+  "validation": {
+    "failed": "Validation failed",
+    "error": "Validation error occurred",
+    "invalid_role": "Invalid role specified"
+  },
+  "retrieve": {
+    "error": "Error retrieving membership information"
+  },
+  "invite": {
+    "success": "User invited successfully",
+    "forbidden_organization": "Access denied: Cannot invite users to this organization",
+    "error": "Error sending invitation",
+    "unauthorized": "Unauthorized: Only administrators can invite users"
+  },
+  "update": {
+    "success": "Membership updated successfully",
+    "forbidden_organization": "Access denied: Cannot modify memberships in this organization",
+    "error": "Error updating membership",
+    "unauthorized": "Unauthorized: Only administrators can modify memberships"
+  },
+  "remove": {
+    "success": "Membership removed successfully",
+    "forbidden_organization": "Access denied: Cannot remove memberships from this organization", 
+    "error": "Error removing membership",
+    "unauthorized": "Unauthorized: Only administrators can remove members"
+  },
+  "leave": {
+    "success": "You have successfully left the organization"
+  }
 } 

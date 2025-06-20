@@ -173,7 +173,7 @@ describe('Memberships E2E Tests - Member Removal and Self-Leave', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('message');
 
       // Verify membership is deleted

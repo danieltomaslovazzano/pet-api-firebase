@@ -213,7 +213,7 @@ describe('Conversations E2E Tests - Admin Operations and Oversight', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toContain('Permission denied');
+        expect(error.response.data.message).toContain('Permission denied');
       }
     });
 
@@ -230,7 +230,7 @@ describe('Conversations E2E Tests - Admin Operations and Oversight', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
     });
@@ -250,7 +250,7 @@ describe('Conversations E2E Tests - Admin Operations and Oversight', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toContain('Permission denied');
+        expect(error.response.data.message).toContain('Permission denied');
       }
     });
   });

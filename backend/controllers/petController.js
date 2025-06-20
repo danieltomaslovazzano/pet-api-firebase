@@ -185,8 +185,9 @@ exports.getPets = async (req, res) => {
     if (breed) filters.breed = breed;
     if (visibility) filters.visibility = visibility;
     
-    // Multitenancy: filter by organizationId unless super admin
-    if (!req.user.isSuperAdmin && req.organizationId) {
+    // Multitenancy: filter by organizationId when provided
+    // Super admins can still be scoped to a specific organization via header
+    if (req.organizationId) {
       filters.organizationId = req.organizationId;
     }
     
@@ -207,9 +208,7 @@ exports.getPets = async (req, res) => {
       });
     } catch (err) {
       console.error('Error retrieving pets:', err);
-      res.apiServerError('pets.list.internal_error', { 
-        originalError: err.message 
-      });
+      res.apiServerError('pets.list.internal_error');
         }
 };
 
@@ -337,6 +336,12 @@ exports.searchPets = async (req, res) => {
     if (status) searchCriteria.status = status;
     if (breed) searchCriteria.breed = breed;
     if (visibility) searchCriteria.visibility = visibility;
+    
+    // Multitenancy: filter by organizationId when provided
+    // Super admins can still be scoped to a specific organization via header
+    if (req.organizationId) {
+      searchCriteria.organizationId = req.organizationId;
+    }
     
     // Parse pagination parameters
     const pageNumber = parseInt(page, 10);

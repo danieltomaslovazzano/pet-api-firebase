@@ -175,5 +175,20 @@
   "forbidden_access_outside_organization": "Forbidden: Cannot access users outside your organization context",
   "forbidden_view_user": "You do not have permission to view this user",
   "preference_updated": "Language preference updated successfully",
-  "missing_id": "Missing user ID in request parameters"
-} 
+  "missing_id": "Missing user ID in request parameters",
+  "get": {
+    "success": "User retrieved successfully",
+    "internal_error": "Internal error retrieving user"
+  },
+  "update": {
+    "success": "User updated successfully",
+    "internal_error": "Internal error updating user"
+  },
+  "delete": {
+    "success": "User deleted successfully",
+    "internal_error": "Internal error deleting user"
+  },
+  "me": {
+    "success": "User profile retrieved successfully"
+  }
+}

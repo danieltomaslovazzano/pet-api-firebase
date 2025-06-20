@@ -192,7 +192,7 @@ describe('Conversations E2E Tests - Conversation Retrieval and Access', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.id).toBe(testConversation.id);
       expect(response.data.data.participants).toContain(regularUser.id);
@@ -230,7 +230,7 @@ describe('Conversations E2E Tests - Conversation Retrieval and Access', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toContain('must be a participant');
+        expect(error.response.data.message).toContain('must be a participant');
       }
     });
 
@@ -247,7 +247,7 @@ describe('Conversations E2E Tests - Conversation Retrieval and Access', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
       expect(response.data.data.length).toBeGreaterThan(0);
@@ -280,7 +280,7 @@ describe('Conversations E2E Tests - Conversation Retrieval and Access', () => {
         } else if (error.response) {
           // HTTP error with response
           expect(error.response.status).toBe(403);
-          expect(error.response.data.error).toContain('Permission denied');
+          expect(error.response.data.message).toContain('Permission denied');
         } else {
           // Other error (network, etc.) - also acceptable as rejection
           console.log('Request failed with network error - this is acceptable as the server rejected the request');
@@ -306,7 +306,7 @@ describe('Conversations E2E Tests - Conversation Retrieval and Access', () => {
         // Could be 400 or 500 depending on validation layer
         expect([400, 500]).toContain(error.response.status);
         // Check for i18n error messages
-        expect(error.response.data.error).toMatch(/common\.error_retrieving|ID|invalid/i);
+        expect(error.response.data.message).toMatch(/common\.error_retrieving|ID|invalid/i);
       }
     });
   });

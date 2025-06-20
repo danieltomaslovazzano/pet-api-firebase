@@ -197,7 +197,7 @@ exports.deleteOrganization = async (req, res) => {
   async function performDelete() {
     try {
       await organizationModel.deleteOrganization(id);
-      res.apiDeleted('organizations.delete.success', {}, { organizationId: id });
+      res.apiDeleted(null, 'organizations.delete.success', {}, { organizationId: id });
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
         return res.apiNotFound('organizations.delete.not_found');

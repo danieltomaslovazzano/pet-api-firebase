@@ -196,7 +196,7 @@ describe('Memberships E2E Tests - Role Management and Updates', () => {
         // Handle both network errors and HTTP response errors
         if (error.response) {
           expect(error.response.status).toBe(400);
-          expect(error.response.data.error).toContain('Invalid role');
+          expect(error.response.data.message).toContain('Invalid role');
         } else {
           // Network error - log and fail the test appropriately
           console.error('Network error in test:', error.message);

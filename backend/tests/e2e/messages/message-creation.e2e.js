@@ -201,7 +201,7 @@ describe('Messages E2E Tests - Message Creation and Validation', () => {
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);
       expect(response.data).toHaveProperty('message');
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
@@ -233,7 +233,7 @@ describe('Messages E2E Tests - Message Creation and Validation', () => {
         expect(true).toBe(false); // Should not reach here
       } catch (error) {
         expect(error.response.status).toBe(400);
-        expect(error.response.data.error).toMatch(/Message must have content|validation/i);
+        expect(error.response.data.message).toMatch(/Message must have content|validation/i);
       }
     });
 
@@ -257,7 +257,7 @@ describe('Messages E2E Tests - Message Creation and Validation', () => {
         expect(true).toBe(false); // Should not reach here
       } catch (error) {
         expect([400, 500]).toContain(error.response.status);
-        expect(error.response.data.error).toMatch(/common\.error_creating|conversation|required/i);
+        expect(error.response.data.message).toMatch(/common\.error_creating|conversation|required/i);
       }
     });
 
@@ -280,9 +280,12 @@ describe('Messages E2E Tests - Message Creation and Validation', () => {
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('message');
       expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
       expect(response.data.data.content).toBe(messageData.content);
+      expect(response.data.data.conversationId).toBe(testConversation2.id);
       expect(response.data.data.senderId).toBe(regularUser.id);
 
       testMessage2 = response.data.data;

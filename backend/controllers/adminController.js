@@ -327,7 +327,7 @@ exports.getAllPets = async (req, res) => {
         createdAt: pet.createdAt,
         updatedAt: pet.updatedAt,
       }));
-      res.apiList(sanitizedPets);
+      res.apiList(sanitizedPets, 'admin.pets_retrieval_success');
   } catch (err) {
     console.error('Error inesperado en getAllPets:', err);
     res.apiServerError('admin.pets_unexpected_error', { error: err.message });

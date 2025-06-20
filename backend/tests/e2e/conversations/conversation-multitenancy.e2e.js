@@ -181,7 +181,7 @@ describe('Conversations E2E Tests - Organization Isolation and Multitenancy', ()
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.organizationId).toBe(testOrganization2.id);
     });
@@ -227,7 +227,7 @@ describe('Conversations E2E Tests - Organization Isolation and Multitenancy', ()
         } else if (error.response) {
           // HTTP error with response
           expect(error.response.status).toBe(403);
-          expect(error.response.data.error).toContain('Permission denied');
+          expect(error.response.data.message).toContain('Permission denied');
         } else {
           // Other error (network, etc.) - also acceptable as rejection
           console.log('Request failed with network error - this is acceptable as the server rejected the request');
@@ -249,7 +249,7 @@ describe('Conversations E2E Tests - Organization Isolation and Multitenancy', ()
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
       
@@ -273,7 +273,7 @@ describe('Conversations E2E Tests - Organization Isolation and Multitenancy', ()
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
     });

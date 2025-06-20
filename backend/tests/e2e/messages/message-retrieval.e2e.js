@@ -212,7 +212,7 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.id).toBe(testMessage.id);
       expect(response.data.data.content).toBe(testMessage.content);
@@ -266,7 +266,7 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toMatch(/Forbidden|forbidden|not_sender/i);
+        expect(error.response.data.message).toMatch(/Forbidden|forbidden|not_sender/i);
       }
     });
 
@@ -283,7 +283,7 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(Array.isArray(response.data.data)).toBe(true);
       expect(response.data.data.length).toBeGreaterThan(0);
@@ -309,7 +309,7 @@ describe('Messages E2E Tests - Message Retrieval and Access', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect([400, 404]).toContain(error.response.status);
-        expect(error.response.data.error).toMatch(/common\.error_retrieving|ID|invalid|Message not found/i);
+        expect(error.response.data.message).toMatch(/common\.error_retrieving|ID|invalid|Message not found/i);
       }
     });
   });

@@ -5,62 +5,77 @@
  * This file contains 4 focused tests for conversation creation and validation
  */
 
-const axios = require('../helpers/request');
-const { loginAsAdmin, createTestUser, cleanupTestData } = require('../helpers/auth');
+const axios = require('axios');
+const { createTestUser, getTestUser, getAuthToken, loginAsAdmin, cleanupTestData } = require('../helpers/auth');
 const { EnhancedReporter } = require('../helpers/report');
 
-// Initialize Enhanced Reporter
-const reporter = new EnhancedReporter('conversations-conversation-creation', 'conversation-creation-tests');
-
-// Test configuration
 const API_BASE_URL = process.env.API_URL || 'http://localhost:3000/api';
 
 describe('Conversations E2E Tests - Conversation Creation and Validation', () => {
-  let adminToken;
-  let regularUserToken;
-  let moderatorToken;
-  let testOrganization;
-  let testOrganization2;
-  let adminUser;
-  let regularUser;
-  let moderatorUser;
-  let testConversation;
-  let testConversation2;
+  let adminUser, adminToken;
+  let regularUser, regularUserToken;
+  let moderatorUser, moderatorToken;
+  let testOrganization, testOrganization2;
+  let testConversation, testConversation2;
   let testUsers = [];
   let testOrganizations = [];
   let testConversations = [];
-
-  beforeEach(() => {
-    const testName = expect.getState().currentTestName || 'unknown test';
-    reporter.startTest(testName);
-  });
-
-  afterEach(() => {
-    const testName = expect.getState().currentTestName;
-    let status = 'PASSED';
-    let error = null;
-    console.log(`[ENHANCED REPORTER] Test "${testName}" completed, recording as: ${status}`);
-    reporter.endTest(status, error);
-  });
+  let reporter;
 
   beforeAll(async () => {
-    console.log('\n🚀 Starting Conversation Creation and Validation Tests...');
-    
     try {
-      // 1. Authenticate as admin
-      const adminAuth = await loginAsAdmin();
-      adminToken = adminAuth.token;
-      adminUser = adminAuth.user;
+      console.log('🧪 Setting up Conversation Creation Tests with User Pool...');
+      
+      reporter = new EnhancedReporter('conversation-creation-tests', 'conversation-creation');
 
-      // 2. Create test organization
+      // 1. Get admin user and token  
+      const adminData = await loginAsAdmin();
+      adminUser = adminData.user;
+      adminToken = adminData.token;
+
+      // 2. Get pool users (no creation needed - they already exist)
+      const poolRegularUser = getTestUser({ role: 'user' });
+      const poolModeratorUser = getTestUser({ role: 'user' }); // Use another user as moderator
+      
+      console.log(`[USER POOL] Using regular user: ${poolRegularUser.email}`);
+      console.log(`[USER POOL] Using moderator user: ${poolModeratorUser.email}`);
+      
+      // 3. Login to get tokens for pool users
+      const regularUserAuth = await getAuthToken(poolRegularUser.email, poolRegularUser.password);
+      regularUser = regularUserAuth.user;
+      regularUserToken = regularUserAuth.token;
+      
+      const moderatorUserAuth = await getAuthToken(poolModeratorUser.email, poolModeratorUser.password);
+      moderatorUser = moderatorUserAuth.user;
+      moderatorToken = moderatorUserAuth.token;
+
+      // 4. Update moderator role (need to find the user by email and update)
+      try {
+        const usersResponse = await axios.get(`${API_BASE_URL}/admin/users`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+          params: { email: moderatorUser.email }
+        });
+        
+        const moderatorDbUser = usersResponse.data.find(u => u.email === moderatorUser.email);
+        if (moderatorDbUser) {
+          await axios.put(
+            `${API_BASE_URL}/admin/users/${moderatorDbUser.id}`,
+            { role: 'moderator' },
+            { headers: { Authorization: `Bearer ${adminToken}` } }
+          );
+          console.log(`[USER POOL] Updated ${moderatorUser.email} to moderator role`);
+        }
+      } catch (error) {
+        console.log(`[USER POOL] Could not update moderator role: ${error.message}`);
+      }
+
+      // 5. Create test organizations
       const orgResponse = await axios.post(
         `${API_BASE_URL}/organizations`,
         {
-          name: 'conversation-creation Test Org',
-          description: 'Organization for conversation-creation testing',
-          email: 'conversation-creation-test@example.com',
-          address: '123 conversation-creation Test Street',
-          phone: '+1234567890'
+          name: `Test Org Conversation Creation ${Date.now()}`,
+          description: 'Test organization for conversation creation tests',
+          organizationType: 'business'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -68,15 +83,12 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
       testOrganization = orgResponse.data.data;
       testOrganizations.push(testOrganization);
 
-      // 3. Create second test organization
       const org2Response = await axios.post(
         `${API_BASE_URL}/organizations`,
         {
-          name: 'conversation-creation Test Org 2',
-          description: 'Second organization for conversation-creation testing',
-          email: 'conversation-creation-test2@example.com',
-          address: '456 conversation-creation Test Avenue',
-          phone: '+0987654321'
+          name: `Test Org 2 Conversation Creation ${Date.now()}`,
+          description: 'Second test organization for conversation creation tests',
+          organizationType: 'business'
         },
         { headers: { Authorization: `Bearer ${adminToken}` } }
       );
@@ -84,59 +96,26 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
       testOrganization2 = org2Response.data.data;
       testOrganizations.push(testOrganization2);
 
-      // 4. Create regular user
-      regularUser = await createTestUser({
-        email: `conversation-creation-regular-${Date.now()}@example.com`,
-        password: 'TestPassword123!',
-        name: 'Regular User'
-      });
-      testUsers.push(regularUser);
-
-      const regularUserResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email: regularUser.email,
-        password: 'TestPassword123!'
-      });
-      regularUserToken = regularUserResponse.data.data.tokens.idToken;
-
-      // 5. Create moderator user
-      moderatorUser = await createTestUser({
-        email: `conversation-creation-moderator-${Date.now()}@example.com`,
-        password: 'TestPassword123!',
-        name: 'Moderator User'
-      });
-      testUsers.push(moderatorUser);
-
-      const moderatorUserResponse = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email: moderatorUser.email,
-        password: 'TestPassword123!'
-      });
-      moderatorToken = moderatorUserResponse.data.data.tokens.idToken;
-
-      // 6. Update moderator role
-      await axios.put(
-        `${API_BASE_URL}/users/${moderatorUser.id}`,
-        { role: 'moderator' },
-        { headers: { Authorization: `Bearer ${adminToken}` } }
-      );
-
-      // 7. Add users to organizations
+      // 6. Add pool users to organizations
       await axios.post(`${API_BASE_URL}/memberships`, {
-        userId: adminUser.id,
+        userId: adminUser.uid,
         organizationId: testOrganization.id,
         role: 'admin'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
 
       await axios.post(`${API_BASE_URL}/memberships`, {
-        userId: regularUser.id,
+        userId: regularUser.uid,
         organizationId: testOrganization.id,
         role: 'member'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
 
       await axios.post(`${API_BASE_URL}/memberships`, {
-        userId: moderatorUser.id,
+        userId: moderatorUser.uid,
         organizationId: testOrganization.id,
         role: 'moderator'
       }, { headers: { Authorization: `Bearer ${adminToken}` } });
+
+      console.log('✅ Setup completed successfully with user pool');
 
     } catch (error) {
       console.error('❌ Setup failed:', error.message);
@@ -148,12 +127,14 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
     try {
       await cleanupTestData({
         organizations: testOrganizations,
-        users: testUsers,
+        // Don't delete pool users - they are reused
         adminToken
       });
 
-      const observations = `- Total conversations tested: ${testConversations.length}\n- Conversation Creation and Validation tests completed\n- All test data cleaned up automatically`;
-      reporter.writeReport(observations);
+      const observations = `- Total conversations tested: ${testConversations.length}\n- Conversation Creation and Validation tests completed\n- Pool users reused successfully`;
+      if (reporter && reporter.writeReport) {
+        reporter.writeReport(observations);
+      }
       
     } catch (error) {
       console.error('❌ Cleanup failed:', error.message);
@@ -164,7 +145,7 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
   describe('Conversation Creation', () => {
     test('Should create a conversation with valid participants', async () => {
       const conversationData = {
-        participants: [adminUser.id, regularUser.id],
+        participants: [adminUser.uid, regularUser.uid],
         title: 'Test Conversation',
         type: 'direct'
       };
@@ -182,7 +163,7 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);
       expect(response.data).toHaveProperty('message');
       expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('id');
@@ -195,7 +176,7 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
 
     test('Should fail to create conversation with insufficient participants', async () => {
       const conversationData = {
-        participants: [adminUser.id], // Only one participant
+        participants: [adminUser.uid], // Only one participant
         title: 'Invalid Conversation'
       };
 
@@ -215,7 +196,7 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
         // Could be 400 or 500 depending on validation layer
         expect([400, 500]).toContain(error.response.status);
         // Check for i18n error messages
-        expect(error.response.data.error).toMatch(/common\.error_creating|array|participants/i);
+        expect(error.response.data.message).toMatch(/common\.error_creating|array|participants/i);
       }
     });
 
@@ -241,13 +222,13 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
         // Could be 400 or 500 depending on validation layer
         expect([400, 500]).toContain(error.response.status);
         // Check for i18n error messages
-        expect(error.response.data.error).toMatch(/common\.error_creating|array|participants/i);
+        expect(error.response.data.message).toMatch(/common\.error_creating|array|participants/i);
       }
     });
 
     test('Should create group conversation with multiple participants', async () => {
       const conversationData = {
-        participants: [adminUser.id, regularUser.id, moderatorUser.id],
+        participants: [adminUser.uid, regularUser.uid, moderatorUser.uid],
         title: 'Group Test Conversation',
         type: 'group'
       };
@@ -265,8 +246,10 @@ describe('Conversations E2E Tests - Conversation Creation and Validation', () =>
 
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('message');
       expect(response.data).toHaveProperty('data');
+      expect(response.data.data).toHaveProperty('id');
       expect(response.data.data.participants).toHaveLength(3);
       expect(response.data.data.type).toBe('group');
       expect(response.data.data.title).toBe(conversationData.title);

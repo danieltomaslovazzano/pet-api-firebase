@@ -154,10 +154,11 @@ describe('Organization Types Integration E2E Tests', () => {
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(Array.isArray(response.data.data)).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(Array.isArray(response.data.data)).toBe(true);
       
       // All pets should belong to the shelter organization
-      response.data.forEach(pet => {
+      response.data.data.forEach(pet => {
         expect(pet.organizationId).toBe(shelterOrg.id);
       });
     });
@@ -217,7 +218,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      const permissions = typeResponse.data.permissions;
+      const permissions = typeResponse.data.data.permissions;
       
       // Verify shelter-specific permissions
       expect(permissions.pets.create).toBe(true);
@@ -238,7 +239,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
 
-      const validation = typeResponse.data.validation;
+      const validation = typeResponse.data.data.validation;
       
       expect(validation.requiredFields).toContain('name');
       expect(validation.requiredFields).toContain('email');
@@ -275,7 +276,7 @@ describe('Organization Types Integration E2E Tests', () => {
 
       // Verify all are shelter type
       for (const shelter of shelters) {
-        expect(shelter.type).toBe('shelter');
+        expect(shelter.data.type).toBe('shelter');
       }
 
       // Filter organizations by shelter type
@@ -288,11 +289,12 @@ describe('Organization Types Integration E2E Tests', () => {
 
       expect(filterResponse.status).toBe(200);
       
-      expect(filterResponse.data).toHaveProperty('success', true);expect(Array.isArray(filterResponse.data.data)).toBe(true);
+      expect(filterResponse.data).toHaveProperty('success', true);
+      expect(Array.isArray(filterResponse.data.data)).toBe(true);
       
       // Should include our created shelters
-      const shelterIds = shelters.map(s => s.id);
-      const returnedShelters = filterResponse.data.filter(org => shelterIds.includes(org.id));
+      const shelterIds = shelters.map(s => s.data.id);
+      const returnedShelters = filterResponse.data.data.filter(org => shelterIds.includes(org.id));
       expect(returnedShelters.length).toBe(3);
     });
 
@@ -313,7 +315,7 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
       const shelter1 = shelter1Response.data;
-      testOrganizations.push(shelter1);
+      testOrganizations.push(shelter1.data);
 
       const shelter2Response = await axios.post(
         'http://localhost:3000/api/organizations',
@@ -330,13 +332,13 @@ describe('Organization Types Integration E2E Tests', () => {
         }
       );
       const shelter2 = shelter2Response.data;
-      testOrganizations.push(shelter2);
+      testOrganizations.push(shelter2.data);
 
       // Add admin to both shelters
       await axios.post(
         'http://localhost:3000/api/memberships',
         {
-          organizationId: shelter1.id,
+          organizationId: shelter1.data.id,
           userId: adminUserId,
           role: 'admin'
         },
@@ -348,7 +350,7 @@ describe('Organization Types Integration E2E Tests', () => {
       await axios.post(
         'http://localhost:3000/api/memberships',
         {
-          organizationId: shelter2.id,
+          organizationId: shelter2.data.id,
           userId: adminUserId,
           role: 'admin'
         },
@@ -390,7 +392,7 @@ describe('Organization Types Integration E2E Tests', () => {
         {
           headers: { 
             Authorization: `Bearer ${adminToken}`,
-            'X-Organization-Id': shelter1.id
+            'X-Organization-Id': shelter1.data.id
           }
         }
       );
@@ -401,7 +403,7 @@ describe('Organization Types Integration E2E Tests', () => {
         {
           headers: { 
             Authorization: `Bearer ${adminToken}`,
-            'X-Organization-Id': shelter2.id
+            'X-Organization-Id': shelter2.data.id
           }
         }
       );
@@ -410,8 +412,8 @@ describe('Organization Types Integration E2E Tests', () => {
       
       expect(pet1Response.data).toHaveProperty('success', true);expect(pet2Response.status).toBe(201);
       
-      expect(pet2Response.data).toHaveProperty('success', true);expect(pet1Response.data.data.organizationId).toBe(shelter1.id);
-      expect(pet2Response.data.data.organizationId).toBe(shelter2.id);
+      expect(pet2Response.data).toHaveProperty('success', true);expect(pet1Response.data.data.organizationId).toBe(shelter1.data.id);
+      expect(pet2Response.data.data.organizationId).toBe(shelter2.data.id);
 
       // Verify data isolation - shelter1 should not see shelter2's pets
       const shelter1PetsResponse = await axios.get(
@@ -419,7 +421,7 @@ describe('Organization Types Integration E2E Tests', () => {
         {
           headers: { 
             Authorization: `Bearer ${adminToken}`,
-            'X-Organization-Id': shelter1.id
+            'X-Organization-Id': shelter1.data.id
           }
         }
       );

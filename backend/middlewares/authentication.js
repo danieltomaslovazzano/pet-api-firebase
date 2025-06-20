@@ -9,7 +9,7 @@
  * - User data loading from either Firestore or PostgreSQL (based on adapter)
  * - Detailed error handling for various token scenarios
  * - Security logging for authentication events
- * - Backward compatibility with legacy error messages
+ * - Standardized error responses using unified response formatter
  * 
  * Security considerations:
  * - Tokens are verified using Firebase Admin SDK
@@ -35,13 +35,8 @@ const { logAuthDebug, logAuthError } = require('../utils/loggerUtil');
  * - 403: User account disabled 
  * - 500: Internal server errors during verification
  * 
- * Backward compatibility:
- * Uses the original error message format for compatibility with existing clients:
- * - "Token no proporcionado" - No token provided
- * - "Token inválido" - Invalid token format or verification failed
- * - "Token expirado" - Token has expired
- * - "Cuenta de usuario deshabilitada" - User account is disabled
- * - "Error interno del servidor" - Internal server error
+ * Standardized error messages:
+ * Uses standardized translation keys through unified response formatter
  */
 exports.verifyToken = async (req, res, next) => {
   try {
@@ -58,8 +53,8 @@ exports.verifyToken = async (req, res, next) => {
         headers: { authorization: authHeader ? 'Present but invalid' : 'Missing' }
       });
       
-      // Use backward-compatible error message
-      return res.apiUnauthorized('Token no proporcionado');
+      // Use standardized error message via unified response formatter
+      return res.apiUnauthorized('common.unauthorized');
     }
 
     const token = authHeader.split('Bearer ')[1];
@@ -111,25 +106,7 @@ exports.verifyToken = async (req, res, next) => {
       
       next();
     } catch (error) {
-      // Handle specific Firebase auth errors
-      let errorMessage = 'Token inválido'; // Use backward-compatible error message
-      let statusCode = 401;
-      
-      // Check for serious internal errors first
-      if (error.name === 'FirebaseError' && error.code === 'internal-error') {
-        statusCode = 500;
-        errorMessage = 'Internal server error';
-      }
-      // Check specific auth errors
-      else if (error.code === 'auth/id-token-expired') {
-        errorMessage = 'Token expirado';
-      } else if (error.code === 'auth/id-token-revoked') {
-        errorMessage = 'Token revocado';
-      } else if (error.code === 'auth/user-disabled') {
-        errorMessage = 'Cuenta de usuario deshabilitada';
-        statusCode = 403;
-      }
-      
+      // Handle specific Firebase auth errors with standardized messages
       logAuthError('Token verification failed', {
         error: error.message,
         code: error.code,
@@ -137,7 +114,21 @@ exports.verifyToken = async (req, res, next) => {
         method
       });
       
-      return res.status(statusCode).json({ error: errorMessage });
+      // Check for serious internal errors first
+      if (error.name === 'FirebaseError' && error.code === 'internal-error') {
+        return res.apiServerError('common.server_error');
+      }
+      // Check specific auth errors
+      else if (error.code === 'auth/id-token-expired') {
+        return res.apiUnauthorized('auth.token.expired');
+      } else if (error.code === 'auth/id-token-revoked') {
+        return res.apiUnauthorized('auth.token.revoked');
+      } else if (error.code === 'auth/user-disabled') {
+        return res.apiForbidden('auth.user.disabled');
+      }
+      
+      // Default to invalid token error
+      return res.apiUnauthorized('auth.token.invalid');
     }
   } catch (error) {
     logAuthError('Unexpected error in authentication middleware', {
@@ -146,6 +137,6 @@ exports.verifyToken = async (req, res, next) => {
       path: req?.path || 'unknown'
     });
     
-    return res.apiServerError('Error interno del servidor');
+    return res.apiServerError('common.server_error');
   }
 }; 

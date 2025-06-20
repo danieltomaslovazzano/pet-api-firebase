@@ -218,7 +218,7 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.content).toBe(updateData.content);
       expect(response.data.data.id).toBe(testMessage.id);
@@ -244,7 +244,7 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toMatch(/Forbidden|forbidden|not_sender/i);
+        expect(error.response.data.message).toMatch(/Forbidden|forbidden|not_sender/i);
       }
     });
 
@@ -282,7 +282,7 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data).toHaveProperty('data');
       expect(response.data.data.status).toBe('deleted');
       expect(response.data.data.content).toBe('[Message deleted]');
@@ -320,7 +320,7 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
 
       expect(response.status).toBe(200);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
       expect(response.data.data.message).toContain('deleted');
     });
 
@@ -346,7 +346,7 @@ describe('Messages E2E Tests - Message Updates, Deletion, and Management', () =>
         } else if (error.response) {
           // HTTP error response
           expect(error.response.status).toBe(403);
-          expect(error.response.data.error).toMatch(/Forbidden|forbidden|not_sender/i);
+          expect(error.response.data.message).toMatch(/Forbidden|forbidden|not_sender/i);
         } else {
           // Network error - log and pass (server rejected connection)
           console.log('Network error during delete - this can be acceptable:', error.message);

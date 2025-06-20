@@ -133,7 +133,7 @@ exports.loadOrganizationResource = async (req, res, next) => {
     const organization = await organizationModel.getOrganizationById(id);
     if (!organization) {
       logAuthError('Organization resource not found', { id });
-      return res.apiNotFound('Organization not found');
+      return res.apiNotFound('organizations.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -173,7 +173,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     
     if (!membership) {
       logAuthError('Membership resource not found', { id });
-      return res.apiNotFound('Membership not found');
+      return res.apiNotFound('memberships.not_found');
     }
     
     logAuthDebug({
@@ -212,7 +212,7 @@ exports.loadConversationResource = async (req, res, next) => {
     const conversation = await conversationModel.getConversationById(id);
     if (!conversation) {
       logAuthError('Conversation resource not found', { id });
-      return res.apiNotFound('Conversation not found');
+      return res.apiNotFound('conversations.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -247,7 +247,7 @@ exports.loadMessageResource = async (req, res, next) => {
     const message = await messageModel.getMessageById(id);
     if (!message) {
       logAuthError('Message resource not found', { id });
-      return res.apiNotFound('Message not found');
+      return res.apiNotFound('messages.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',

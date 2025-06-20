@@ -1,19 +1,28 @@
-const admin = require('../../../config/firebase');
-const { prisma } = require('../../../config/prisma');
-const axios = require('./request');
+const axios = require('axios');
+const { requestWrapper } = require('./request');
 
 const API_URL = process.env.API_URL || 'http://localhost:3000/api';
 
-// Token cache to prevent rate limiting during mass test execution
-const tokenCache = new Map();
-const TOKEN_EXPIRY_BUFFER = 5 * 60 * 1000; // 5 minutes buffer before expiry
+// Pre-created user pool to avoid rate limiting
+const USER_POOL = [
+  { email: 'test-user-01@example.com', password: 'TestPass123!', name: 'Test User 01', role: 'user' },
+  { email: 'test-user-02@example.com', password: 'TestPass123!', name: 'Test User 02', role: 'user' },
+  { email: 'test-user-03@example.com', password: 'TestPass123!', name: 'Test User 03', role: 'user' },
+  { email: 'test-user-04@example.com', password: 'TestPass123!', name: 'Test User 04', role: 'user' },
+  { email: 'test-user-05@example.com', password: 'TestPass123!', name: 'Test User 05', role: 'user' },
+  { email: 'test-admin-01@example.com', password: 'TestPass123!', name: 'Test Admin 01', role: 'admin' },
+  { email: 'test-admin-02@example.com', password: 'TestPass123!', name: 'Test Admin 02', role: 'admin' },
+  { email: 'test-moderator-01@example.com', password: 'TestPass123!', name: 'Test Moderator 01', role: 'moderator' },
+];
 
-/**
- * Clears the token cache (useful for cleanup)
- */
+// Track user usage to distribute load
+let userPoolIndex = 0;
+
+// Cache for tokens
+const tokenCache = new Map();
+
 const clearTokenCache = () => {
   tokenCache.clear();
-  console.log('[AUTH CACHE] Token cache cleared');
 };
 
 /**
@@ -22,18 +31,69 @@ const clearTokenCache = () => {
  * @returns {boolean} True if token is still valid
  */
 const isTokenValid = (cachedEntry) => {
-  if (!cachedEntry || !cachedEntry.expiresAt) return false;
-  return Date.now() < (cachedEntry.expiresAt - TOKEN_EXPIRY_BUFFER);
+  return cachedEntry.expiresAt > Date.now();
 };
 
 /**
- * Creates a real user for testing with retry logic for rate limiting
- * @param {Object} userData - User data to create
- * @returns {Promise<Object>} Created user data
+ * Gets a test user from the pre-created pool instead of creating new ones
+ * This avoids Firebase rate limiting issues
+ * @param {Object} options - User preferences (role, specific user)
+ * @returns {Object} Test user data
  */
-const createTestUser = async (userData) => {
-  const maxRetries = 3;
-  const baseDelay = 2000; // 2 seconds
+const getTestUser = (options = {}) => {
+  const { role = 'user', index = null } = options;
+  
+  if (index !== null && USER_POOL[index]) {
+    return USER_POOL[index];
+  }
+  
+  // Filter by role if specified
+  const filteredPool = role === 'any' ? USER_POOL : USER_POOL.filter(u => u.role === role);
+  
+  if (filteredPool.length === 0) {
+    throw new Error(`No users found in pool with role: ${role}`);
+  }
+  
+  // Round-robin selection to distribute load
+  const user = filteredPool[userPoolIndex % filteredPool.length];
+  userPoolIndex++;
+  
+  return user;
+};
+
+/**
+ * Creates a test user (now uses pre-created pool)
+ * @param {Object} userData - User data (optional, will use pool if not provided)
+ * @returns {Promise<Object>} User data
+ */
+const createTestUser = async (userData = null) => {
+  // If specific userData provided, try to create it (legacy support)
+  if (userData && userData.email && !userData.email.includes('@example.com')) {
+    return createCustomTestUser(userData);
+  }
+  
+  // Use pre-created pool to avoid rate limiting
+  const poolUser = getTestUser({ role: userData?.role || 'user' });
+  
+  console.log(`[USER POOL] Using pre-created user: ${poolUser.email}`);
+  
+  // Return in the expected format
+  return {
+    email: poolUser.email,
+    name: poolUser.name,
+    role: poolUser.role,
+    uid: poolUser.email.replace('@example.com', '').replace(/[.-]/g, ''), // Mock UID
+    id: poolUser.email.replace('@example.com', '').replace(/[.-]/g, ''), // Mock ID
+    password: poolUser.password // For login
+  };
+};
+
+/**
+ * Creates a custom test user (fallback for special cases)
+ */
+const createCustomTestUser = async (userData) => {
+  const maxRetries = 5;
+  const baseDelay = 5000;
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -49,17 +109,51 @@ const createTestUser = async (userData) => {
       const errorData = error.response?.data;
       
       // Check if it's a rate limiting error
-      if (errorData?.details?.details === 'TOO_MANY_ATTEMPTS_TRY_LATER' && attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+      if ((errorData?.meta?.firebaseCode === 'TOO_MANY_ATTEMPTS_TRY_LATER' || 
+           errorData?.details?.details === 'TOO_MANY_ATTEMPTS_TRY_LATER') && 
+           attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt);
         console.log(`[USER CREATION] Rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+        console.log(`[USER CREATION] Firebase rate limit detected, waiting longer delay for better success rate`);
         await new Promise(resolve => setTimeout(resolve, delay));
         continue;
       }
       
-      console.error('Error creating test user:', errorData || error.message);
+      // Enhanced error logging for Priority 4 debugging
+      console.error('Error creating test user:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        errorData,
+        message: error.message,
+        userData: { email: userData.email, name: userData.name }
+      });
       throw error;
     }
   }
+  
+  throw new Error(`Failed to create test user after ${maxRetries + 1} attempts due to persistent rate limiting`);
+};
+
+/**
+ * Gets multiple test users from the pool
+ * @param {number} count - Number of users needed
+ * @param {string} role - Role filter (optional)
+ * @returns {Array} Array of test users
+ */
+const getMultipleTestUsers = (count, role = 'user') => {
+  const users = [];
+  for (let i = 0; i < count; i++) {
+    const user = getTestUser({ role });
+    users.push({
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      uid: user.email.replace('@example.com', '').replace(/[.-]/g, ''),
+      id: user.email.replace('@example.com', '').replace(/[.-]/g, ''),
+      password: user.password
+    });
+  }
+  return users;
 };
 
 /**
@@ -246,6 +340,8 @@ const cleanupTestUsers = async (emails) => {
 
 module.exports = {
   createTestUser,
+  getTestUser,
+  getMultipleTestUsers,
   deleteTestUser,
   getAuthToken,
   getAdminToken,
@@ -253,5 +349,6 @@ module.exports = {
   loginAsUser,
   cleanupTestData,
   cleanupTestUsers,
-  clearTokenCache
+  clearTokenCache,
+  USER_POOL
 }; 

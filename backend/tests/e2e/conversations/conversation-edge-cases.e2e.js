@@ -179,7 +179,7 @@ describe('Conversations E2E Tests - Error Handling and Edge Cases', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(404);
-        expect(error.response.data.error).toContain('Conversation not found');
+        expect(error.response.data.message).toContain('Conversation not found');
       }
     });
 
@@ -194,7 +194,7 @@ describe('Conversations E2E Tests - Error Handling and Edge Cases', () => {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(401);
         // Accept both English and Spanish versions
-        expect(error.response.data.error).toMatch(/Token not provided|Token no proporcionado/);
+        expect(error.response.data.message).toMatch(/Token not provided|Token no proporcionado/);
       }
     });
 
@@ -216,7 +216,7 @@ describe('Conversations E2E Tests - Error Handling and Edge Cases', () => {
         // Could be 400 or 500 depending on validation layer
         expect([400, 500]).toContain(error.response.status);
         // Check for i18n error messages
-        expect(error.response.data.error).toMatch(/common\.error_creating|array|participants/i);
+        expect(error.response.data.message).toMatch(/common\.error_creating|array|participants/i);
       }
     });
   });

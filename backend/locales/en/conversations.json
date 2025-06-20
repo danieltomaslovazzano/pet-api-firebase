@@ -176,5 +176,68 @@
   "error_hiding": "Error hiding conversation",
   "error_unhiding": "Error unhiding conversation",
   "error_blocking": "Error blocking conversation",
-  "error_unblocking": "Error unblocking conversation"
+  "error_unblocking": "Error unblocking conversation",
+  "validation": {
+    "failed": "Validation failed for conversation",
+    "error": "Validation error in conversation",
+    "invalid_id": "Invalid conversation ID format",
+    "participants_required": "Participants array is required for creating conversations",
+    "participants_array": "Participants must be provided as an array",
+    "insufficient_participants": "At least two participants are required for conversations"
+  },
+  "create": {
+    "success": "Conversation created successfully",
+    "error": "Error creating conversation",
+    "forbidden_participant": "All conversation participants must belong to the organization",
+    "membership_check_error": "Error verifying organization membership"
+  },
+  "get": {
+    "success": "Conversation retrieved successfully",
+    "error": "Error retrieving conversation",
+    "forbidden_organization": "Cannot access conversation outside your organization",
+    "forbidden_participant": "You must be a participant to view this conversation"
+  },
+  "get_user": {
+    "success": "User conversations retrieved successfully",
+    "error": "Error retrieving user conversations",
+    "forbidden_organization": "Cannot access conversations for users outside your organization",
+    "forbidden_admin": "Only organization admins can view other users' conversations",
+    "forbidden_self_only": "You can only view your own conversations"
+  },
+  "soft_delete": {
+    "success": "Conversation soft deleted successfully",
+    "error": "Error soft deleting conversation",
+    "forbidden_organization": "Cannot access conversation outside your organization",
+    "forbidden_participant": "You must be a participant to modify this conversation"
+  },
+  "permanent_delete": {
+    "success": "Conversation permanently deleted successfully",
+    "error": "Error permanently deleting conversation",
+    "forbidden_organization": "Cannot delete conversation outside your organization",
+    "forbidden_permissions": "Insufficient permissions to permanently delete conversations"
+  },
+  "hide": {
+    "success": "Conversation hidden successfully",
+    "error": "Error hiding conversation",
+    "forbidden": "Forbidden: Cannot hide this conversation"
+  },
+  "unhide": {
+    "success": "Conversation unhidden successfully",
+    "error": "Error unhiding conversation",
+    "forbidden": "Forbidden: Cannot unhide this conversation"
+  },
+  "block": {
+    "success": "Conversation blocked successfully",
+    "error": "Error blocking conversation",
+    "forbidden": "Forbidden: Cannot block this conversation"
+  },
+  "unblock": {
+    "success": "Conversation unblocked successfully",
+    "error": "Error unblocking conversation",
+    "forbidden": "Forbidden: Cannot unblock this conversation"
+  },
+  "get_all": {
+    "success": "Conversations retrieved successfully",
+    "error": "Error retrieving conversations"
+  }
 } 

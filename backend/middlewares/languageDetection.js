@@ -153,16 +153,34 @@ const languageDetection = async (req, res, next) => {
 
   // Agregar función de traducción al request para facilitar su uso
   req.t = (key, params = {}) => {
+    console.log('[REQ_T_DEBUG] Called with:', { 
+      key: key, 
+      keyType: typeof key, 
+      keyValue: JSON.stringify(key),
+      params: params,
+      paramsType: typeof params
+    });
+    
+    // Validate that key is a string
+    if (typeof key !== "string") {
+      console.error("[req.t] Called with non-string key:", typeof key, "Value:", key);
+      console.error("[req.t] Stack trace:", new Error().stack);
+      return key?.toString() || "INVALID_KEY";
+    }
     const { translate } = require('../utils/i18n');
     return translate(key, req.language, params);
   };
-
   // Agregar función de traducción con idioma específico
   req.translate = (key, language, params = {}) => {
+    // Validate that key is a string
+    if (typeof key !== "string") {
+      console.error("[req.translate] Called with non-string key:", typeof key, "Value:", key);
+      console.error("[req.translate] Stack trace:", new Error().stack);
+      return key?.toString() || "INVALID_KEY";
+    }
     const { translate } = require('../utils/i18n');
     return translate(key, language || req.language, params);
   };
-
   // Log de debugging en desarrollo
   if (i18nConfig.development.logMissingKeys && process.env.NODE_ENV === 'development') {
     console.log(`[i18n] Language detected: ${detectedLanguage} (source: ${req.languageSource})`);

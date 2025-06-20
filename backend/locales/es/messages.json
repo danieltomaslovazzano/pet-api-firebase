@@ -202,5 +202,30 @@
   "forbidden_view_message": "Prohibido: Debes ser participante para ver este mensaje",
   "forbidden_delete_outside_organization": "Prohibido: No puedes eliminar mensajes fuera de tu organización",
   "forbidden_delete_permission": "Prohibido: Solo el remitente del mensaje o un administrador de la organización pueden eliminar mensajes",
-  "forbidden_delete_own_only": "Prohibido: Solo puedes eliminar tus propios mensajes"
+  "forbidden_delete_own_only": "Prohibido: Solo puedes eliminar tus propios mensajes",
+  "conversation": {
+    "not_found": "Conversación no encontrada"
+  },
+  "forbidden": {
+    "different_organization": "Prohibido: No puedes acceder a conversaciones fuera de tu organización",
+    "not_participant": "Prohibido: Debes ser participante para enviar mensajes a esta conversación",
+    "not_participant_view": "Prohibido: Debes ser participante para ver mensajes en esta conversación",
+    "admin_required": "Prohibido: Solo el remitente del mensaje o un administrador de la organización pueden eliminar mensajes",
+    "own_messages_only": "Prohibido: Solo puedes eliminar tus propios mensajes",
+    "not_sender": "Prohibido: Solo puedes editar tus propios mensajes"
+  },
+  "create": {
+    "internal_error": "Error creando mensaje"
+  },
+  "retrieve": {
+    "internal_error": "Error obteniendo mensajes"
+  },
+  "delete": {
+    "internal_error": "Error eliminando mensaje",
+    "success": "Mensaje eliminado exitosamente"
+  },
+  "update": {
+    "internal_error": "Error actualizando mensaje",
+    "success": "Mensaje actualizado exitosamente"
+  }
 } 

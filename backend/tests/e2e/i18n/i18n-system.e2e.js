@@ -135,8 +135,8 @@ describe('i18n System E2E Tests', () => {
       const response = await axios.get(`${SERVER_URL}/api/language-preferences/supported-languages`);
       
       expect(response.status).toBe(200);
-      
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data.success).toBe(true);
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.data).toHaveProperty('data');
       expect(response.data.data).toHaveProperty('supportedLanguages');
       expect(response.data.data.supportedLanguages).toContain('en');
       expect(response.data.data.supportedLanguages).toContain('es');
@@ -149,11 +149,11 @@ describe('i18n System E2E Tests', () => {
       const esResponse = await axios.get(`${SERVER_URL}/api/language-preferences/supported-languages?lang=es`);
       
       expect(enResponse.status).toBe(200);
+      expect(enResponse.data).toHaveProperty('success', true);
+      expect(esResponse.status).toBe(200);
+      expect(esResponse.data).toHaveProperty('success', true);
       
-      expect(enResponse.data).toHaveProperty('success', true);expect(esResponse.status).toBe(200);
-      
-      
-      expect(esResponse.data).toHaveProperty('success', true);// Check that language names are translated
+      // Check that language names are translated
       expect(enResponse.data.data.languages.en.name).toBe('English');
       expect(esResponse.data.data.languages.en.name).toBe('Inglés');
     });
@@ -253,7 +253,7 @@ describe('i18n System E2E Tests', () => {
           expect(esError.response.data.success).toBe(false);
           
           // The error messages should be different (translated)
-          expect(enError.response.data.error).not.toBe(esError.response.data.error);
+          expect(enError.response.data.message).not.toBe(esError.response.data.message);
         }
       }
     });
@@ -266,10 +266,10 @@ describe('i18n System E2E Tests', () => {
       });
 
       expect(response1.status).toBe(200);
-      
-      expect(response1.data).toHaveProperty('success', true);expect(response2.status).toBe(200);
-      
-      expect(response2.data).toHaveProperty('success', true);expect(response1.headers['content-language']).toBe('es');
+      expect(response1.data).toHaveProperty('success', true);
+      expect(response2.status).toBe(200);
+      expect(response2.data).toHaveProperty('success', true);
+      expect(response1.headers['content-language']).toBe('es');
       expect(response2.headers['content-language']).toBe('es');
     });
   });
@@ -313,8 +313,8 @@ describe('i18n System E2E Tests', () => {
       // All requests should succeed
       responses.forEach(response => {
         expect(response.status).toBe(200);
-      
-      expect(response.data).toHaveProperty('success', true);});
+        expect(response.data).toHaveProperty('success', true);
+      });
 
       // Should complete 10 concurrent requests in less than 1 second
       expect(duration).toBeLessThan(1000);
@@ -374,8 +374,8 @@ describe('i18n System E2E Tests', () => {
       const response = await axios.get(`${SERVER_URL}/api/language-preferences/supported-languages?lang=es`);
       
       expect(response.status).toBe(200);
-      
-      expect(response.data).toHaveProperty('success', true);expect(response.headers).toHaveProperty('content-language');
+      expect(response.data).toHaveProperty('success', true);
+      expect(response.headers).toHaveProperty('content-language');
       expect(response.headers).toHaveProperty('x-supported-languages');
       expect(response.headers['content-language']).toBe('es');
       expect(response.headers['x-supported-languages']).toContain('en, es');
@@ -385,11 +385,10 @@ describe('i18n System E2E Tests', () => {
       const response = await axios.get(`${SERVER_URL}/api/language-preferences/supported-languages`);
       
       expect(response.status).toBe(200);
-      
-      expect(response.data).toHaveProperty('success', true);// Should follow the standard response format
+      expect(response.data).toHaveProperty('success', true);
+      // Should follow the standard response format
       expect(response.data).toHaveProperty('success');
       expect(response.data).toHaveProperty('data');
-      expect(response.data.data.success).toBe(true);
     });
   });
 }); 

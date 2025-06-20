@@ -285,7 +285,7 @@ describe('Conversations E2E Tests - Conversation Management and Moderation', () 
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(403);
-        expect(error.response.data.error).toContain('Permission denied');
+        expect(error.response.data.message).toContain('Permission denied');
       }
     });
   });

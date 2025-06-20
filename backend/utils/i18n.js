@@ -68,6 +68,13 @@ class I18nManager {
    * @returns {string} Texto traducido
    */
   getTranslation(key, language, params = {}) {
+    // Validate that key is a string
+    if (typeof key !== 'string') {
+      console.error('[i18n] translate() called with non-string key:', typeof key, 'Value:', key);
+      console.error('[i18n] Stack trace:', new Error().stack);
+      return key?.toString() || 'INVALID_KEY';
+    }
+
     // Asegurar que el idioma esté cargado
     if (!this.loadedLanguages.has(language)) {
       this.loadLanguage(language);
@@ -249,6 +256,12 @@ const i18nManager = new I18nManager();
  * @returns {string} Texto traducido
  */
 function translate(key, language = i18nConfig.defaultLanguage, params = {}) {
+  // Validate that key is a string
+  if (typeof key !== 'string') {
+    console.error('[i18n] translate() called with non-string key:', typeof key, 'Value:', key);
+    console.error('[i18n] Stack trace:', new Error().stack);
+    return key?.toString() || 'INVALID_KEY';
+  }
   return i18nManager.getTranslation(key, language, params);
 }
 

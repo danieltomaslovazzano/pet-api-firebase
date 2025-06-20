@@ -199,7 +199,7 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect(error.response.status).toBe(404);
-        expect(error.response.data.error).toContain('Message not found');
+        expect(error.response.data.message).toContain('Message not found');
       }
     });
 
@@ -225,7 +225,7 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
         } else if (error.response) {
           // HTTP error response
           expect([401, 403]).toContain(error.response.status);
-          expect(error.response.data.error).toMatch(/Token not provided|Token no proporcionado|Organization|forbidden/i);
+          expect(error.response.data.message).toMatch(/Token not provided|Token no proporcionado|Organization|forbidden/i);
         } else {
           // Network error - acceptable as server rejection
           console.log('Network error during unauthorized access - acceptable:', error.message);
@@ -250,7 +250,7 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect([400, 500]).toContain(error.response.status);
-        expect(error.response.data.error).toMatch(/Error creating message|content|required/i);
+        expect(error.response.data.message).toMatch(/Error creating message|content|required/i);
       }
     });
 
@@ -277,7 +277,7 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
       // Accept that very long content might be allowed
       expect(response.status).toBe(201);
       
-      expect(response.data).toHaveProperty('success', true);expect(response.data.data).toHaveProperty('success',true);
+      expect(response.data).toHaveProperty('success', true);expect(response.data).toHaveProperty('success',true);
     });
 
     test('Should handle invalid conversation ID', async () => {
@@ -301,7 +301,7 @@ describe('Messages E2E Tests - Error Handling and Edge Cases', () => {
       } catch (error) {
         expect(error.response).toBeDefined();
         expect([400, 404, 500]).toContain(error.response.status);
-        expect(error.response.data.error).toMatch(/common\.error_creating|conversation|not found/i);
+        expect(error.response.data.message).toMatch(/common\.error_creating|conversation|not found/i);
       }
     });
   });
