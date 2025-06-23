@@ -1,0 +1,57 @@
+{
+  "dog": {
+    "name": "Buddy",
+    "species": "dog",
+    "breed": "Golden Retriever",
+    "age": 3,
+    "weight": 25.5,
+    "color": "Golden",
+    "description": "Friendly and energetic dog",
+    "gender": "male",
+    "isNeutered": true
+  },
+  "cat": {
+    "name": "Whiskers", 
+    "species": "cat",
+    "breed": "Persian",
+    "age": 2,
+    "weight": 4.2,
+    "color": "White",
+    "description": "Calm and affectionate cat",
+    "gender": "female",
+    "isNeutered": true
+  },
+  "bird": {
+    "name": "Tweety",
+    "species": "bird", 
+    "breed": "Canary",
+    "age": 1,
+    "weight": 0.02,
+    "color": "Yellow",
+    "description": "Cheerful singing bird",
+    "gender": "male",
+    "isNeutered": false
+  },
+  "rabbit": {
+    "name": "Bunny",
+    "species": "rabbit",
+    "breed": "Holland Lop",
+    "age": 1.5,
+    "weight": 1.8,
+    "color": "Brown",
+    "description": "Gentle and quiet rabbit",
+    "gender": "female", 
+    "isNeutered": true
+  },
+  "fish": {
+    "name": "Nemo",
+    "species": "fish",
+    "breed": "Goldfish",
+    "age": 0.5,
+    "weight": 0.1,
+    "color": "Orange",
+    "description": "Beautiful tropical fish",
+    "gender": "unknown",
+    "isNeutered": false
+  }
+} 

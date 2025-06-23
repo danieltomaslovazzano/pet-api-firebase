@@ -14,15 +14,16 @@ class AuthManager {
   // Admin login functionality
   async loginAdmin() {
     const credentials = {
-      email: process.env.ADMIN_EMAIL || 'admin@test.com',
-      password: process.env.ADMIN_PASSWORD || 'TestAdmin123!'
+      email: process.env.ADMIN_EMAIL || process.env.E2E_ADMIN_EMAIL || 'daniellovazzano@gmail.com',
+      password: process.env.ADMIN_PASSWORD || process.env.E2E_ADMIN_PASSWORD || 'PC.103638dl'
     };
 
     try {
       const response = await this.api.post('/auth/login', credentials);
       
       if (response.status === 200 && response.data.success) {
-        const token = response.data.data.token;
+        // Handle different response formats (new vs old API)
+        const token = response.data.data.token || response.data.data.tokens?.idToken;
         this.tokens.set('admin', token);
         return {
           token,
@@ -47,7 +48,7 @@ class AuthManager {
       const response = await this.api.post('/auth/login', credentials);
       
       if (response.status === 200 && response.data.success) {
-        const token = response.data.data.token;
+        const token = response.data.data.token || response.data.data.tokens?.idToken;
         this.tokens.set(userData.email, token);
         return {
           token,

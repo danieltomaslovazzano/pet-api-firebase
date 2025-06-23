@@ -1,0 +1,34 @@
+{
+  "admin": {
+    "email": "admin@test.com",
+    "password": "TestAdmin123!",
+    "name": "Test Admin",
+    "firstName": "Test",
+    "lastName": "Admin",
+    "role": "admin"
+  },
+  "veterinarian": {
+    "email": "vet@test.com", 
+    "password": "TestVet123!",
+    "name": "Dr. Test Veterinarian",
+    "firstName": "Dr. Test",
+    "lastName": "Veterinarian",
+    "role": "veterinarian"
+  },
+  "regular_user": {
+    "email": "user@test.com",
+    "password": "TestUser123!",
+    "name": "Test User",
+    "firstName": "Test",
+    "lastName": "User",
+    "role": "user"
+  },
+  "organization_admin": {
+    "email": "orgadmin@test.com",
+    "password": "TestOrgAdmin123!",
+    "name": "Org Admin Test",
+    "firstName": "Org Admin",
+    "lastName": "Test",
+    "role": "admin"
+  }
+} 
