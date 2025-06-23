@@ -14,9 +14,11 @@ class TestDataManager {
 
   // Create organization data with overrides
   createOrganization(overrides = {}) {
+    const uniqueId = this.getUniqueId();
     const defaultOrg = {
-      name: `Test Organization ${this.getUniqueId()}`,
-      type: 'veterinary_clinic',
+      name: `Test Organization ${uniqueId}`,
+      type: 'shelter',
+      email: `test-org-${uniqueId}@example.com`,
       description: 'Test organization for E2E tests',
       address: '123 Test Street',
       phone: '+1234567890'

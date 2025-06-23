@@ -1,18 +1,14 @@
 /**
- * API Helper - Simple HTTP client wrapper
- * Clean, simple axios wrapper optimized for E2E tests
+ * API Helper - HTTP client wrapper
+ * Simple axios wrapper for E2E tests
  */
 
 const axios = require('axios');
 
 class ApiClient {
-  constructor(baseURL) {
-    this.baseURL = baseURL || process.env.API_URL || 'http://localhost:3000/api';
-    this.token = null;
-    
-    // Create axios instance
+  constructor(baseURL = process.env.API_URL || 'http://localhost:3000/api') {
     this.client = axios.create({
-      baseURL: this.baseURL,
+      baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -22,12 +18,16 @@ class ApiClient {
 
   // Set authentication token
   setAuth(token) {
-    this.token = token;
     if (token) {
       this.client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
       delete this.client.defaults.headers.common['Authorization'];
     }
+  }
+
+  // Clear authentication
+  clearAuth() {
+    delete this.client.defaults.headers.common['Authorization'];
   }
 
   // HTTP Methods
@@ -58,6 +58,15 @@ class ApiClient {
     }
   }
 
+  async patch(url, data = {}, options = {}) {
+    try {
+      const response = await this.client.patch(url, data, options);
+      return response;
+    } catch (error) {
+      throw this._handleError(error);
+    }
+  }
+
   async delete(url, options = {}) {
     try {
       const response = await this.client.delete(url, options);
@@ -67,22 +76,31 @@ class ApiClient {
     }
   }
 
-  // Error handling
+  // Private method to handle errors
   _handleError(error) {
     if (error.response) {
-      // Server responded with error status
-      return error;
-    } else if (error.request) {
-      // Request was made but no response received
-      throw new Error(`No response received: ${error.message}`);
-    } else {
-      // Something else happened
-      throw new Error(`Request error: ${error.message}`);
+      // Log detailed error for debugging
+      console.error('API Error Details:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+        url: error.config?.url,
+        method: error.config?.method?.toUpperCase()
+      });
+      
+      // If validation errors exist, show them in detail
+      if (error.response.data?.errors) {
+        console.error('Validation Errors:', JSON.stringify(error.response.data.errors, null, 2));
+      }
+      if (error.response.data?.meta?.availableTypes) {
+        console.error('Available Types:', error.response.data.meta.availableTypes);
+      }
     }
+    return error;
   }
 }
 
-// Utility functions for test assertions
+// Utility functions for expectations
 function expectSuccess(response) {
   expect(response.status).toBeGreaterThanOrEqual(200);
   expect(response.status).toBeLessThan(300);
