@@ -10,8 +10,8 @@ module.exports = {
   // Test file matching
   testMatch: ['**/tests/**/*.test.js'],
   
-  // Setup files
-  setupFilesAfterEnv: ['<rootDir>/setup.js'],
+  // Setup files - Fixed path to point to correct setup.js
+  setupFilesAfterEnv: ['<rootDir>/e2e-new/setup.js'],
   
   // Timeout configuration
   testTimeout: 10000, // 10 seconds per test

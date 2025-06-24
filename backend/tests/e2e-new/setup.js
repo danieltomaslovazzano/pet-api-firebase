@@ -3,13 +3,19 @@
  * Simple setup without complex configurations
  */
 
-// Load environment variables
+// Load environment variables with absolute path resolution
+const path = require('path');
 require('dotenv').config({ 
-  path: require('path').join(__dirname, 'config', 'test.env') 
+  path: path.resolve(__dirname, 'config', 'test.env') 
 });
 
+// Ensure API_URL is set in environment
+if (!process.env.API_URL) {
+  process.env.API_URL = 'http://localhost:3000/api';
+}
+
 // Global test configuration
-global.API_URL = process.env.API_URL || 'http://localhost:3000/api';
+global.API_URL = process.env.API_URL;
 
 // Global timeout for all tests
 jest.setTimeout(10000);
@@ -18,6 +24,7 @@ jest.setTimeout(10000);
 beforeAll(async () => {
   console.log('🚀 Starting New E2E Test Suite');
   console.log(`📡 API URL: ${global.API_URL}`);
+  console.log(`🔧 Process ENV API_URL: ${process.env.API_URL}`);
 });
 
 // Global teardown
