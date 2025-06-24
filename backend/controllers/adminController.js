@@ -97,6 +97,10 @@ exports.bulkAction = async (req, res) => {
       message: `Acción "${action}" completada para ${results.length} usuarios con ${errors.length} errores`,
       results,
       errors
+    }, {
+      action,
+      successCount: results.length,
+      errorCount: errors.length
     });
   } catch (err) {
     console.error('Error en acción masiva:', err);

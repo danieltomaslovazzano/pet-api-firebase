@@ -2,7 +2,15 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 // Load development environment variables for E2E tests
-dotenv.config({ path: path.join(__dirname, '..', '..', '.env.dev') });
+dotenv.config({ path: path.join(__dirname, '../../.env.dev') });
+
+console.log('[E2E SETUP] Loaded .env.dev configuration');
+console.log('[E2E SETUP] Admin email configured:', !!process.env.ADMIN_EMAIL);
+console.log('[E2E SETUP] Admin password configured:', !!process.env.ADMIN_PASSWORD);
+console.log('[E2E SETUP] E2E Admin email configured:', !!process.env.E2E_ADMIN_EMAIL);
+console.log('[E2E SETUP] E2E Admin password configured:', !!process.env.E2E_ADMIN_PASSWORD);
+
+module.exports = {};
 
 // Global test timeout
 jest.setTimeout(process.env.TEST_TIMEOUT || 30000);
@@ -19,6 +27,14 @@ beforeAll(async () => {
 afterAll(async () => {
   // Add any global cleanup here
   console.log('\n🧹 Cleaning up test environment...');
+  
+  // Clear token cache to prevent memory leaks
+  try {
+    const { clearTokenCache } = require('./helpers/auth');
+    clearTokenCache();
+  } catch (error) {
+    console.warn('Warning: Could not clear token cache:', error.message);
+  }
 });
 
 // Global error handling

@@ -3,7 +3,8 @@ const { organizationModel, membershipModel } = require('../models/adapter');
 const { 
   getAllOrganizationTypes, 
   getOrganizationType,
-  isValidOrganizationType 
+  isValidOrganizationType,
+  validateOrganizationByType
 } = require('../config/organizationTypes');
 
 exports.createOrganization = async (req, res) => {
@@ -22,6 +23,21 @@ exports.createOrganization = async (req, res) => {
     }], 'organizations.create.validation_failed', {
       availableTypes: Object.keys(getAllOrganizationTypes())
     });
+  }
+  
+  // Validate organization data based on its type
+  const typeValidation = validateOrganizationByType(orgData.type, orgData);
+  if (!typeValidation.isValid) {
+    const validationErrors = typeValidation.errors.map(error => ({
+      field: error.includes('email') ? 'email' : 
+             error.includes('address') ? 'address' :
+             error.includes('phone') ? 'phone' :
+             error.includes('name') ? 'name' : 'general',
+      code: 'REQUIRED_FIELD',
+      message: error
+    }));
+    
+    return res.apiValidationError(validationErrors, 'organizations.create.validation_failed');
   }
   
   // No need to set organizationId when creating an organization
@@ -90,6 +106,39 @@ exports.updateOrganization = async (req, res) => {
     }], 'organizations.update.validation_failed', {
       availableTypes: Object.keys(getAllOrganizationTypes())
     });
+  }
+  
+  // If type is being updated, validate the full organization data with the new type
+  if (orgData.type) {
+    try {
+      // Get current organization data to merge with updates
+      const currentOrg = await organizationModel.getOrganizationById(id);
+      if (!currentOrg) {
+        return res.apiNotFound('organizations.update.not_found');
+      }
+      
+      // Merge current data with updates
+      const mergedData = { ...currentOrg, ...orgData };
+      
+      // Validate merged data with the new type
+      const typeValidation = validateOrganizationByType(orgData.type, mergedData);
+      if (!typeValidation.isValid) {
+        const validationErrors = typeValidation.errors.map(error => ({
+          field: error.includes('email') ? 'email' : 
+                 error.includes('address') ? 'address' :
+                 error.includes('phone') ? 'phone' :
+                 error.includes('name') ? 'name' : 'general',
+          code: 'REQUIRED_FIELD',
+          message: error
+        }));
+        
+        return res.apiValidationError(validationErrors, 'organizations.update.validation_failed');
+      }
+    } catch (err) {
+      return res.apiServerError('organizations.update.validation_error', { 
+        originalError: err.message 
+      });
+    }
   }
   
   // Multitenancy: super admin can update any org, others must be admin of the org

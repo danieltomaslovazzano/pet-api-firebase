@@ -245,7 +245,7 @@ exports.removeMember = async (req, res) => {
     });
   }
 
-  async function removeMembership(message = 'Membership removed successfully') {
+  async function removeMembership(messageKey = 'memberships.remove.success') {
     try {
       await membershipModel.deleteMembership(id);
       return res.apiSuccess({ message });
@@ -262,7 +262,7 @@ exports.removeMember = async (req, res) => {
   // Verificar si el modificador tiene permisos de admin o si es el propio usuario abandonando
   if (req.user.uid === membership.userId) {
     // Usuario abandonando
-    return await removeMembership('You have left the organization successfully');
+    return await removeMembership('memberships.leave.success');
   } else {
     // Admin removiendo a alguien
     const isAdmin = await membershipModel.checkUserRole(req.user.uid, membership.organizationId, 'admin');
@@ -271,6 +271,6 @@ exports.removeMember = async (req, res) => {
       return res.apiForbidden({ error: 'Unauthorized. Only admins can remove members.' });
     }
     
-    return await removeMembership('Member removed successfully');
+    return await removeMembership('memberships.remove.success');
   }
 };

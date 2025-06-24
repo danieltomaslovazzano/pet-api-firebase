@@ -55,7 +55,7 @@ exports.loadPetResource = async (req, res, next) => {
     const pet = await petModel.getPetById(id);
     if (!pet) {
       logAuthError('Pet resource not found', { id });
-      return res.status(404).json({ error: 'Pet not found' });
+      return res.apiNotFound('Pet not found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -67,7 +67,7 @@ exports.loadPetResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading pet resource', { id, error: err.message });
-    return res.status(500).json({ error: 'Error retrieving pet' });
+    return res.apiServerError('Error retrieving pet');
   }
 };
 
@@ -80,7 +80,7 @@ exports.loadUserResource = (req, res, next) => {
   const id = req.params.id || req.params.userId;
   
   if (!id) {
-    return res.status(400).json({ error: 'Missing user ID in request parameters' });
+    return res.error('Missing user ID in request parameters', 400);
   }
   
   logAuthDebug({
@@ -94,7 +94,7 @@ exports.loadUserResource = (req, res, next) => {
     .then(user => {
       if (!user) {
         logAuthError('User resource not found', { id });
-        return res.status(404).json({ error: 'User not found' });
+        return res.apiNotFound('User not found');
       }
       
       logAuthDebug({
@@ -109,7 +109,7 @@ exports.loadUserResource = (req, res, next) => {
     })
     .catch(err => {
       logAuthError('Error loading user resource', { id, error: err.message });
-      return res.status(500).json({ error: 'Error retrieving user' });
+      return res.apiServerError('Error retrieving user');
     });
 };
 
@@ -121,7 +121,7 @@ exports.loadUserResource = (req, res, next) => {
 exports.loadOrganizationResource = async (req, res, next) => {
   const id = req.params.id || req.params.orgId || req.params.organizationId;
   if (!id) {
-    return res.status(400).json({ error: 'Missing organization ID in request parameters' });
+    return res.error('Missing organization ID in request parameters', 400);
   }
   try {
     logAuthDebug({
@@ -133,7 +133,7 @@ exports.loadOrganizationResource = async (req, res, next) => {
     const organization = await organizationModel.getOrganizationById(id);
     if (!organization) {
       logAuthError('Organization resource not found', { id });
-      return res.status(404).json({ error: 'Organization not found' });
+      return res.apiNotFound('organizations.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -145,7 +145,7 @@ exports.loadOrganizationResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading organization resource', { id, error: err.message });
-    return res.status(500).json({ error: 'Error retrieving organization' });
+    return res.apiServerError('Error retrieving organization');
   }
 };
 
@@ -159,7 +159,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     const id = req.params.id || req.params.membershipId;
     
     if (!id) {
-      return res.status(400).json({ error: 'Missing membership ID in request parameters' });
+      return res.error('Missing membership ID in request parameters', 400);
     }
     
     logAuthDebug({
@@ -173,7 +173,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     
     if (!membership) {
       logAuthError('Membership resource not found', { id });
-      return res.status(404).json({ error: 'Membership not found' });
+      return res.apiNotFound('memberships.not_found');
     }
     
     logAuthDebug({
@@ -189,7 +189,7 @@ exports.loadMembershipResource = async (req, res, next) => {
     next();
   } catch (error) {
     logAuthError('Error loading membership resource', { id: req.params.id, error: error.message });
-    return res.status(500).json({ error: 'Error retrieving membership' });
+    return res.apiServerError('Error retrieving membership');
   }
 };
 
@@ -200,7 +200,7 @@ exports.loadMembershipResource = async (req, res, next) => {
 exports.loadConversationResource = async (req, res, next) => {
   const id = req.params.id || req.params.conversationId;
   if (!id) {
-    return res.status(400).json({ error: 'Missing conversation ID in request parameters' });
+    return res.error('Missing conversation ID in request parameters', 400);
   }
   try {
     logAuthDebug({
@@ -212,7 +212,7 @@ exports.loadConversationResource = async (req, res, next) => {
     const conversation = await conversationModel.getConversationById(id);
     if (!conversation) {
       logAuthError('Conversation resource not found', { id });
-      return res.status(404).json({ error: 'Conversation not found' });
+      return res.apiNotFound('conversations.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -224,7 +224,7 @@ exports.loadConversationResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading conversation resource', { id, error: err.message });
-    return res.status(500).json({ error: 'Error retrieving conversation' });
+    return res.apiServerError('Error retrieving conversation');
   }
 };
 
@@ -235,7 +235,7 @@ exports.loadConversationResource = async (req, res, next) => {
 exports.loadMessageResource = async (req, res, next) => {
   const id = req.params.id || req.params.messageId;
   if (!id) {
-    return res.status(400).json({ error: 'Missing message ID in request parameters' });
+    return res.error('Missing message ID in request parameters', 400);
   }
   try {
     logAuthDebug({
@@ -247,7 +247,7 @@ exports.loadMessageResource = async (req, res, next) => {
     const message = await messageModel.getMessageById(id);
     if (!message) {
       logAuthError('Message resource not found', { id });
-      return res.status(404).json({ error: 'Message not found' });
+      return res.apiNotFound('messages.not_found');
     }
     logAuthDebug({
       type: 'resource_loaded',
@@ -260,7 +260,7 @@ exports.loadMessageResource = async (req, res, next) => {
     next();
   } catch (err) {
     logAuthError('Error loading message resource', { id, error: err.message });
-    return res.status(500).json({ error: 'Error retrieving message' });
+    return res.apiServerError('Error retrieving message');
   }
 };
 

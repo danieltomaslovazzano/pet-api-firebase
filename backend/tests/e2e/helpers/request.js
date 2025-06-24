@@ -1,6 +1,16 @@
 const axios = require('axios');
 const { performance } = require('perf_hooks');
 
+// Configuración de axios
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+});
+
 // Estructura global para almacenar logs de requests/responses por test
 if (!global.__E2E_REQUEST_LOGS__) {
   global.__E2E_REQUEST_LOGS__ = [];
@@ -56,7 +66,7 @@ methods.forEach(method => {
     }
     const testName = getCurrentTestName();
     try {
-      const res = await axios[method](...args);
+      const res = await axiosInstance[method](...args);
       const duration = performance.now() - start;
       const logEntry = {
         testName,
@@ -100,10 +110,10 @@ methods.forEach(method => {
   };
 });
 
-// Proxy para exponer la API de axios (por si se usa axios.create, interceptors, etc.)
+// Proxy para exponer la API de axios
 module.exports = new Proxy(requestWrapper, {
   get(target, prop) {
     if (prop in target) return target[prop];
-    return axios[prop];
+    return axiosInstance[prop];
   }
 }); 

@@ -21,6 +21,7 @@ model User {
   phone         String?
   address       String?
   blockedUsers  String[]
+  preferredLanguage String      @default("en")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   isSuperAdmin  Boolean        @default(false)
@@ -75,6 +76,7 @@ model Organization {
   phone        String?
   email        String?
   status       String        @default("active")
+  defaultLanguage String     @default("en")
   createdBy    String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -145,9 +147,20 @@ model Message {
   content         String
   status          String       @default("sent")
   timestamp       DateTime     @default(now())
+  updatedAt       DateTime?    @updatedAt
   attachments     Json?
   location        Json?
   organizationId  String?
+  
+  // Soft delete fields
+  deletedAt       DateTime?
+  deletedBy       String?
+  
+  // Moderation fields
+  moderationStatus String?
+  moderatedAt     DateTime?
+  moderatedBy     String?
+  moderationReason String?
   
   // Relationships
   conversation    Conversation @relation(fields: [conversationId], references: [id])

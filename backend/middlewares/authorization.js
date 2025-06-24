@@ -48,7 +48,7 @@ const checkPermission = (resource, action, options = {}) => {
         path: req.path,
         method: req.method
       });
-      return res.status(401).json({ error: 'Authentication required' });
+      return res.apiUnauthorized('common.unauthorized');
     }
     
     try {
@@ -86,10 +86,8 @@ const checkPermission = (resource, action, options = {}) => {
         
         logAuthError('Permission denied', details);
         
-        return res.status(403).json({ 
-          error: 'Permission denied', 
-          message: `You don't have permission to ${action} this ${resource}`
-        });
+        // Use unified response formatter with standard message
+        return res.apiForbidden('common.forbidden');
       }
       
       logAuthDebug({
@@ -113,17 +111,15 @@ const checkPermission = (resource, action, options = {}) => {
         path: req.path
       });
       
-      // Provide a friendlier error message to the client
-      let statusCode = 500;
-      let errorMessage = 'Error checking permissions';
-      
-      // Handle specific error types
+      // Handle specific error types using unified response formatter
       if (error.name === 'ValidationError') {
-        statusCode = 400;
-        errorMessage = 'Invalid permission request format';
+        return res.apiValidationError([{
+          field: 'general',
+          code: 'VALIDATION_ERROR',
+          messageKey: 'common.validation_error'
+        }], 'common.validation_error');
       } else if (error.name === 'ResourceNotFoundError') {
-        statusCode = 404;
-        errorMessage = `The requested ${resource} could not be found`;
+        return res.apiNotFound('common.not_found');
       } else if (error.name === 'PermissionConfigError') {
         // Log this error as critical since it indicates a configuration issue
         logAuthError('Critical permission configuration error', {
@@ -131,9 +127,10 @@ const checkPermission = (resource, action, options = {}) => {
           resource,
           action
         });
+        return res.apiServerError('common.server_error');
       }
       
-      res.status(statusCode).json({ error: errorMessage });
+      return res.apiServerError('common.server_error');
     }
   };
 };

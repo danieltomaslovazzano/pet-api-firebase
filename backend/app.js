@@ -16,7 +16,10 @@ const messageRoutes = require('./routes/messageRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const authRoutes = require('./routes/authRoutes');
 const organizationRoutes = require('./routes/organizationRoutes');
+const publicOrganizationRoutes = require('./routes/publicOrganizationRoutes');
 const membershipRoutes = require('./routes/membershipRoutes');
+const languagePreferencesRoutes = require('./routes/languagePreferencesRoutes');
+const publicLanguageRoutes = require('./routes/publicLanguageRoutes');
 
 // Configure CORS
 app.use(cors({
@@ -37,6 +40,10 @@ app.use(unifiedResponseFormatter);
 
 // Rutas públicas
 app.use('/api/auth', authRoutes);
+// Endpoints públicos de idiomas (sin autenticación)
+app.use('/api/language-preferences', publicLanguageRoutes);
+// Organization types endpoints (public)
+app.use('/api/organizations/types', publicOrganizationRoutes);
 
 // Rutas públicas específicas de organizaciones  
 const publicOrgRouter = express.Router();
@@ -60,12 +67,12 @@ app.use('/api/organizations', organizationRoutes); // Todas las demás rutas de 
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/memberships', membershipRoutes);
+app.use('/api/language-preferences', languagePreferencesRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Full error details:', err);
-  res.status(500).json({
-    error: 'Internal Server Error',
+  res.apiServerError('common.internal_server_error', {
     details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 });

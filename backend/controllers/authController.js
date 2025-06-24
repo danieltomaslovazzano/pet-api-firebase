@@ -104,6 +104,7 @@ const authController = {
       res.apiCreated(responseData, 'auth.register.success', {}, { email });
     } catch (error) {
       const errorResponse = error.response?.data?.error || error;
+      const { email: requestEmail } = req.body; // Extract email from request for error handling
       logAuthEvent('Register Error', errorResponse, true);
       
       if (error.response?.data?.error) {

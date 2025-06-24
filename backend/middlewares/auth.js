@@ -9,7 +9,7 @@ const verifyToken = async (req, res, next) => {
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     console.error('[auth] Token no proporcionado o mal formado:', authHeader);
-    return res.status(401).json({ error: 'Token no proporcionado' });
+    return res.apiUnauthorized('auth.token_not_provided');
   }
 
   const idToken = authHeader.split('Bearer ')[1];
@@ -38,7 +38,7 @@ const verifyToken = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('[auth] Error verifying Firebase token:', error);
-    return res.status(401).json({ error: 'Token inválido', details: error.message });
+    return res.apiUnauthorized('auth.invalid_token', { details: error.message });
   }
 };
 
@@ -47,7 +47,7 @@ const checkRoles = (allowedRoles) => {
   return async (req, res, next) => {
     // Si no hay un usuario autenticado, regresar error
     if (!req.user) {
-      return res.status(401).json({ error: 'No autenticado' });
+      return res.apiUnauthorized('auth.not_authenticated');
     }
 
     // Obtener el rol del usuario desde los claims personalizados
@@ -65,10 +65,10 @@ const checkRoles = (allowedRoles) => {
         return next();
       }
 
-      return res.status(403).json({ error: 'Permisos insuficientes' });
+      return res.apiForbidden('auth.insufficient_permissions');
     } catch (error) {
       console.error('Error checking roles:', error);
-      return res.status(500).json({ error: 'Error verificando permisos' });
+      return res.apiServerError('auth.role_check_error', { details: error.message });
     }
   };
 };

@@ -313,8 +313,13 @@ exports.hideConversation = async (req, res) => {
     
   } catch (error) {
     console.error('Error hiding conversation:', error);
-    const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (error.statusCode === 404) {
+      return res.apiNotFound('conversations.not_found');
+    } else if (error.statusCode === 403) {
+      return res.apiForbidden('conversations.hide.forbidden');
+    } else {
+      return res.apiServerError('conversations.hide.error');
+    }
   }
 };
 
@@ -337,8 +342,13 @@ exports.unhideConversation = async (req, res) => {
     
   } catch (error) {
     console.error('Error unhiding conversation:', error);
-    const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (error.statusCode === 404) {
+      return res.apiNotFound('conversations.not_found');
+    } else if (error.statusCode === 403) {
+      return res.apiForbidden('conversations.unhide.forbidden');
+    } else {
+      return res.apiServerError('conversations.unhide.error');
+    }
   }
 };
 
@@ -361,8 +371,13 @@ exports.blockConversation = async (req, res) => {
     
   } catch (error) {
     console.error('Error blocking conversation:', error);
-    const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (error.statusCode === 404) {
+      return res.apiNotFound('conversations.not_found');
+    } else if (error.statusCode === 403) {
+      return res.apiForbidden('conversations.block.forbidden');
+    } else {
+      return res.apiServerError('conversations.block.error');
+    }
   }
 };
 
@@ -385,8 +400,13 @@ exports.unblockConversation = async (req, res) => {
     
   } catch (error) {
     console.error('Error unblocking conversation:', error);
-    const statusCode = error.statusCode || 500;
-    res.status(statusCode).json({ error: error.message });
+    if (error.statusCode === 404) {
+      return res.apiNotFound('conversations.not_found');
+    } else if (error.statusCode === 403) {
+      return res.apiForbidden('conversations.unblock.forbidden');
+    } else {
+      return res.apiServerError('conversations.unblock.error');
+    }
   }
 };
 

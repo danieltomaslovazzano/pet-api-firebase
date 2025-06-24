@@ -54,13 +54,14 @@ exports.validateCreateOrganization = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: errors.array().map(err => ({
+      return res.apiValidationError(
+        errors.array().map(err => ({
           field: err.path,
-          message: err.msg
-        }))
-      });
+          code: 'VALIDATION_ERROR',
+          messageKey: err.msg
+        })),
+        'validation.failed'
+      );
     }
     next();
   }
@@ -122,13 +123,14 @@ exports.validateUpdateOrganization = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: errors.array().map(err => ({
+      return res.apiValidationError(
+        errors.array().map(err => ({
           field: err.path,
-          message: err.msg
-        }))
-      });
+          code: 'VALIDATION_ERROR',
+          messageKey: err.msg
+        })),
+        'validation.failed'
+      );
     }
     next();
   }
@@ -144,10 +146,14 @@ exports.validateOrganizationId = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Invalid organization ID', 
-        details: errors.array().map(err => err.msg)
-      });
+      return res.apiValidationError(
+        [{
+          field: 'id',
+          code: 'INVALID_ID',
+          messageKey: 'Invalid organization ID'
+        }],
+        'validation.failed'
+      );
     }
     next();
   }
@@ -169,10 +175,14 @@ exports.validateOrganizationType = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Invalid organization type', 
-        details: errors.array().map(err => err.msg)
-      });
+      return res.apiValidationError(
+        errors.array().map(err => ({
+          field: err.path,
+          code: 'INVALID_TYPE',
+          messageKey: err.msg
+        })),
+        'validation.failed'
+      );
     }
     next();
   }
@@ -212,13 +222,14 @@ exports.validateOrganizationQuery = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        error: 'Invalid query parameters', 
-        details: errors.array().map(err => ({
+      return res.apiValidationError(
+        errors.array().map(err => ({
           field: err.path,
-          message: err.msg
-        }))
-      });
+          code: 'VALIDATION_ERROR',
+          messageKey: err.msg
+        })),
+        'validation.failed'
+      );
     }
     next();
   }

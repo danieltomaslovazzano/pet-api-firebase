@@ -1,0 +1,26 @@
+{
+  "veterinary_clinic": {
+    "name": "Test Veterinary Clinic",
+    "type": "veterinary_clinic",
+    "description": "A test veterinary clinic for E2E testing",
+    "address": "123 Vet Street, Test City",
+    "phone": "+1234567890",
+    "email": "clinic@test.com"
+  },
+  "animal_shelter": {
+    "name": "Test Animal Shelter",
+    "type": "animal_shelter", 
+    "description": "A test animal shelter for E2E testing",
+    "address": "456 Shelter Ave, Test City",
+    "phone": "+1234567891",
+    "email": "shelter@test.com"
+  },
+  "pet_store": {
+    "name": "Test Pet Store",
+    "type": "pet_store",
+    "description": "A test pet store for E2E testing", 
+    "address": "789 Pet Street, Test City",
+    "phone": "+1234567892",
+    "email": "store@test.com"
+  }
+} 
