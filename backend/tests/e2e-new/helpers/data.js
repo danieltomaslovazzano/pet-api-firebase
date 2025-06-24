@@ -83,6 +83,31 @@ class TestDataManager {
     return `${prefix} ${this.getUniqueId()}`;
   }
 
+  // Create conversation data with overrides
+  createConversation(overrides = {}) {
+    const uniqueId = this.getUniqueId();
+    const defaultConversation = {
+      title: `Test Conversation ${uniqueId}`,
+      participants: [], // Will be populated with actual user IDs
+      type: 'private',
+      status: 'active'
+    };
+    
+    return { ...defaultConversation, ...overrides };
+  }
+
+  // Create message data with overrides
+  createMessage(overrides = {}) {
+    const uniqueId = this.getUniqueId();
+    const defaultMessage = {
+      content: `Test message content ${uniqueId}`,
+      type: 'text',
+      status: 'sent'
+    };
+    
+    return { ...defaultMessage, ...overrides };
+  }
+
   // Load fixture file (for future use)
   loadFixture(filename) {
     try {
