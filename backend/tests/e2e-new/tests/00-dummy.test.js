@@ -77,7 +77,7 @@ describe('Data Helper Validation', () => {
     const org = dataManager.createOrganization({ name: 'Custom Org' });
     
     expect(org.name).toBe('Custom Org');
-    expect(org.type).toBe('veterinary_clinic');
+    expect(org.type).toBe('shelter');
     expect(org.description).toBeDefined();
   });
 

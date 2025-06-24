@@ -7,6 +7,7 @@ const axios = require('axios');
 
 class ApiClient {
   constructor(baseURL = process.env.API_URL || 'http://localhost:3000/api') {
+    this.baseURL = baseURL;
     this.client = axios.create({
       baseURL,
       timeout: 10000,
