@@ -50,7 +50,7 @@
     "test:ci": "npm run test:setup && jest --ci --coverage && npm run test:teardown",
     "test:e2e-new": "jest --config=tests/e2e-new/config/jest.config.js --testPathPattern=\"tests/e2e-new/tests/\"",
     "test:e2e-new:report": "node tests/e2e-new/scripts/generate-report.js",
-    "test:e2e": "node scripts/run-e2e-dev.js",
+    "test:e2e": "npm run test:e2e-new",
     "test:e2e:auth": "node scripts/run-e2e-dev.js auth",
     "test:e2e:users": "node scripts/run-e2e-dev.js users",
     "test:e2e:orgs": "node scripts/run-e2e-dev.js organizations",
