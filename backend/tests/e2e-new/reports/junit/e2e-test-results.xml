@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="66" failures="52" errors="0" time="5.729">
+  <testsuite name="Pets E2E Tests (Complete)" errors="0" failures="11" skipped="0" timestamp="2025-06-26T14:47:24" time="3.014" tests="11">
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should create pet without organization" time="0.002">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should get pets list" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should get pet details" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should update pet details" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should delete pet" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet CRUD Operations" name="should search pets" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet Advanced Features" name="should hide pet visibility" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet Advanced Features" name="should show pet visibility" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet Advanced Features" name="should feature pet" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet Validation &amp; Error Handling" name="should validate required fields when creating pet" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Pets E2E Tests (Complete) › Pet Validation &amp; Error Handling" name="should handle pet not found error" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/04-pets.test.js:26:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Users E2E Tests" errors="0" failures="11" skipped="0" timestamp="2025-06-26T14:47:27" time="0.253" tests="11">
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should create user successfully" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should get users list" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should get user by ID" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should get current user profile" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should update user information" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User CRUD Operations" name="should delete user" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User Social Features" name="should block user" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User Social Features" name="should unblock user" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User Validation &amp; Error Handling" name="should validate required fields when creating user" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User Validation &amp; Error Handling" name="should handle user not found" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Users E2E Tests › User Validation &amp; Error Handling" name="should handle invalid user ID format" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/07-users.test.js:28:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Admin Management E2E Tests (Simplified)" errors="0" failures="7" skipped="0" timestamp="2025-06-26T14:47:27" time="0.438" tests="7">
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin User Management" name="should get all users as admin" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin User Management" name="should create user as admin" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin User Management" name="should get user details as admin" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin User Management" name="should update user as admin" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin User Management" name="should delete user as admin" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin Validation &amp; Error Handling" name="should handle admin user not found" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Admin Management E2E Tests (Simplified) › Admin Validation &amp; Error Handling" name="should validate required fields for user creation" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/08-admin.test.js:28:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Organizations E2E Tests" errors="0" failures="8" skipped="0" timestamp="2025-06-26T14:47:28" time="0.274" tests="8">
+    <testcase classname="Organizations E2E Tests › Organization CRUD Operations" name="should create organization as admin" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization CRUD Operations" name="should get organization details" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization CRUD Operations" name="should update organization" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization CRUD Operations" name="should delete organization" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization CRUD Operations" name="should prevent non-admin from creating organization" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization Types" name="should get organization types (public endpoint)" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization Validation" name="should validate required fields when creating organization" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+    <testcase classname="Organizations E2E Tests › Organization Validation" name="should validate organization type exists" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/02-organizations.test.js:26:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Messages E2E Tests (Simplified)" errors="0" failures="4" skipped="0" timestamp="2025-06-26T14:47:28" time="0.352" tests="4">
+    <testcase classname="Messages E2E Tests (Simplified) › Message Basic Tests" name="should handle message validation errors" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/06-messages.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Messages E2E Tests (Simplified) › Message Basic Tests" name="should handle invalid conversation ID" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/06-messages.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Messages E2E Tests (Simplified) › Message Basic Tests" name="should handle message not found" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/06-messages.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Messages E2E Tests (Simplified) › Message Basic Tests" name="should handle invalid message ID format" time="0.001">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/06-messages.test.js:28:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Authentication E2E Tests" errors="0" failures="8" skipped="0" timestamp="2025-06-26T14:47:29" time="0.239" tests="8">
+    <testcase classname="Authentication E2E Tests › Admin Login" name="should login admin successfully" time="0.089">
+      <failure>AggregateError: 
+    at Function.Object.&lt;anonymous&gt;.AxiosError.from (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/AxiosError.js:92:14)
+    at RedirectableRequest.handleRequestError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/adapters/http.js:620:25)
+    at RedirectableRequest.emit (node:events:519:35)
+    at ClientRequest.eventHandlers.&lt;computed&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/follow-redirects/index.js:49:24)
+    at ClientRequest.emit (node:events:507:28)
+    at emitErrorEvent (node:_http_client:104:11)
+    at Socket.socketErrorListener (node:_http_client:518:5)
+    at Socket.emit (node:events:507:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/node_modules/axios/lib/core/Axios.js:45:41)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at ApiClient.post (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/api.js:46:24)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:41:24)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Admin Login" name="should use AuthManager for admin login" time="0.006">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:60:27)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Invalid Credentials" name="should fail with invalid credentials" time="0.004">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;status&apos;)
+    at status (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/api.js:112:28)
+    at Object.expectError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:89:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Invalid Credentials" name="should fail with missing password" time="0.004">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;status&apos;)
+    at status (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/api.js:112:28)
+    at Object.expectError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:107:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Token Validation" name="should validate token correctly" time="0.003">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:116:27)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Token Validation" name="should reject invalid token" time="0.004">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;status&apos;)
+    at status (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/api.js:112:28)
+    at Object.expectError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:139:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Token Validation" name="should reject missing token" time="0.003">
+      <failure>TypeError: Cannot read properties of undefined (reading &apos;status&apos;)
+    at status (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/api.js:112:28)
+    at Object.expectError (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:153:9)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Authentication E2E Tests › Session Management" name="should logout and clear session" time="0.003">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/01-auth.test.js:162:27)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Conversations E2E Tests (Simplified)" errors="0" failures="3" skipped="0" timestamp="2025-06-26T14:47:29" time="0.152" tests="3">
+    <testcase classname="Conversations E2E Tests (Simplified) › Conversation Basic Tests" name="should handle conversation validation errors" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/05-conversations.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests (Simplified) › Conversation Basic Tests" name="should handle conversation not found" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/05-conversations.test.js:28:24)</failure>
+    </testcase>
+    <testcase classname="Conversations E2E Tests (Simplified) › Conversation Basic Tests" name="should handle invalid conversation ID format" time="0">
+      <failure>Error: Admin login error: 
+    at AuthManager.loginAdmin (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/helpers/auth.js:36:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at Object.&lt;anonymous&gt; (/Users/daniellovazzano/Documents/Projects/pet-api-firebase/backend/tests/e2e-new/tests/05-conversations.test.js:28:24)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Configuration Validation" errors="0" failures="0" skipped="0" timestamp="2025-06-26T14:47:29" time="0.242" tests="14">
+    <testcase classname="Configuration Validation" name="should have correct test environment" time="0.001">
+    </testcase>
+    <testcase classname="Configuration Validation" name="should have API_URL configured" time="0.001">
+    </testcase>
+    <testcase classname="Configuration Validation" name="should have required environment variables" time="0.001">
+    </testcase>
+    <testcase classname="Configuration Validation" name="should complete successfully" time="0">
+    </testcase>
+    <testcase classname="Core Helpers Validation" name="should create ApiClient instance" time="0.002">
+    </testcase>
+    <testcase classname="Core Helpers Validation" name="should create AuthManager instance" time="0.001">
+    </testcase>
+    <testcase classname="Core Helpers Validation" name="should have utility functions available" time="0">
+    </testcase>
+    <testcase classname="Data Helper Validation" name="should create TestDataManager instance" time="0">
+    </testcase>
+    <testcase classname="Data Helper Validation" name="should generate unique user data" time="0.001">
+    </testcase>
+    <testcase classname="Data Helper Validation" name="should generate organization data with overrides" time="0.001">
+    </testcase>
+    <testcase classname="Data Helper Validation" name="should generate unique IDs" time="0">
+    </testcase>
+    <testcase classname="Cleanup Helper Validation" name="should create CleanupManager instance" time="0">
+    </testcase>
+    <testcase classname="Cleanup Helper Validation" name="should track resources correctly" time="0.001">
+    </testcase>
+    <testcase classname="Cleanup Helper Validation" name="should clear resources after cleanup" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
