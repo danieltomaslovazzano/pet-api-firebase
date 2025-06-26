@@ -14,17 +14,12 @@ describe('Configuration Validation', () => {
   });
 
   test('should have API_URL configured', () => {
-    // Check if global.API_URL is set, or if we can create a default one
-    const apiUrl = global.API_URL || process.env.API_URL || 'http://localhost:3000/api';
-    expect(apiUrl).toBeDefined();
-    expect(apiUrl).toMatch(/^http/);
+    expect(global.API_URL).toBeDefined();
+    expect(global.API_URL).toMatch(/^http/);
   });
 
-  test('should have API connectivity available', () => {
-    // More practical test - check if we can create an API client
-    const api = new ApiClient();
-    expect(api.baseURL).toBeDefined();
-    expect(api.baseURL).toMatch(/^http/);
+  test('should have required environment variables', () => {
+    expect(process.env.API_URL).toBeDefined();
   });
 
   test('should complete successfully', () => {
